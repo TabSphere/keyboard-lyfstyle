@@ -66,7 +66,7 @@ npm run generate
 xcrun swiftc targets/keyboard/StyleCatalogue.swift scripts/native-tests/swift/main.swift -o /tmp/lyfstyle-golden-tests
 /tmp/lyfstyle-golden-tests shared/styles.json shared/golden-tests.json
 pod install --project-directory=ios
-xcodebuild -workspace ios/keyboardlyfstyle.xcworkspace -scheme keyboardlyfstyle -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+xcodebuild -workspace ios/Lyfstyle.xcworkspace -scheme Lyfstyle -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 ```
 
 ## Frederick’s manual prerequisites

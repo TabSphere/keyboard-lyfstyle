@@ -42,6 +42,9 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: android-actions/setup-android@v3
+        with:
+          # The default list includes the retired 'tools' package, which makes sdkmanager fail.
+          packages: platform-tools
       - run: npm ci
       - run: npx expo prebuild --platform android --clean
       - uses: gradle/actions/setup-gradle@v4
@@ -81,9 +84,13 @@ jobs:
       - run: pod install --project-directory=ios
       - name: Build app and keyboard without signing
         run: |
+          # Prebuild names the workspace after the app's display name (currently "Lyfstyle").
+          WORKSPACE=$(ls -d ios/*.xcworkspace | head -n 1)
+          SCHEME=$(basename "$WORKSPACE" .xcworkspace)
+          echo "Building $WORKSPACE (scheme $SCHEME)"
           xcodebuild \
-            -workspace ios/keyboardlyfstyle.xcworkspace \
-            -scheme keyboardlyfstyle \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
