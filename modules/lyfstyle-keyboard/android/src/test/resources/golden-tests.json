@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "styleId": "normal",
+      "input": "Hello 𝓗 H̶ é q 123\n👨‍👩‍👧‍👦",
+      "expected": "Hello 𝓗 H̶ é q 123\n👨‍👩‍👧‍👦"
+    },
+    {
+      "styleId": "bold",
+      "input": "Hello 123",
+      "expected": "𝐇𝐞𝐥𝐥𝐨 𝟏𝟐𝟑"
+    },
+    {
+      "styleId": "italic",
+      "input": "h H",
+      "expected": "ℎ 𝐻"
+    },
+    {
+      "styleId": "script",
+      "input": "BEFHILMR ego",
+      "expected": "ℬℰℱℋℐℒℳℛ ℯℊℴ"
+    },
+    {
+      "styleId": "double-struck",
+      "input": "CHNPQRZ 019",
+      "expected": "ℂℍℕℙℚℝℤ 𝟘𝟙𝟡"
+    },
+    {
+      "styleId": "superscript",
+      "input": "qé1",
+      "expected": "qé¹"
+    },
+    {
+      "styleId": "squared",
+      "input": "Aa",
+      "expected": "🄰a"
+    },
+    {
+      "styleId": "strike",
+      "input": "H",
+      "expected": "H̶"
+    },
+    {
+      "styleId": "underline",
+      "input": "H",
+      "expected": "H̲"
+    },
+    {
+      "styleId": "bold",
+      "input": "é 👨‍👩‍👧‍👦\n",
+      "expected": "é 👨‍👩‍👧‍👦\n"
+    },
+    {
+      "styleId": "does-not-exist",
+      "input": "Keep me normal",
+      "expected": "Keep me normal"
+    }
+  ]
+}

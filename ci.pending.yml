@@ -1,0 +1,91 @@
+name: Unsigned CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'phase/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unsigned-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shared-and-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run export:web
+      - run: npx expo-doctor
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+      - run: npm ci
+      - run: npx expo prebuild --platform android --clean
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build debug app and test native style engine
+        env:
+          NODE_ENV: development
+        run: ./android/gradlew -p android :app:assembleDebug :lyfstyle-keyboard:testDebugUnitTest --stacktrace
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-test-results
+          path: modules/lyfstyle-keyboard/android/build/test-results/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: lyfstyle-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+  ios:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run generate
+      - name: Run standalone Swift golden tests
+        run: |
+          xcrun swiftc targets/keyboard/StyleCatalogue.swift scripts/native-tests/swift/main.swift -o /tmp/lyfstyle-golden-tests
+          /tmp/lyfstyle-golden-tests shared/styles.json shared/golden-tests.json
+      - name: Generate native iOS project
+        run: npx expo prebuild --platform ios --clean
+      - run: pod install --project-directory=ios
+      - name: Build app and keyboard without signing
+        run: |
+          xcodebuild \
+            -workspace ios/keyboardlyfstyle.xcworkspace \
+            -scheme keyboardlyfstyle \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build

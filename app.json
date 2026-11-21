@@ -1,0 +1,70 @@
+{
+  "expo": {
+    "name": "Lyfstyle",
+    "slug": "keyboard-lyfstyle",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "lyfstyle",
+    "backgroundColor": "#F4F1EA",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F4F1EA"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tabsphere.keyboardlyfstyle",
+      "buildNumber": "1",
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.com.tabsphere.keyboardlyfstyle"]
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.tabsphere.keyboardlyfstyle",
+      "versionCode": 1,
+      "softwareKeyboardLayoutMode": "resize",
+      "adaptiveIcon": {
+        "backgroundColor": "#F4F1EA",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": [
+      "expo-router",
+      "@bacons/apple-targets",
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "minSdkVersion": 26
+          },
+          "ios": {
+            "deploymentTarget": "16.4"
+          }
+        }
+      ],
+      "expo-iap"
+    ],
+    "extra": {
+      "proProductId": "com.tabsphere.keyboardlyfstyle.pro",
+      "appGroup": "group.com.tabsphere.keyboardlyfstyle"
+    }
+  }
+}
