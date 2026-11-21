@@ -4,13 +4,14 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Fraunces_600SemiBold, Fraunces_600SemiBold_Italic } from '@expo-google-fonts/fraunces';
 import {
-  SchibstedGrotesk_400Regular,
-  SchibstedGrotesk_500Medium,
-  SchibstedGrotesk_600SemiBold,
-  SchibstedGrotesk_700Bold,
-  SchibstedGrotesk_800ExtraBold,
-} from '@expo-google-fonts/schibsted-grotesk';
+  Geist_400Regular,
+  Geist_500Medium,
+  Geist_600SemiBold,
+  Geist_700Bold,
+} from '@expo-google-fonts/geist';
+import { GeistMono_500Medium } from '@expo-google-fonts/geist-mono';
 import { useFonts } from 'expo-font';
 import { ComposerProvider } from '../state/ComposerContext';
 import { colors } from '../theme/tokens';
@@ -19,11 +20,13 @@ void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    SchibstedGrotesk_400Regular,
-    SchibstedGrotesk_500Medium,
-    SchibstedGrotesk_600SemiBold,
-    SchibstedGrotesk_700Bold,
-    SchibstedGrotesk_800ExtraBold,
+    Fraunces_600SemiBold,
+    Fraunces_600SemiBold_Italic,
+    Geist_400Regular,
+    Geist_500Medium,
+    Geist_600SemiBold,
+    Geist_700Bold,
+    GeistMono_500Medium,
   });
 
   useEffect(() => {

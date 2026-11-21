@@ -128,7 +128,7 @@ final class KeyboardViewController: UIInputViewController {
                         self?.secondarySymbols.toggle(); self?.rebuild()
                     })
                 } else {
-                    let shift = key(capsLock ? "CAPS" : "Shift", accent: shifted || capsLock) { [weak self] in
+                    let shift = key(capsLock ? "Caps lock" : "Shift", accent: shifted || capsLock, systemImage: capsLock ? "capslock.fill" : shifted ? "shift.fill" : "shift") { [weak self] in
                         guard let self else { return }
                         self.shifted = self.capsLock ? false : !self.shifted
                         self.capsLock = false
@@ -153,6 +153,7 @@ final class KeyboardViewController: UIInputViewController {
 
     private func toolbar() -> UIView {
         let row = rowStack()
+        row.distribution = .fill
         let effectiveStyle = effectiveStyleId()
         let styleName = effectiveStyle == "normal" ? "Normal Text" : catalogue.style(id: effectiveStyle).name
         let styleButton = key(styleName, accent: drawerVisible) { [weak self] in
@@ -160,7 +161,7 @@ final class KeyboardViewController: UIInputViewController {
         }
         styleButton.accessibilityLabel = "Choose typing style. Current style \(styleName)"
         row.addArrangedSubview(styleButton)
-        let normal = key(normalMode ? "Normal ✓" : "Aa", accent: normalMode || safeNormal) { [weak self] in
+        let normal = key(normalMode || safeNormal ? "Aa ✓" : "Aa", accent: normalMode || safeNormal) { [weak self] in
             guard let self, !self.safeNormal else { return }
             self.normalMode.toggle()
             self.defaults.set(self.normalMode, forKey: "normalMode")
@@ -170,8 +171,16 @@ final class KeyboardViewController: UIInputViewController {
         normal.accessibilityLabel = safeNormal ? "Normal text required for this field" : "Toggle normal text"
         row.addArrangedSubview(normal)
         let favourite = favourites().contains(selectedStyle)
-        row.addArrangedSubview(key(favourite ? "★" : "☆") { [weak self] in self?.toggleFavourite() })
-        row.addArrangedSubview(key(palette.name) { [weak self] in self?.cycleTheme() })
+        let favouriteButton = key(favourite ? "Remove from favourites" : "Add to favourites", systemImage: favourite ? "star.fill" : "star") { [weak self] in self?.toggleFavourite() }
+        row.addArrangedSubview(favouriteButton)
+        let themeButton = key("Keyboard theme \(palette.name). Tap for next theme", systemImage: "paintpalette") { [weak self] in self?.cycleTheme() }
+        row.addArrangedSubview(themeButton)
+        NSLayoutConstraint.activate([
+            styleButton.widthAnchor.constraint(equalTo: row.widthAnchor, multiplier: 0.42),
+            normal.widthAnchor.constraint(equalTo: row.widthAnchor, multiplier: 0.18),
+            favouriteButton.widthAnchor.constraint(equalTo: row.widthAnchor, multiplier: 0.14),
+            themeButton.widthAnchor.constraint(equalTo: row.widthAnchor, multiplier: 0.16),
+        ])
         return row
     }
 
@@ -181,7 +190,7 @@ final class KeyboardViewController: UIInputViewController {
         container.spacing = 3
         let scroll = UIScrollView()
         scroll.showsHorizontalScrollIndicator = false
-        scroll.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        scroll.heightAnchor.constraint(equalToConstant: 56).isActive = true
         let list = UIStackView()
         list.axis = .horizontal
         list.spacing = 5
@@ -203,10 +212,14 @@ final class KeyboardViewController: UIInputViewController {
         }
         let visible = ordered.filter { !favouritesOnly || favourites().contains($0.id) }
         for style in visible {
-            let button = key(style.name, accent: style.id == selectedStyle && !normalMode) { [weak self] in
+            let sample = catalogue.transform("Aa", styleId: style.id)
+            let button = key("\(sample)\n\(style.name)", accent: style.id == selectedStyle && !normalMode) { [weak self] in
                 self?.selectStyle(style.id)
             }
-            button.widthAnchor.constraint(equalToConstant: 112).isActive = true
+            button.titleLabel?.numberOfLines = 2
+            button.titleLabel?.textAlignment = .center
+            button.titleLabel?.font = .systemFont(ofSize: 11, weight: .medium)
+            button.widthAnchor.constraint(equalToConstant: 116).isActive = true
             list.addArrangedSubview(button)
         }
         if visible.isEmpty {
@@ -225,16 +238,27 @@ final class KeyboardViewController: UIInputViewController {
 
     private func bottomRow() -> UIView {
         let row = rowStack()
-        row.addArrangedSubview(key(symbols ? "ABC" : "123") { [weak self] in
+        row.distribution = .fill
+        let numbersButton = key(symbols ? "ABC" : "123") { [weak self] in
             self?.symbols.toggle(); self?.secondarySymbols = false; self?.rebuild()
-        })
-        let next = key("Next") { [weak self] in self?.advanceToNextInputMode() }
+        }
+        row.addArrangedSubview(numbersButton)
+        let next = key("Next keyboard", systemImage: "globe") { [weak self] in self?.advanceToNextInputMode() }
         next.isHidden = !needsInputModeSwitchKey
-        next.accessibilityLabel = "Next keyboard"
         row.addArrangedSubview(next)
-        row.addArrangedSubview(key("space") { [weak self] in self?.commit(" ") })
-        row.addArrangedSubview(key(".") { [weak self] in self?.commit(".") })
-        row.addArrangedSubview(key("return", accent: true) { [weak self] in self?.commit("\n") })
+        let space = key("space") { [weak self] in self?.commit(" ") }
+        row.addArrangedSubview(space)
+        let period = key(".") { [weak self] in self?.commit(".") }
+        row.addArrangedSubview(period)
+        let returnButton = key("Return", accent: true, systemImage: "return") { [weak self] in self?.commit("\n") }
+        row.addArrangedSubview(returnButton)
+        NSLayoutConstraint.activate([
+            numbersButton.widthAnchor.constraint(equalTo: row.widthAnchor, multiplier: 0.13),
+            next.widthAnchor.constraint(equalTo: row.widthAnchor, multiplier: 0.13),
+            space.widthAnchor.constraint(equalTo: row.widthAnchor, multiplier: 0.40),
+            period.widthAnchor.constraint(equalTo: row.widthAnchor, multiplier: 0.09),
+            returnButton.widthAnchor.constraint(equalTo: row.widthAnchor, multiplier: 0.15),
+        ])
         return row
     }
 
@@ -247,23 +271,51 @@ final class KeyboardViewController: UIInputViewController {
         return row
     }
 
-    private func key(_ title: String, accent: Bool = false, action: @escaping () -> Void) -> UIButton {
+    private func key(_ title: String, accent: Bool = false, systemImage: String? = nil, action: @escaping () -> Void) -> UIButton {
         let button = UIButton(type: .system, primaryAction: UIAction(handler: { _ in
             UISelectionFeedbackGenerator().selectionChanged()
             action()
         }))
-        button.setTitle(title, for: .normal)
+        let foreground = accent ? accentTextColor() : UIColor(hex: palette.text)
+        if let systemImage {
+            let configuration = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium)
+            button.setImage(UIImage(systemName: systemImage, withConfiguration: configuration), for: .normal)
+            button.tintColor = foreground
+        } else {
+            button.setTitle(title, for: .normal)
+        }
         button.titleLabel?.font = .systemFont(ofSize: title.count > 6 ? 12 : 16, weight: .medium)
-        button.backgroundColor = UIColor(hex: accent ? palette.accent : palette.key)
-        button.setTitleColor(accent ? accentTextColor() : UIColor(hex: palette.text), for: .normal)
-        button.layer.cornerRadius = 8
+        button.titleLabel?.lineBreakMode = .byTruncatingTail
+        let fill = UIColor(hex: accent ? palette.accent : palette.key)
+        button.setBackgroundImage(colorImage(fill), for: .normal)
+        button.setBackgroundImage(colorImage(highlighted(fill)), for: .highlighted)
+        button.setTitleColor(foreground, for: .normal)
+        button.setTitleColor(foreground, for: .highlighted)
+        button.layer.cornerRadius = 9
+        button.clipsToBounds = true
         button.accessibilityLabel = title
         button.heightAnchor.constraint(greaterThanOrEqualToConstant: 38).isActive = true
         return button
     }
 
+    private func colorImage(_ color: UIColor) -> UIImage {
+        UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).image { context in
+            color.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+        }
+    }
+
+    private func highlighted(_ color: UIColor) -> UIColor {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        guard color.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return color.withAlphaComponent(0.75) }
+        return UIColor(red: red * 0.86, green: green * 0.86, blue: blue * 0.86, alpha: alpha)
+    }
+
     private func deleteButton() -> UIButton {
-        let button = key("delete") { [weak self] in self?.deleteBackward() }
+        let button = key("Delete previous visible character. Hold to repeat", systemImage: "delete.backward") { [weak self] in self?.deleteBackward() }
         button.accessibilityLabel = "Delete previous visible character. Hold to repeat"
         let press = UILongPressGestureRecognizer(target: self, action: #selector(deleteLongPress(_:)))
         press.minimumPressDuration = 0.38

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { ChevronRight, ExternalLink, RotateCcw, ShieldCheck, Sparkles } from 'lucide-react-native';
+import { Check, ChevronRight, ExternalLink, RotateCcw, ShieldCheck, Sparkles } from 'lucide-react-native';
 import { useComposer } from '../../state/ComposerContext';
-import { colors } from '../../theme/tokens';
+import { colors, radii } from '../../theme/tokens';
 import { ActionButton, Divider, Eyebrow, PageTitle, Screen, Wordmark, type } from '../../components/ui';
 
 export default function SettingsScreen() {
@@ -24,20 +24,10 @@ export default function SettingsScreen() {
 
   return (
     <Screen>
-      <View style={styles.header}><Wordmark /><Text style={styles.version}>VERSION 1.0.0</Text></View>
-      <PageTitle title="The small" italic="print.">
+      <View style={styles.header}><Wordmark height={27} /><Text style={styles.version}>VERSION 1.0.0</Text></View>
+      <PageTitle title="Settings &" italic="privacy." compact>
         Clear choices, local storage and no hidden data pipeline.
       </PageTitle>
-
-      <View style={styles.proPanel}>
-        <View style={styles.proPanelTop}>
-          {pro.isPro ? <ShieldCheck size={25} color={colors.canvas} strokeWidth={1.5} /> : <Sparkles size={25} color={colors.canvas} strokeWidth={1.5} />}
-          <Eyebrow light>{pro.isPro ? 'LIFETIME PRO / ACTIVE' : 'LYFSTYLE / FREE'}</Eyebrow>
-        </View>
-        <Text style={styles.proTitle}>{pro.isPro ? 'Every look is yours.' : 'Keep the whole collection.'}</Text>
-        <Text style={styles.proCopy}>{pro.isPro ? 'Your 12 Pro styles and Pro decorations are unlocked on this device.' : '12 styles are free forever. Lifetime Pro adds 12 more, plus three Pro decorations—one purchase, no subscription.'}</Text>
-        <ActionButton onPress={() => router.push('/pro')} variant="primary">{pro.isPro ? 'Manage Lifetime Pro' : 'See Lifetime Pro'}</ActionButton>
-      </View>
 
       <View style={styles.menu}>
         <MenuRow title="Privacy, in plain English" subtitle="What stays on your device—and why" onPress={() => router.push('/privacy')} />
@@ -51,6 +41,23 @@ export default function SettingsScreen() {
         />
       </View>
 
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={pro.isPro ? 'Manage active Lifetime Pro' : 'View Lifetime Pro'}
+        onPress={() => router.push('/pro')}
+        style={({ pressed }) => [styles.proPanel, pressed && styles.pressed]}
+      >
+        <View style={styles.proIcon}>
+          {pro.isPro ? <ShieldCheck size={22} color={colors.accentDeep} strokeWidth={1.6} /> : <Sparkles size={22} color={colors.accentDeep} strokeWidth={1.6} />}
+        </View>
+        <View style={styles.proCopyBlock}>
+          <Eyebrow>{pro.isPro ? 'LIFETIME PRO / ACTIVE' : 'LYFSTYLE / FREE'}</Eyebrow>
+          <Text style={styles.proTitle}>{pro.isPro ? 'Every look is yours.' : 'Unlock the full collection.'}</Text>
+          <Text style={styles.proCopy}>{pro.isPro ? '12 Pro styles and Pro decorations are available on this device.' : '12 more styles and three decorations. Pay once, no subscription.'}</Text>
+        </View>
+        <ChevronRight size={19} color={colors.accentDeep} />
+      </Pressable>
+
       <View style={styles.purchaseSection}>
         <Eyebrow>PURCHASES</Eyebrow>
         <Text style={styles.sectionCopy}>Bought Lyfstyle before? Restore directly from Apple or Google. No Lyfstyle account is needed.</Text>
@@ -63,8 +70,9 @@ export default function SettingsScreen() {
       <View style={styles.localSection}>
         <Eyebrow>YOUR LOCAL DRAFT</Eyebrow>
         <Text style={styles.sectionCopy}>Your draft, recent looks and favorites are stored only in this app on this device. Clearing the draft does not affect purchases.</Text>
-        <Pressable onPress={resetDraft} style={styles.resetButton}>
-          <Text style={styles.resetText}>{resetArmed ? 'Tap again to clear your draft' : 'Clear draft'}</Text>
+        <Pressable accessibilityRole="button" onPress={resetDraft} style={({ pressed }) => [styles.resetButton, pressed && styles.pressed]}>
+          <Text style={[styles.resetText, resetArmed && styles.resetTextArmed]}>{resetArmed ? 'Tap again to clear your draft' : 'Clear draft'}</Text>
+          {resetArmed ? <Check size={16} color={colors.accentDeep} /> : null}
         </Pressable>
       </View>
 
@@ -80,34 +88,36 @@ function MenuRow({ title, subtitle, onPress, external = false }: {
   external?: boolean;
 }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.menuRow, pressed && styles.pressed]}>
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.menuRow, pressed && styles.pressed]}>
       <View style={styles.menuCopy}>
         <Text style={styles.menuTitle}>{title}</Text>
         <Text style={styles.menuSubtitle}>{subtitle}</Text>
       </View>
-      {external ? <ExternalLink size={17} color={colors.muted} /> : <ChevronRight size={19} color={colors.muted} />}
+      {external ? <ExternalLink size={17} color={colors.tertiary} /> : <ChevronRight size={19} color={colors.tertiary} />}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10 },
-  version: { fontFamily: type.bold, fontSize: 9, letterSpacing: 1, color: colors.muted },
-  proPanel: { backgroundColor: colors.ink, padding: 22 },
-  proPanelTop: { flexDirection: 'row', alignItems: 'center', gap: 11 },
-  proTitle: { fontFamily: type.display, color: colors.canvas, fontSize: 34, lineHeight: 38, marginTop: 18 },
-  proCopy: { fontFamily: type.sans, color: '#B9B9BE', fontSize: 13, lineHeight: 21, marginTop: 8, marginBottom: 19 },
-  menu: { marginTop: 28, borderTopWidth: 1, borderTopColor: colors.ink },
-  menuRow: { minHeight: 77, flexDirection: 'row', alignItems: 'center', gap: 15, borderBottomWidth: 1, borderBottomColor: colors.line },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8 },
+  version: { fontFamily: type.mono, fontSize: 10, letterSpacing: 0.6, color: colors.muted },
+  menu: { borderTopWidth: 1, borderTopColor: colors.line },
+  menuRow: { minHeight: 74, flexDirection: 'row', alignItems: 'center', gap: 15, borderBottomWidth: 1, borderBottomColor: colors.lineSoft },
   menuCopy: { flex: 1 },
   menuTitle: { fontFamily: type.semibold, fontSize: 14, color: colors.ink },
-  menuSubtitle: { fontFamily: type.sans, fontSize: 11, lineHeight: 17, color: colors.muted, marginTop: 4 },
-  pressed: { opacity: 0.6 },
-  purchaseSection: { marginTop: 29, alignItems: 'flex-start' },
+  menuSubtitle: { fontFamily: type.sans, fontSize: 12, lineHeight: 18, color: colors.muted, marginTop: 3 },
+  proPanel: { marginTop: 22, borderRadius: radii.medium, padding: 16, backgroundColor: colors.accentTint, borderWidth: 1, borderColor: '#F2D2C7', flexDirection: 'row', alignItems: 'center', gap: 12 },
+  proIcon: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
+  proCopyBlock: { flex: 1 },
+  proTitle: { fontFamily: type.display, color: colors.ink, fontSize: 22, lineHeight: 27, marginTop: 4 },
+  proCopy: { fontFamily: type.sans, color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: 4 },
+  pressed: { opacity: 0.65 },
+  purchaseSection: { marginTop: 27, alignItems: 'flex-start' },
   sectionCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 21, color: colors.muted, marginTop: 8, marginBottom: 16 },
   message: { fontFamily: type.medium, color: colors.success, fontSize: 12, lineHeight: 19, marginTop: 12 },
   localSection: { alignItems: 'flex-start' },
-  resetButton: { minHeight: 42, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: colors.ink },
+  resetButton: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 7, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: colors.ink },
   resetText: { fontFamily: type.semibold, color: colors.ink, fontSize: 13 },
-  footer: { fontFamily: type.bold, color: colors.muted, fontSize: 9, lineHeight: 17, letterSpacing: 1.2, marginTop: 36 },
+  resetTextArmed: { color: colors.accentDeep },
+  footer: { fontFamily: type.mono, color: colors.tertiary, fontSize: 10, lineHeight: 18, letterSpacing: 0.8, marginTop: 32 },
 });
