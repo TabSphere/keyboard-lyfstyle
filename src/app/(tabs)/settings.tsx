@@ -31,7 +31,7 @@ export default function SettingsScreen() {
 
       <View style={styles.proPanel}>
         <View style={styles.proPanelTop}>
-          {pro.isPro ? <ShieldCheck size={25} color={colors.ivory} strokeWidth={1.5} /> : <Sparkles size={25} color={colors.ivory} strokeWidth={1.5} />}
+          {pro.isPro ? <ShieldCheck size={25} color={colors.canvas} strokeWidth={1.5} /> : <Sparkles size={25} color={colors.canvas} strokeWidth={1.5} />}
           <Eyebrow light>{pro.isPro ? 'LIFETIME PRO / ACTIVE' : 'LYFSTYLE / FREE'}</Eyebrow>
         </View>
         <Text style={styles.proTitle}>{pro.isPro ? 'Every look is yours.' : 'Keep the whole collection.'}</Text>
@@ -95,8 +95,8 @@ const styles = StyleSheet.create({
   version: { fontFamily: type.bold, fontSize: 9, letterSpacing: 1, color: colors.muted },
   proPanel: { backgroundColor: colors.ink, padding: 22 },
   proPanelTop: { flexDirection: 'row', alignItems: 'center', gap: 11 },
-  proTitle: { fontFamily: type.serif, color: colors.ivory, fontSize: 34, lineHeight: 38, marginTop: 18 },
-  proCopy: { fontFamily: type.sans, color: '#D7D2C8', fontSize: 13, lineHeight: 21, marginTop: 8, marginBottom: 19 },
+  proTitle: { fontFamily: type.display, color: colors.canvas, fontSize: 34, lineHeight: 38, marginTop: 18 },
+  proCopy: { fontFamily: type.sans, color: '#B9B9BE', fontSize: 13, lineHeight: 21, marginTop: 8, marginBottom: 19 },
   menu: { marginTop: 28, borderTopWidth: 1, borderTopColor: colors.ink },
   menuRow: { minHeight: 77, flexDirection: 'row', alignItems: 'center', gap: 15, borderBottomWidth: 1, borderBottomColor: colors.line },
   menuCopy: { flex: 1 },
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   sectionCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 21, color: colors.muted, marginTop: 8, marginBottom: 16 },
   message: { fontFamily: type.medium, color: colors.success, fontSize: 12, lineHeight: 19, marginTop: 12 },
   localSection: { alignItems: 'flex-start' },
-  resetButton: { minHeight: 42, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: colors.coralDark },
-  resetText: { fontFamily: type.semibold, color: colors.coralDark, fontSize: 13 },
+  resetButton: { minHeight: 42, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: colors.ink },
+  resetText: { fontFamily: type.semibold, color: colors.ink, fontSize: 13 },
   footer: { fontFamily: type.bold, color: colors.muted, fontSize: 9, lineHeight: 17, letterSpacing: 1.2, marginTop: 36 },
 });

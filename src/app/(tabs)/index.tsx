@@ -46,7 +46,7 @@ export default function ComposerScreen() {
           onPress={() => router.push('/pro')}
           style={({ pressed }) => [styles.proButton, composer.pro.isPro && styles.proButtonActive, pressed && styles.pressed]}
         >
-          {composer.pro.isPro ? <Check size={13} color={colors.ivory} /> : <Sparkles size={13} color={colors.ivory} />}
+          {composer.pro.isPro ? <Check size={13} color={colors.onAccent} /> : <Sparkles size={13} color={colors.onAccent} />}
           <Text style={styles.proButtonText}>{composer.pro.isPro ? 'PRO ACTIVE' : 'LIFETIME PRO'}</Text>
         </Pressable>
       </View>
@@ -57,7 +57,7 @@ export default function ComposerScreen() {
 
       <View style={styles.composer}>
         <View style={styles.inputHeading}>
-          <Eyebrow>01 / YOUR WORDS</Eyebrow>
+          <Eyebrow>YOUR WORDS</Eyebrow>
           <Text style={styles.counter}>{composer.text.length}/280</Text>
         </View>
         <TextInput
@@ -73,7 +73,7 @@ export default function ComposerScreen() {
         />
         <View style={styles.previewHeading}>
           <View style={styles.previewLabelRow}>
-            <Eyebrow>02 / LIVE PREVIEW</Eyebrow>
+            <Eyebrow>LIVE PREVIEW</Eyebrow>
             {selected.isPro && !composer.pro.isPro ? <ProLabel /> : null}
           </View>
           <Text style={styles.styleName}>{selected.name}</Text>
@@ -101,7 +101,7 @@ export default function ComposerScreen() {
                 onPress={() => composer.selectStyle(style.id)}
                 style={({ pressed }) => [styles.styleChoice, active && styles.styleChoiceActive, pressed && styles.pressed]}
               >
-                <Text numberOfLines={1} style={[styles.styleSample, active && { color: colors.coralDark }]}>
+                <Text numberOfLines={1} style={[styles.styleSample, active && { color: colors.ink }]}>
                   {transformText('Aa', style.id)}
                 </Text>
                 <View style={styles.styleChoiceNameRow}>
@@ -115,7 +115,7 @@ export default function ComposerScreen() {
       </View>
 
       <View style={styles.actions}>
-        <ActionButton onPress={copy} icon={composer.locked ? <LockKeyhole size={17} color={colors.white} /> : <Copy size={17} color={colors.white} />}>
+        <ActionButton onPress={copy} icon={composer.locked ? <LockKeyhole size={17} color={colors.onAccent} /> : <Copy size={17} color={colors.onAccent} />}>
           {composer.locked ? 'Unlock to copy' : 'Copy text'}
         </ActionButton>
         <ActionButton onPress={share} variant="outline" icon={<Share2 size={17} color={colors.ink} />}>
@@ -163,24 +163,24 @@ export default function ComposerScreen() {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10 },
-  proButton: { minHeight: 34, borderRadius: 2, paddingHorizontal: 11, backgroundColor: colors.coralDark, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  proButton: { minHeight: 34, borderRadius: 2, paddingHorizontal: 11, backgroundColor: colors.accent, flexDirection: 'row', alignItems: 'center', gap: 6 },
   proButtonActive: { backgroundColor: colors.success },
-  proButtonText: { fontFamily: type.bold, color: colors.white, fontSize: 9, letterSpacing: 0.8 },
-  composer: { backgroundColor: colors.paper, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line, paddingHorizontal: 18, paddingTop: 17, paddingBottom: 18 },
+  proButtonText: { fontFamily: type.bold, color: colors.onAccent, fontSize: 9, letterSpacing: 0.8 },
+  composer: { backgroundColor: colors.surface, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line, paddingHorizontal: 18, paddingTop: 17, paddingBottom: 18 },
   inputHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   counter: { fontFamily: type.sans, color: colors.muted, fontSize: 11 },
-  input: { minHeight: 95, maxHeight: 190, paddingVertical: 15, paddingHorizontal: 0, borderBottomWidth: 1, borderBottomColor: colors.line, color: colors.ink, fontFamily: type.serif, fontSize: 31, lineHeight: 39, outlineStyle: 'none' } as never,
+  input: { minHeight: 95, maxHeight: 190, paddingVertical: 15, paddingHorizontal: 0, borderBottomWidth: 1, borderBottomColor: colors.line, color: colors.ink, fontFamily: type.display, fontSize: 31, lineHeight: 39, outlineStyle: 'none' } as never,
   previewHeading: { marginTop: 18, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   previewLabelRow: { flexDirection: 'row', gap: 10, alignItems: 'center' },
   styleName: { fontFamily: type.medium, fontSize: 11, color: colors.muted },
   output: { minHeight: 76, paddingTop: 14, color: colors.ink, fontSize: 27, lineHeight: 39 },
   compatibility: { fontFamily: type.sans, color: colors.muted, fontSize: 11, lineHeight: 17, marginTop: 8 },
   railHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 25, marginBottom: 10 },
-  viewAll: { fontFamily: type.bold, fontSize: 9, letterSpacing: 0.9, color: colors.coralDark },
+  viewAll: { fontFamily: type.bold, fontSize: 9, letterSpacing: 0.9, color: colors.ink },
   railClip: { marginHorizontal: -22 },
   styleRail: { flexDirection: 'row', paddingHorizontal: 22, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line },
   styleChoice: { width: 92, minHeight: 88, paddingVertical: 12, paddingHorizontal: 8, borderRightWidth: 1, borderRightColor: colors.line, borderBottomWidth: 3, borderBottomColor: 'transparent', justifyContent: 'center' },
-  styleChoiceActive: { backgroundColor: colors.paper, borderBottomColor: colors.coralDark },
+  styleChoiceActive: { backgroundColor: colors.accent, borderBottomColor: colors.ink },
   styleSample: { color: colors.ink, fontSize: 24, lineHeight: 30, textAlign: 'center' },
   styleChoiceNameRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 4, marginTop: 8 },
   styleChoiceName: { fontFamily: type.medium, color: colors.muted, fontSize: 9, maxWidth: 63 },
@@ -188,10 +188,10 @@ const styles = StyleSheet.create({
   notice: { fontFamily: type.medium, color: colors.success, fontSize: 13, marginTop: 12 },
   decorationSection: { marginTop: 30 },
   decorationTitleRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  decorationTitle: { fontFamily: type.serifItalic, color: colors.ink, fontSize: 23, lineHeight: 28, marginTop: 5 },
+  decorationTitle: { fontFamily: type.display, color: colors.ink, fontSize: 23, lineHeight: 28, marginTop: 5 },
   decorationList: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 15 },
   decorationItem: { minHeight: 38, flexDirection: 'row', alignItems: 'center', gap: 5, borderBottomWidth: 1, borderBottomColor: colors.line, paddingHorizontal: 8 },
-  decorationActive: { borderBottomColor: colors.coralDark, backgroundColor: colors.paper },
+  decorationActive: { borderBottomColor: colors.ink, backgroundColor: colors.accent },
   decorationText: { fontFamily: type.medium, color: colors.ink, fontSize: 12 },
   footnote: { marginTop: 28, paddingTop: 17, borderTopWidth: 1, borderTopColor: colors.line },
   footnoteText: { fontFamily: type.sans, color: colors.muted, fontSize: 11, lineHeight: 18 },

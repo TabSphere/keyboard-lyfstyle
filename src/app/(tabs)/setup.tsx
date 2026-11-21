@@ -110,7 +110,7 @@ export default function SetupScreen() {
       {notice ? <Text accessibilityLiveRegion="polite" style={styles.notice}>{notice}</Text> : null}
 
       <View style={styles.privacyBlock}>
-        <ShieldCheck size={26} color={colors.coralDark} strokeWidth={1.5} />
+        <ShieldCheck size={26} color={colors.ink} strokeWidth={1.5} />
         <Text style={styles.privacyTitle}>Your typing stays yours.</Text>
         <Text style={styles.privacyCopy}>No account, analytics, ads, prediction engine or keystroke-upload code. Password, email, URL, phone, numeric and OTP fields automatically use Normal mode.</Text>
         <Pressable onPress={() => router.push('/privacy')} style={styles.privacyLink}>
@@ -160,8 +160,8 @@ function SetupStep({ number, title, copy, action, onPress, busy }: {
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10 },
   webNotice: { backgroundColor: colors.ink, padding: 20, marginBottom: 22 },
-  webTitle: { fontFamily: type.serif, color: colors.ivory, fontSize: 27, marginTop: 7 },
-  webCopy: { fontFamily: type.sans, color: '#D7D2C8', fontSize: 13, lineHeight: 20, marginTop: 8 },
+  webTitle: { fontFamily: type.display, color: colors.canvas, fontSize: 27, marginTop: 7 },
+  webCopy: { fontFamily: type.sans, color: '#B9B9BE', fontSize: 13, lineHeight: 20, marginTop: 8 },
   setupBlock: { borderTopWidth: 1, borderTopColor: colors.ink },
   statusRow: { flexDirection: 'row', alignItems: 'center', gap: 18, paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: colors.line },
   statusItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
@@ -170,16 +170,16 @@ const styles = StyleSheet.create({
   statusText: { fontFamily: type.medium, fontSize: 12, color: colors.ink },
   refresh: { marginLeft: 'auto', width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
   step: { paddingVertical: 23, borderBottomWidth: 1, borderBottomColor: colors.line, alignItems: 'flex-start' },
-  stepNumber: { fontFamily: type.bold, fontSize: 10, letterSpacing: 1, color: colors.coralDark },
-  stepTitle: { fontFamily: type.serif, fontSize: 31, color: colors.ink, marginTop: 4 },
+  stepNumber: { fontFamily: type.bold, fontSize: 10, letterSpacing: 1, color: colors.ink },
+  stepTitle: { fontFamily: type.display, fontSize: 31, color: colors.ink, marginTop: 4 },
   stepCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 21, color: colors.muted, marginTop: 7, marginBottom: 17 },
   notice: { fontFamily: type.medium, color: colors.success, fontSize: 13, lineHeight: 20, marginTop: 16 },
-  privacyBlock: { backgroundColor: colors.paper, padding: 20, marginTop: 28, borderLeftWidth: 3, borderLeftColor: colors.coralDark },
-  privacyTitle: { fontFamily: type.serif, fontSize: 29, color: colors.ink, marginTop: 12 },
+  privacyBlock: { backgroundColor: colors.surface, padding: 20, marginTop: 28, borderLeftWidth: 3, borderLeftColor: colors.ink },
+  privacyTitle: { fontFamily: type.display, fontSize: 29, color: colors.ink, marginTop: 12 },
   privacyCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 21, color: colors.muted, marginTop: 8 },
   privacyLink: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 16 },
   privacyLinkText: { fontFamily: type.semibold, fontSize: 12, color: colors.ink },
   fullAccess: { paddingVertical: 27 },
-  fullAccessTitle: { fontFamily: type.serifItalic, fontSize: 26, color: colors.ink, marginTop: 7 },
+  fullAccessTitle: { fontFamily: type.display, fontSize: 26, color: colors.ink, marginTop: 7 },
   fullAccessCopy: { fontFamily: type.sans, fontSize: 12, lineHeight: 20, color: colors.muted, marginTop: 8, marginBottom: 18 },
 });

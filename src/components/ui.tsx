@@ -10,15 +10,17 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowUpRight } from 'lucide-react-native';
+import Svg, { Path } from 'react-native-svg';
 import { colors } from '../theme/tokens';
+import { wordmark } from '../theme/wordmark';
 
+// One interface family: Schibsted Grotesk. Personality comes from the user's styled text.
 export const type = {
-  serif: 'InstrumentSerif_400Regular',
-  serifItalic: 'InstrumentSerif_400Regular_Italic',
-  sans: 'DMSans_400Regular',
-  medium: 'DMSans_500Medium',
-  semibold: 'DMSans_600SemiBold',
-  bold: 'DMSans_700Bold',
+  display: 'SchibstedGrotesk_800ExtraBold',
+  sans: 'SchibstedGrotesk_400Regular',
+  medium: 'SchibstedGrotesk_500Medium',
+  semibold: 'SchibstedGrotesk_600SemiBold',
+  bold: 'SchibstedGrotesk_700Bold',
 } as const;
 
 export function Screen({ children, scroll = true, contentStyle }: PropsWithChildren<{
@@ -42,24 +44,26 @@ export function Screen({ children, scroll = true, contentStyle }: PropsWithChild
   );
 }
 
-export function Wordmark({ dark = false }: { dark?: boolean }) {
+export function Wordmark({ dark = false, height = 30 }: { dark?: boolean; height?: number }) {
+  const width = (height * wordmark.width) / wordmark.height;
   return (
-    <View style={styles.wordmarkRow} accessibilityLabel="Lyfstyle">
-      <Text style={[styles.wordmark, dark && { color: colors.ivory }]}>Lyfstyle</Text>
-      <View style={styles.wordmarkDot} />
+    <View accessible accessibilityRole="image" accessibilityLabel="Lyfstyle">
+      <Svg width={width} height={height} viewBox={wordmark.viewBox}>
+        <Path d={wordmark.d} fill={dark ? colors.canvas : colors.ink} />
+      </Svg>
     </View>
   );
 }
 
 export function Eyebrow({ children, light = false }: PropsWithChildren<{ light?: boolean }>) {
-  return <Text style={[styles.eyebrow, light && { color: colors.ivory }]}>{children}</Text>;
+  return <Text style={[styles.eyebrow, light && { color: colors.canvas }]}>{children}</Text>;
 }
 
 export function PageTitle({ title, italic, children }: PropsWithChildren<{ title: string; italic?: string }>) {
   return (
     <View style={styles.titleBlock}>
       <Text style={styles.pageTitle}>
-        {title}{italic ? <Text style={styles.pageTitleItalic}> {italic}</Text> : null}
+        {title}{italic ? <Text>{' '}<Text style={styles.pageTitleMark}>{` ${italic} `}</Text></Text> : null}
       </Text>
       {children ? <Text style={styles.pageIntro}>{children}</Text> : null}
     </View>
@@ -96,7 +100,7 @@ export function ActionButton({
         (disabled || busy) && styles.disabled,
       ]}
     >
-      {busy ? <ActivityIndicator color={variant === 'outline' || variant === 'text' ? colors.ink : colors.white} /> : (
+      {busy ? <ActivityIndicator color={variant === 'dark' ? colors.white : colors.ink} /> : (
         <>
           <Text style={[styles.actionText, styles[`actionText_${variant}`]]}>{children}</Text>
           {icon}
@@ -124,25 +128,23 @@ export function Divider() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.ivory },
+  safe: { flex: 1, backgroundColor: colors.canvas },
   scroll: { flex: 1 },
   scrollContent: { flexGrow: 1 },
   content: { width: '100%', maxWidth: 640, alignSelf: 'center', paddingHorizontal: 22, paddingBottom: 34 },
-  wordmarkRow: { flexDirection: 'row', alignItems: 'flex-end' },
-  wordmark: { fontFamily: type.serif, fontSize: 38, lineHeight: 42, color: colors.ink, letterSpacing: -1.2 },
-  wordmarkDot: { width: 8, height: 8, borderRadius: 8, backgroundColor: colors.coral, marginLeft: 3, marginBottom: 7 },
   eyebrow: { fontFamily: type.bold, fontSize: 10, lineHeight: 15, color: colors.muted, letterSpacing: 1.7, textTransform: 'uppercase' },
   titleBlock: { marginTop: 26, marginBottom: 26 },
-  pageTitle: { fontFamily: type.serif, color: colors.ink, fontSize: 48, lineHeight: 49, letterSpacing: -1.4, maxWidth: 520 },
-  pageTitleItalic: { fontFamily: type.serifItalic, color: colors.coralDark },
+  pageTitle: { fontFamily: type.display, color: colors.ink, fontSize: 40, lineHeight: 46, letterSpacing: -1.6, maxWidth: 520 },
+  // Highlighter-marker emphasis instead of an italic accent word.
+  pageTitleMark: { backgroundColor: colors.accent, color: colors.onAccent },
   pageIntro: { fontFamily: type.sans, color: colors.muted, fontSize: 15, lineHeight: 23, marginTop: 13, maxWidth: 480 },
   action: { minHeight: 50, paddingHorizontal: 20, borderRadius: 3, flexDirection: 'row', gap: 9, alignItems: 'center', justifyContent: 'center' },
-  action_primary: { backgroundColor: colors.coralDark },
+  action_primary: { backgroundColor: colors.accent },
   action_dark: { backgroundColor: colors.ink },
   action_outline: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.line },
   action_text: { backgroundColor: 'transparent', paddingHorizontal: 4 },
   actionText: { fontFamily: type.semibold, fontSize: 14, lineHeight: 20 },
-  actionText_primary: { color: colors.white },
+  actionText_primary: { color: colors.onAccent },
   actionText_dark: { color: colors.white },
   actionText_outline: { color: colors.ink },
   actionText_text: { color: colors.ink },
@@ -150,6 +152,6 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.68, transform: [{ scale: 0.985 }] },
   textLink: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 5 },
   textLinkText: { fontFamily: type.semibold, fontSize: 14, color: colors.ink },
-  proLabel: { fontFamily: type.bold, color: colors.coralDark, fontSize: 9, letterSpacing: 1.1 },
+  proLabel: { fontFamily: type.bold, color: colors.onAccent, backgroundColor: colors.accent, fontSize: 9, letterSpacing: 1.1, paddingHorizontal: 4, paddingVertical: 1, overflow: 'hidden' },
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.line, marginVertical: 22 },
 });
