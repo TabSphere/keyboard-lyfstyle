@@ -66,9 +66,12 @@ jobs:
           if-no-files-found: error
 
   ios:
-    runs-on: macos-15
+    # Expo SDK 55 needs Xcode 26 (Swift 6.2); macos-15 defaults to Xcode 16.
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
+      - name: Show Xcode version
+        run: xcodebuild -version
       - uses: actions/setup-node@v4
         with:
           node-version: 22
