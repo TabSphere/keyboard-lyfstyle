@@ -74,7 +74,7 @@ final class KeyboardViewController: UIInputViewController {
     private func updateInputSafety() {
         let type = textDocumentProxy.keyboardType
         let contentType = textDocumentProxy.textContentType
-        let required = textDocumentProxy.isSecureTextEntry ||
+        let required = (textDocumentProxy.isSecureTextEntry ?? false) ||
             contentType == .oneTimeCode ||
             type == .emailAddress || type == .URL || type == .numberPad ||
             type == .phonePad || type == .decimalPad || type == .numbersAndPunctuation ||
@@ -89,7 +89,7 @@ final class KeyboardViewController: UIInputViewController {
         let direct = await readVerifiedStoreKitEntitlement()
         let shared = hasFullAccess && UserDefaults(suiteName: appGroup)?.bool(forKey: "proUnlocked") == true
         let unlocked = direct || shared
-        if !unlocked && catalogue.style(selectedStyle).isPro {
+        if !unlocked && catalogue.style(id: selectedStyle).isPro {
             selectedStyle = "script"
             defaults.set(selectedStyle, forKey: "style")
         }
