@@ -46,3 +46,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Generated brand and pitch files (PDF, PSD)
+brand-kit/

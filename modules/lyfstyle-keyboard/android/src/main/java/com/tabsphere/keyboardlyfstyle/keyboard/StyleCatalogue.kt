@@ -12,6 +12,8 @@ data class TextStyle(
     val isPro: Boolean,
     val keyboard: Boolean,
     val mapping: Map<String, String>,
+    /** Section in the Fonts panel ("Cursive & cute", "Bold & clean"…). */
+    val group: String = "",
 )
 
 data class KeyboardPalette(
@@ -28,6 +30,8 @@ data class KeyboardPalette(
     val image: String? = null,
     /** Opacity of normal keys over a picture (1 = solid). */
     val keyAlpha: Float = 1f,
+    /** Section in the theme picker ("Colours", "K-pop", "Pride"…). */
+    val group: String = "",
 )
 
 class StyleCatalogue private constructor(private val root: JSONObject) {
@@ -53,6 +57,7 @@ class StyleCatalogue private constructor(private val root: JSONObject) {
                 // Composite styles (frames, joiners) are app-only.
                 keyboard = item.optBoolean("keyboard", true),
                 mapping = mapping,
+                group = item.optString("group", ""),
             )
         }
     }
@@ -67,6 +72,7 @@ class StyleCatalogue private constructor(private val root: JSONObject) {
                 isPro = item.optBoolean("isPro", false),
                 image = item.optString("image", "").ifEmpty { null },
                 keyAlpha = item.optDouble("keyAlpha", 1.0).toFloat(),
+                group = item.optString("group", ""),
             )
         }
     }
@@ -74,6 +80,39 @@ class StyleCatalogue private constructor(private val root: JSONObject) {
 
     fun style(id: String): TextStyle = styles.firstOrNull { it.id == id } ?: styles.first { it.id == "normal" }
     fun theme(id: String): KeyboardPalette = themes.firstOrNull { it.id == id } ?: themes.first()
+
+    /** Styled character → plain letter, across every keyboard style (skips plain ASCII outputs). */
+    private val reverse: Map<String, String> by lazy {
+        buildMap {
+            styles.filter { it.keyboard && it.kind != "normal" }.forEach { style ->
+                style.mapping.forEach { (plain, styled) ->
+                    if (styled != plain && styled.any { it.code > 127 } && !containsKey(styled)) put(styled, plain)
+                }
+            }
+        }
+    }
+    private val longestStyled by lazy { reverse.keys.maxOfOrNull { it.length } ?: 1 }
+
+    /** Turns fancy text back into plain letters (used before translating). */
+    fun plain(input: String): String {
+        val output = StringBuilder(input.length)
+        var index = 0
+        while (index < input.length) {
+            var matched = false
+            for (length in minOf(longestStyled, input.length - index) downTo 1) {
+                val hit = reverse[input.substring(index, index + length)] ?: continue
+                output.append(hit)
+                index += length
+                matched = true
+                break
+            }
+            if (!matched) {
+                output.append(input[index])
+                index += 1
+            }
+        }
+        return output.toString()
+    }
 
     fun transform(input: String, styleId: String): String {
         val style = style(styleId)

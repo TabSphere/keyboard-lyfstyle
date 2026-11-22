@@ -1,0 +1,450 @@
+[
+  {
+    "id": "aerial-ocean-waves",
+    "name": "Ocean From Above",
+    "group": "Nature & sky",
+    "background": "#35AEC8",
+    "dark": false,
+    "file": "aerial-ocean-waves.jpg"
+  },
+  {
+    "id": "art-abstract-splatter",
+    "name": "Paint Splatter",
+    "group": "Art",
+    "background": "#A18F6F",
+    "dark": false,
+    "file": "art-abstract-splatter.jpg"
+  },
+  {
+    "id": "art-geometric-blocks",
+    "name": "Colour Blocks",
+    "group": "Art",
+    "background": "#CDBBA9",
+    "dark": false,
+    "file": "art-geometric-blocks.jpg"
+  },
+  {
+    "id": "art-stained-glass",
+    "name": "Stained Glass",
+    "group": "Art",
+    "background": "#271B20",
+    "dark": true,
+    "file": "art-stained-glass.jpg"
+  },
+  {
+    "id": "art-starry-swirls",
+    "name": "Starry Swirls",
+    "group": "Art",
+    "background": "#15232D",
+    "dark": true,
+    "file": "art-starry-swirls.jpg"
+  },
+  {
+    "id": "art-ukiyoe-wave",
+    "name": "Great Wave",
+    "group": "Art",
+    "background": "#ACAA9D",
+    "dark": false,
+    "file": "art-ukiyoe-wave.jpg"
+  },
+  {
+    "id": "art-water-lilies",
+    "name": "Water Lilies",
+    "group": "Art",
+    "background": "#969899",
+    "dark": false,
+    "file": "art-water-lilies.jpg"
+  },
+  {
+    "id": "autumn-amber-fall",
+    "name": "Autumn",
+    "group": "Nature & sky",
+    "background": "#714120",
+    "dark": true,
+    "file": "autumn-amber-fall.jpg"
+  },
+  {
+    "id": "cafe-linen-morning",
+    "name": "Café Morning",
+    "group": "Luxe & textures",
+    "background": "#DDC7AE",
+    "dark": false,
+    "file": "cafe-linen-morning.jpg"
+  },
+  {
+    "id": "cherry-blossom-spring",
+    "name": "Spring Blossom",
+    "group": "Nature & sky",
+    "background": "#FBDDDB",
+    "dark": false,
+    "file": "cherry-blossom-spring.jpg"
+  },
+  {
+    "id": "cyberpunk-city-night",
+    "name": "Cyberpunk",
+    "group": "City & neon",
+    "background": "#121342",
+    "dark": true,
+    "file": "cyberpunk-city-night.jpg"
+  },
+  {
+    "id": "dark-botanical-jungle",
+    "name": "Dark Jungle",
+    "group": "Nature & sky",
+    "background": "#0A130B",
+    "dark": true,
+    "file": "dark-botanical-jungle.jpg"
+  },
+  {
+    "id": "dark-roast-coffee",
+    "name": "Dark Roast",
+    "group": "Luxe & textures",
+    "background": "#271407",
+    "dark": true,
+    "file": "dark-roast-coffee.jpg"
+  },
+  {
+    "id": "desert-dunes-minimal",
+    "name": "Desert Dunes",
+    "group": "Nature & sky",
+    "background": "#D0836F",
+    "dark": false,
+    "file": "desert-dunes-minimal.jpg"
+  },
+  {
+    "id": "galaxy-nebula-night",
+    "name": "Nebula",
+    "group": "Nature & sky",
+    "background": "#090F32",
+    "dark": true,
+    "file": "galaxy-nebula-night.jpg"
+  },
+  {
+    "id": "kpop-bubblegum-candy",
+    "name": "Bubblegum",
+    "group": "K-pop",
+    "background": "#F5D0D2",
+    "dark": false,
+    "file": "kpop-bubblegum-candy.jpg"
+  },
+  {
+    "id": "kpop-confetti-finale",
+    "name": "Confetti",
+    "group": "K-pop",
+    "background": "#F7CBCA",
+    "dark": false,
+    "file": "kpop-confetti-finale.jpg"
+  },
+  {
+    "id": "kpop-dark-concept",
+    "name": "Dark Concept",
+    "group": "K-pop",
+    "background": "#141519",
+    "dark": true,
+    "file": "kpop-dark-concept.jpg"
+  },
+  {
+    "id": "kpop-glitchcore-acid",
+    "name": "Glitchcore",
+    "group": "K-pop",
+    "background": "#122303",
+    "dark": true,
+    "file": "kpop-glitchcore-acid.jpg"
+  },
+  {
+    "id": "kpop-holographic-foil",
+    "name": "Holo Foil",
+    "group": "K-pop",
+    "background": "#D9CCF5",
+    "dark": false,
+    "file": "kpop-holographic-foil.jpg"
+  },
+  {
+    "id": "kpop-lightstick-ocean",
+    "name": "Lightstick Ocean",
+    "group": "K-pop",
+    "background": "#120E2C",
+    "dark": true,
+    "file": "kpop-lightstick-ocean.jpg"
+  },
+  {
+    "id": "kpop-stage-lights",
+    "name": "Stage Lights",
+    "group": "K-pop",
+    "background": "#552695",
+    "dark": true,
+    "file": "kpop-stage-lights.jpg"
+  },
+  {
+    "id": "kpop-y2k-chrome-hearts",
+    "name": "Y2K Hearts",
+    "group": "K-pop",
+    "background": "#EF7FC0",
+    "dark": false,
+    "file": "kpop-y2k-chrome-hearts.jpg"
+  },
+  {
+    "id": "movie-cinema-velvet",
+    "name": "Cinema",
+    "group": "Movies",
+    "background": "#190D0C",
+    "dark": true,
+    "file": "movie-cinema-velvet.jpg"
+  },
+  {
+    "id": "movie-clapperboard-gold",
+    "name": "Clapperboard",
+    "group": "Movies",
+    "background": "#241A0F",
+    "dark": true,
+    "file": "movie-clapperboard-gold.jpg"
+  },
+  {
+    "id": "movie-comic-popart",
+    "name": "Pop Art",
+    "group": "Movies",
+    "background": "#9A6934",
+    "dark": true,
+    "file": "movie-comic-popart.jpg"
+  },
+  {
+    "id": "movie-drive-in-night",
+    "name": "Drive-In",
+    "group": "Movies",
+    "background": "#191927",
+    "dark": true,
+    "file": "movie-drive-in-night.jpg"
+  },
+  {
+    "id": "movie-noir-blinds",
+    "name": "Film Noir",
+    "group": "Movies",
+    "background": "#151411",
+    "dark": true,
+    "file": "movie-noir-blinds.jpg"
+  },
+  {
+    "id": "movie-popcorn-night",
+    "name": "Popcorn",
+    "group": "Movies",
+    "background": "#E7A63C",
+    "dark": false,
+    "file": "movie-popcorn-night.jpg"
+  },
+  {
+    "id": "movie-scifi-corridor",
+    "name": "Sci-Fi",
+    "group": "Movies",
+    "background": "#101719",
+    "dark": true,
+    "file": "movie-scifi-corridor.jpg"
+  },
+  {
+    "id": "music-cassette-retro",
+    "name": "Mixtape",
+    "group": "Music",
+    "background": "#B89877",
+    "dark": false,
+    "file": "music-cassette-retro.jpg"
+  },
+  {
+    "id": "music-festival-sunset",
+    "name": "Festival",
+    "group": "Music",
+    "background": "#C67D4B",
+    "dark": false,
+    "file": "music-festival-sunset.jpg"
+  },
+  {
+    "id": "music-guitar-strings",
+    "name": "Guitar",
+    "group": "Music",
+    "background": "#623410",
+    "dark": true,
+    "file": "music-guitar-strings.jpg"
+  },
+  {
+    "id": "music-jazz-sax",
+    "name": "Jazz Club",
+    "group": "Music",
+    "background": "#190D03",
+    "dark": true,
+    "file": "music-jazz-sax.jpg"
+  },
+  {
+    "id": "music-neon-equalizer",
+    "name": "Equalizer",
+    "group": "Music",
+    "background": "#1B1444",
+    "dark": true,
+    "file": "music-neon-equalizer.jpg"
+  },
+  {
+    "id": "music-piano-ivory",
+    "name": "Piano",
+    "group": "Music",
+    "background": "#A19787",
+    "dark": false,
+    "file": "music-piano-ivory.jpg"
+  },
+  {
+    "id": "music-vinyl-amber",
+    "name": "Vinyl",
+    "group": "Music",
+    "background": "#29190D",
+    "dark": true,
+    "file": "music-vinyl-amber.jpg"
+  },
+  {
+    "id": "noir-gold-luxury",
+    "name": "Black & Gold",
+    "group": "Luxe & textures",
+    "background": "#130C06",
+    "dark": true,
+    "file": "noir-gold-luxury.jpg"
+  },
+  {
+    "id": "pastel-cloud-dream",
+    "name": "Cloud Dream",
+    "group": "Nature & sky",
+    "background": "#E9D1F1",
+    "dark": false,
+    "file": "pastel-cloud-dream.jpg"
+  },
+  {
+    "id": "pride-ace-minimal",
+    "name": "Ace Pride",
+    "group": "Pride",
+    "background": "#817B85",
+    "dark": true,
+    "file": "pride-ace-minimal.jpg"
+  },
+  {
+    "id": "pride-bi-gradient",
+    "name": "Bi Pride",
+    "group": "Pride",
+    "background": "#54177F",
+    "dark": true,
+    "file": "pride-bi-gradient.jpg"
+  },
+  {
+    "id": "pride-disco-glam",
+    "name": "Disco Pride",
+    "group": "Pride",
+    "background": "#441C31",
+    "dark": true,
+    "file": "pride-disco-glam.jpg"
+  },
+  {
+    "id": "pride-lesbian-sunset",
+    "name": "Lesbian Pride",
+    "group": "Pride",
+    "background": "#EEAC89",
+    "dark": false,
+    "file": "pride-lesbian-sunset.jpg"
+  },
+  {
+    "id": "pride-pan-glow",
+    "name": "Pan Pride",
+    "group": "Pride",
+    "background": "#D8B69A",
+    "dark": false,
+    "file": "pride-pan-glow.jpg"
+  },
+  {
+    "id": "pride-progress-watercolor",
+    "name": "Progress Pride",
+    "group": "Pride",
+    "background": "#E0C2A5",
+    "dark": false,
+    "file": "pride-progress-watercolor.jpg"
+  },
+  {
+    "id": "pride-rainbow-silk",
+    "name": "Rainbow Silk",
+    "group": "Pride",
+    "background": "#977466",
+    "dark": true,
+    "file": "pride-rainbow-silk.jpg"
+  },
+  {
+    "id": "pride-trans-dream",
+    "name": "Trans Pride",
+    "group": "Pride",
+    "background": "#DFD4E8",
+    "dark": false,
+    "file": "pride-trans-dream.jpg"
+  },
+  {
+    "id": "rainy-window-city",
+    "name": "Rainy Window",
+    "group": "City & neon",
+    "background": "#2E2F30",
+    "dark": true,
+    "file": "rainy-window-city.jpg"
+  },
+  {
+    "id": "retro-70s-groovy",
+    "name": "Groovy 70s",
+    "group": "Art",
+    "background": "#EFA146",
+    "dark": false,
+    "file": "retro-70s-groovy.jpg"
+  },
+  {
+    "id": "sunset-beach-golden",
+    "name": "Golden Beach",
+    "group": "Nature & sky",
+    "background": "#C98061",
+    "dark": false,
+    "file": "sunset-beach-golden.jpg"
+  },
+  {
+    "id": "tropical-daylight",
+    "name": "Tropical",
+    "group": "Nature & sky",
+    "background": "#CACCB5",
+    "dark": false,
+    "file": "tropical-daylight.jpg"
+  },
+  {
+    "id": "urban-neon-nights",
+    "name": "Neon Nights",
+    "group": "City & neon",
+    "background": "#1A112A",
+    "dark": true,
+    "file": "urban-neon-nights.jpg"
+  },
+  {
+    "id": "vaporwave-palm-sunset",
+    "name": "Vaporwave",
+    "group": "City & neon",
+    "background": "#AD2F88",
+    "dark": true,
+    "file": "vaporwave-palm-sunset.jpg"
+  },
+  {
+    "id": "vintage-film-faded",
+    "name": "Vintage Film",
+    "group": "Luxe & textures",
+    "background": "#C5AF8C",
+    "dark": false,
+    "file": "vintage-film-faded.jpg"
+  },
+  {
+    "id": "white-marble-gold",
+    "name": "White Marble",
+    "group": "Luxe & textures",
+    "background": "#ECEBE9",
+    "dark": false,
+    "file": "white-marble-gold.jpg"
+  },
+  {
+    "id": "winter-snow-minimal",
+    "name": "Snow Day",
+    "group": "Nature & sky",
+    "background": "#EDF0F6",
+    "dark": false,
+    "file": "winter-snow-minimal.jpg"
+  }
+]

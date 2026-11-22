@@ -46,6 +46,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="pro" options={{ presentation: 'modal' }} />
           <Stack.Screen name="settings" />
+          <Stack.Screen name="custom-theme" />
           <Stack.Screen name="privacy" />
           <Stack.Screen name="about" />
           <Stack.Screen name="tool/repeater" />

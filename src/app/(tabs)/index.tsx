@@ -1,18 +1,27 @@
 import { useMemo, useState } from 'react';
 import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
-import { Check, Copy, Lock, Share2, Star, X } from 'lucide-react-native';
+import { Check, ChevronDown, ChevronUp, Copy, Lock, Share2, Star, X } from 'lucide-react-native';
 import { useComposer } from '../../state/ComposerContext';
 import { useCopy } from '../../hooks/useCopy';
-import { CATEGORIES, getStyle, styles as allStyles, transformText, type Lyfstyle } from '../../styleEngine';
+import { getStyle, styles as allStyles, transformText, type Lyfstyle } from '../../styleEngine';
 import { colors, pastels, radii } from '../../theme/tokens';
 import { Chip, ChipRow, ProLabel, Screen, TopBar, type } from '../../components/ui';
 
 const MAX_LENGTH = 280;
-const CATEGORY_LABELS: Record<string, string> = {
-  Emoji: '✨ Emoji', Cute: '🌸 Cute', Bold: '𝗕 Bold', Fancy: '𝓕 Fancy', Soft: '☁️ Soft', Dark: '𝔇 Dark',
-  Playful: '🎈 Playful', Effects: 'G̴l̴i̴t̴c̴h̴', Kaomoji: '(◕‿◕)', Classic: 'Classic', Decorated: 'Lines',
-};
+/** Font groups, in the order they're shown, with a sample of the look in each label. */
+const GROUPS: { id: string; label: string }[] = [
+  { id: 'Emoji frames', label: '✨ Emoji frames' },
+  { id: 'Cursive & cute', label: '𝓒𝓾𝓻𝓼𝓲𝓿𝓮 & cute' },
+  { id: 'Bold & clean', label: '𝗕𝗼𝗹𝗱 & clean' },
+  { id: 'Bubbles & boxes', label: 'Ⓑⓤⓑⓑⓛⓔⓢ & boxes' },
+  { id: 'Gothic & fancy', label: '𝔊𝔬𝔱𝔥𝔦𝔠 & fancy' },
+  { id: 'Effects', label: 'G̴l̴i̴t̴c̴h̴ & effects' },
+  { id: 'Fun & flipped', label: '🙃 Fun & flipped' },
+  { id: 'Spaced out', label: 's ♡ p ♡ a ♡ c ♡ e' },
+  { id: 'Kaomoji', label: '(◕‿◕) Kaomoji' },
+];
+const PREVIEW_COUNT = 3;
 
 type Filter = 'all' | 'saved' | 'recent' | string;
 
@@ -21,6 +30,7 @@ export default function WriteScreen() {
   const { pro } = composer;
   const { copiedKey, copy } = useCopy();
   const [filter, setFilter] = useState<Filter>('all');
+  const [open, setOpen] = useState<string[]>([]);
   const sample = composer.text.trim() ? composer.text : 'your text';
   const selected = getStyle(composer.selectedStyle);
 
@@ -29,11 +39,11 @@ export default function WriteScreen() {
     if (filter === 'all') return styled;
     if (filter === 'saved') return styled.filter((style) => composer.favorites.includes(style.id));
     if (filter === 'recent') return composer.recents.map(getStyle).filter((style) => style.id !== 'normal');
-    return styled.filter((style) => style.category === filter);
+    return styled.filter((style) => style.group === filter);
   }, [composer.favorites, composer.recents, filter]);
 
-  const categories = useMemo(
-    () => CATEGORIES.filter((category) => allStyles.some((style) => style.category === category)),
+  const groups = useMemo(
+    () => GROUPS.map((group) => ({ ...group, styles: allStyles.filter((style) => style.group === group.id) })).filter((group) => group.styles.length),
     [],
   );
 
@@ -52,6 +62,53 @@ export default function WriteScreen() {
       return;
     }
     await Share.share({ message: composer.output }).catch(() => undefined);
+  };
+
+  const renderCard = (style: Lyfstyle, index: number) => {
+    const locked = style.isPro && !pro.isPro;
+    const favourite = composer.favorites.includes(style.id);
+    const active = style.id === composer.selectedStyle;
+    return (
+      <Pressable
+        key={style.id}
+        accessibilityRole="button"
+        accessibilityLabel={`${style.name} style${locked ? ', Pro' : ''}. Show in preview.`}
+        onPress={() => composer.selectStyle(style.id)}
+        style={({ pressed }) => [
+          styles.card,
+          { backgroundColor: pastels[index % pastels.length] },
+          active && styles.cardActive,
+          pressed && styles.pressed,
+        ]}
+      >
+        <View style={styles.cardBody}>
+          <Text numberOfLines={2} style={styles.cardText}>{transformText(sample, style.id)}</Text>
+          <View style={styles.cardMeta}>
+            <Text style={styles.cardName}>{style.name}</Text>
+            {locked ? <ProLabel /> : null}
+          </View>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={favourite ? `Remove ${style.name} from saved` : `Save ${style.name}`}
+          onPress={() => composer.toggleFavorite(style.id)}
+          hitSlop={8}
+          style={styles.star}
+        >
+          <Star size={18} color={favourite ? colors.pink : colors.tertiary} fill={favourite ? colors.pink : 'transparent'} strokeWidth={2} />
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={locked ? `Unlock ${style.name} with Pro` : `Copy ${style.name}`}
+          onPress={() => void copyStyle(style)}
+          style={({ pressed }) => [styles.copyButton, locked && styles.copyButtonLocked, pressed && styles.pressed]}
+        >
+          <Text style={[styles.copyText, locked && { color: colors.ink }]}>
+            {locked ? 'Pro' : copiedKey === style.id ? 'Copied' : 'Copy'}
+          </Text>
+        </Pressable>
+      </Pressable>
+    );
   };
 
   return (
@@ -111,13 +168,13 @@ export default function WriteScreen() {
         <Chip label={`All ${allStyles.length - 1}`} active={filter === 'all'} onPress={() => setFilter('all')} />
         <Chip label="♡ Saved" active={filter === 'saved'} onPress={() => setFilter('saved')} tint={colors.pinkSoft} />
         <Chip label="Recent" active={filter === 'recent'} onPress={() => setFilter('recent')} tint={colors.peachSoft} />
-        {categories.map((category, index) => (
+        {groups.map((group, index) => (
           <Chip
-            key={category}
-            label={CATEGORY_LABELS[category] ?? category}
-            active={filter === category}
-            onPress={() => setFilter(category)}
-            tint={category === 'Emoji' ? colors.sun : pastels[index % pastels.length]}
+            key={group.id}
+            label={group.label}
+            active={filter === group.id}
+            onPress={() => setFilter(group.id)}
+            tint={group.id === 'Emoji frames' ? colors.sun : pastels[index % pastels.length]}
           />
         ))}
       </ChipRow>
@@ -128,52 +185,32 @@ export default function WriteScreen() {
             {filter === 'saved' ? 'Tap the star on any style to save it here.' : 'Styles you copy will show up here.'}
           </Text>
         ) : null}
-        {visible.map((style, index) => {
-          const locked = style.isPro && !pro.isPro;
-          const favourite = composer.favorites.includes(style.id);
-          const active = style.id === composer.selectedStyle;
-          return (
-            <Pressable
-              key={style.id}
-              accessibilityRole="button"
-              accessibilityLabel={`${style.name} style${locked ? ', Pro' : ''}. Show in preview.`}
-              onPress={() => composer.selectStyle(style.id)}
-              style={({ pressed }) => [
-                styles.card,
-                { backgroundColor: pastels[index % pastels.length] },
-                active && styles.cardActive,
-                pressed && styles.pressed,
-              ]}
-            >
-              <View style={styles.cardBody}>
-                <Text numberOfLines={2} style={styles.cardText}>{transformText(sample, style.id)}</Text>
-                <View style={styles.cardMeta}>
-                  <Text style={styles.cardName}>{style.name}</Text>
-                  {locked ? <ProLabel /> : null}
-                </View>
+        {filter === 'all'
+          ? groups.map((group) => {
+            const expanded = open.includes(group.id);
+            const shown = expanded ? group.styles : group.styles.slice(0, PREVIEW_COUNT);
+            return (
+              <View key={group.id} style={styles.group}>
+                <Pressable accessibilityRole="button" onPress={() => setFilter(group.id)} style={styles.groupHead}>
+                  <Text style={styles.groupTitle}>{group.label}</Text>
+                  <Text style={styles.groupCount}>{group.styles.length}</Text>
+                </Pressable>
+                {shown.map((style, index) => renderCard(style, index))}
+                {group.styles.length > PREVIEW_COUNT ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded }}
+                    onPress={() => setOpen((current) => (expanded ? current.filter((id) => id !== group.id) : [...current, group.id]))}
+                    style={({ pressed }) => [styles.more, pressed && styles.pressed]}
+                  >
+                    <Text style={styles.moreText}>{expanded ? 'Show less' : `Show all ${group.styles.length}`}</Text>
+                    {expanded ? <ChevronUp size={16} color={colors.ink} /> : <ChevronDown size={16} color={colors.ink} />}
+                  </Pressable>
+                ) : null}
               </View>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={favourite ? `Remove ${style.name} from saved` : `Save ${style.name}`}
-                onPress={() => composer.toggleFavorite(style.id)}
-                hitSlop={8}
-                style={styles.star}
-              >
-                <Star size={18} color={favourite ? colors.pink : colors.tertiary} fill={favourite ? colors.pink : 'transparent'} strokeWidth={2} />
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={locked ? `Unlock ${style.name} with Pro` : `Copy ${style.name}`}
-                onPress={() => void copyStyle(style)}
-                style={({ pressed }) => [styles.copyButton, locked && styles.copyButtonLocked, pressed && styles.pressed]}
-              >
-                <Text style={[styles.copyText, locked && { color: colors.ink }]}>
-                  {locked ? 'Pro' : copiedKey === style.id ? 'Copied' : 'Copy'}
-                </Text>
-              </Pressable>
-            </Pressable>
-          );
-        })}
+            );
+          })
+          : visible.map((style, index) => renderCard(style, index))}
       </View>
 
       <Text style={styles.note}>Your typing stays on this device. Styled letters can look different in some apps and fonts.</Text>
@@ -198,6 +235,12 @@ const styles = StyleSheet.create({
   heroCopyText: { fontFamily: type.black, fontSize: 15, color: colors.ink },
   heroShare: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' },
   feed: { marginTop: 14, gap: 9 },
+  group: { gap: 9, marginBottom: 10 },
+  groupHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', paddingTop: 6 },
+  groupTitle: { fontFamily: type.black, fontSize: 17, color: colors.ink },
+  groupCount: { fontFamily: type.bold, fontSize: 12, color: colors.muted },
+  more: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 40, borderRadius: radii.pill, borderWidth: 2, borderColor: colors.lineSoft },
+  moreText: { fontFamily: type.black, fontSize: 13, color: colors.ink },
   empty: { fontFamily: type.sans, fontSize: 14, color: colors.muted, textAlign: 'center', paddingVertical: 28 },
   card: { borderRadius: radii.medium, paddingVertical: 12, paddingLeft: 14, paddingRight: 10, flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 2, borderColor: 'transparent' },
   cardActive: { borderColor: colors.brand },

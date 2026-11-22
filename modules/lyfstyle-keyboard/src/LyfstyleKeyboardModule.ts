@@ -10,6 +10,10 @@ declare class LyfstyleKeyboardModule extends NativeModule<LyfstyleKeyboardNative
   setKeyboardTheme(themeId: string): Promise<void>;
   setKeyboardPhoto(fileUri: string): Promise<void>;
   clearKeyboardPhoto(): Promise<void>;
+  setCustomTheme(json: string): Promise<void>;
+  setPhotoDim(value: number): Promise<void>;
+  hasMicrophone(): Promise<boolean>;
+  requestMicrophone(): Promise<void>;
 }
 
 export default requireNativeModule<LyfstyleKeyboardModule>('LyfstyleKeyboard');

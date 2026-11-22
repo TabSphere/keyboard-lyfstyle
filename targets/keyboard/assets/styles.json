@@ -10,7 +10,8 @@
       "kind": "normal",
       "isPro": false,
       "fallback": "preserve",
-      "mapping": {}
+      "mapping": {},
+      "group": "Normal"
     },
     {
       "id": "bold",
@@ -84,7 +85,8 @@
         "y": "𝐲",
         "z": "𝐳"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "italic",
@@ -148,7 +150,8 @@
         "y": "𝑦",
         "z": "𝑧"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "bold-italic",
@@ -212,7 +215,8 @@
         "y": "𝒚",
         "z": "𝒛"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "script",
@@ -276,7 +280,8 @@
         "y": "𝓎",
         "z": "𝓏"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Cursive & cute"
     },
     {
       "id": "bold-script",
@@ -340,7 +345,8 @@
         "y": "𝔂",
         "z": "𝔃"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Cursive & cute"
     },
     {
       "id": "fraktur",
@@ -404,7 +410,8 @@
         "y": "𝔶",
         "z": "𝔷"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Gothic & fancy"
     },
     {
       "id": "double-struck",
@@ -478,7 +485,8 @@
         "y": "𝕪",
         "z": "𝕫"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "bold-fraktur",
@@ -542,7 +550,8 @@
         "y": "𝖞",
         "z": "𝖟"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Gothic & fancy"
     },
     {
       "id": "sans",
@@ -616,7 +625,8 @@
         "y": "𝗒",
         "z": "𝗓"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "sans-bold",
@@ -690,7 +700,8 @@
         "y": "𝘆",
         "z": "𝘇"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "sans-italic",
@@ -754,7 +765,8 @@
         "y": "𝘺",
         "z": "𝘻"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "sans-bold-italic",
@@ -818,7 +830,8 @@
         "y": "𝙮",
         "z": "𝙯"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "monospace",
@@ -892,7 +905,8 @@
         "y": "𝚢",
         "z": "𝚣"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "circled",
@@ -966,7 +980,8 @@
         "y": "ⓨ",
         "z": "ⓩ"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bubbles & boxes"
     },
     {
       "id": "fullwidth",
@@ -1040,7 +1055,8 @@
         "y": "ｙ",
         "z": "ｚ"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "small-caps",
@@ -1104,7 +1120,8 @@
         "Y": "ʏ",
         "Z": "ᴢ"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bold & clean"
     },
     {
       "id": "underline",
@@ -1178,7 +1195,8 @@
         "y": "y̲",
         "z": "z̲"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "negative-circled",
@@ -1216,7 +1234,8 @@
         "Y": "🅨",
         "Z": "🅩"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bubbles & boxes"
     },
     {
       "id": "squared",
@@ -1254,7 +1273,8 @@
         "Y": "🅈",
         "Z": "🅉"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bubbles & boxes"
     },
     {
       "id": "negative-squared",
@@ -1292,7 +1312,8 @@
         "Y": "🆈",
         "Z": "🆉"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bubbles & boxes"
     },
     {
       "id": "superscript",
@@ -1358,7 +1379,8 @@
         "V": "ⱽ",
         "W": "ᵂ"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Fun & flipped"
     },
     {
       "id": "subscript",
@@ -1397,7 +1419,8 @@
         "v": "ᵥ",
         "x": "ₓ"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Fun & flipped"
     },
     {
       "id": "strike",
@@ -1471,7 +1494,8 @@
         "y": "y̶",
         "z": "z̶"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "upside-down",
@@ -1535,7 +1559,8 @@
         "Y": "⅄",
         "Z": "Z"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Fun & flipped"
     },
     {
       "id": "bubble-filled",
@@ -1599,7 +1624,8 @@
         "y": "🅨",
         "z": "🅩"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Cursive & cute"
     },
     {
       "id": "squared-all",
@@ -1663,7 +1689,8 @@
         "y": "🅈",
         "z": "🅉"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bubbles & boxes"
     },
     {
       "id": "night-box",
@@ -1727,7 +1754,8 @@
         "y": "🆈",
         "z": "🆉"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bubbles & boxes"
     },
     {
       "id": "parenthesized",
@@ -1791,7 +1819,8 @@
         "Y": "⒴",
         "Z": "⒵"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bubbles & boxes"
     },
     {
       "id": "currency",
@@ -1855,7 +1884,8 @@
         "Y": "Ɏ",
         "Z": "Ⱬ"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Gothic & fancy"
     },
     {
       "id": "greek",
@@ -1919,7 +1949,8 @@
         "Y": "Y",
         "Z": "Z"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Gothic & fancy"
     },
     {
       "id": "asian",
@@ -1983,7 +2014,8 @@
         "Y": "ㄚ",
         "Z": "乙"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Gothic & fancy"
     },
     {
       "id": "wizard",
@@ -2047,7 +2079,8 @@
         "Y": "Y",
         "Z": "ᘔ"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Gothic & fancy"
     },
     {
       "id": "rune",
@@ -2111,7 +2144,8 @@
         "Y": "ᚤ",
         "Z": "ᛉ"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Gothic & fancy"
     },
     {
       "id": "cute-alpha",
@@ -2175,7 +2209,8 @@
         "Y": "ყ",
         "Z": "ʑ"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Cursive & cute"
     },
     {
       "id": "tiny-cursive",
@@ -2239,7 +2274,8 @@
         "Y": "ᥡ",
         "Z": "𝗓"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Cursive & cute"
     },
     {
       "id": "dotted",
@@ -2303,7 +2339,8 @@
         "Y": "ẏ",
         "Z": "ż"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Cursive & cute"
     },
     {
       "id": "mirror",
@@ -2367,7 +2404,8 @@
         "Y": "γ",
         "Z": "z"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Fun & flipped"
     },
     {
       "id": "wide-tiny",
@@ -2431,7 +2469,8 @@
         "Y": "ʸ",
         "Z": "ᶻ"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Cursive & cute"
     },
     {
       "id": "glitch",
@@ -2505,7 +2544,8 @@
         "y": "y̴͓",
         "z": "z̴͓"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "slash",
@@ -2579,7 +2619,8 @@
         "y": "y̸",
         "z": "z̸"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "double-underline",
@@ -2653,7 +2694,8 @@
         "y": "y̳",
         "z": "z̳"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "overline",
@@ -2727,7 +2769,8 @@
         "y": "y̅",
         "z": "z̅"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "wavy",
@@ -2801,7 +2844,8 @@
         "y": "y̰",
         "z": "z̰"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "arrows-below",
@@ -2875,7 +2919,8 @@
         "y": "y͎",
         "z": "z͎"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "crossed",
@@ -2949,7 +2994,8 @@
         "y": "y̽",
         "z": "z̽"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "heart-top",
@@ -3023,7 +3069,8 @@
         "y": "y͆",
         "z": "z͆"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "rain",
@@ -3097,7 +3144,8 @@
         "y": "y̤",
         "z": "z̤"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Effects"
     },
     {
       "id": "boxed",
@@ -3171,7 +3219,8 @@
         "y": "y⃞",
         "z": "z⃞"
       },
-      "keyboard": true
+      "keyboard": true,
+      "group": "Bubbles & boxes"
     },
     {
       "id": "frame-sparkles",
@@ -3238,7 +3287,8 @@
       },
       "prefix": "✨ ",
       "suffix": " ✨",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-flowers",
@@ -3305,7 +3355,8 @@
       },
       "prefix": "🌸 ",
       "suffix": " 🌸",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-hearts",
@@ -3382,7 +3433,8 @@
       },
       "prefix": "💖 ",
       "suffix": " 💖",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-star-wave",
@@ -3459,7 +3511,8 @@
       },
       "prefix": "★彡 ",
       "suffix": " 彡★",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-moon",
@@ -3526,7 +3579,8 @@
       },
       "prefix": "☾ ⋆ ",
       "suffix": " ⋆ ☽",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-butterfly",
@@ -3593,7 +3647,8 @@
       },
       "prefix": "🦋 ",
       "suffix": " 🦋",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-bow",
@@ -3607,7 +3662,8 @@
       "mapping": {},
       "prefix": "🎀 ",
       "suffix": " 🎀",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-cloud",
@@ -3621,7 +3677,8 @@
       "mapping": {},
       "prefix": "☁️ ",
       "suffix": " ☁️",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-fire",
@@ -3698,7 +3755,8 @@
       },
       "prefix": "🔥 ",
       "suffix": " 🔥",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-crown",
@@ -3765,7 +3823,8 @@
       },
       "prefix": "👑 ",
       "suffix": " 👑",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-wings",
@@ -3832,7 +3891,8 @@
       },
       "prefix": "꧁ ",
       "suffix": " ꧂",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-soft-kawaii",
@@ -3846,7 +3906,8 @@
       "mapping": {},
       "prefix": "ʚ ",
       "suffix": " ɞ ♡",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-corner",
@@ -3860,7 +3921,8 @@
       "mapping": {},
       "prefix": "「 ",
       "suffix": " 」",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-lenticular",
@@ -3937,7 +3999,8 @@
       },
       "prefix": "【 ",
       "suffix": " 】",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-white-corner",
@@ -3951,7 +4014,8 @@
       "mapping": {},
       "prefix": "『 ",
       "suffix": " 』",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-sparkle-dust",
@@ -4018,7 +4082,8 @@
       },
       "prefix": "⋆｡°✩ ",
       "suffix": " ✩°｡⋆",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-heart-ribbon",
@@ -4032,7 +4097,8 @@
       "mapping": {},
       "prefix": "𓆩♡𓆪 ",
       "suffix": " 𓆩♡𓆪",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-swirl",
@@ -4099,7 +4165,8 @@
       },
       "prefix": "˗ˏˋ ",
       "suffix": " ˎˊ˗",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-cherry",
@@ -4113,7 +4180,8 @@
       "mapping": {},
       "prefix": "🍒 ",
       "suffix": " 🍒",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-rainbow",
@@ -4127,7 +4195,8 @@
       "mapping": {},
       "prefix": "🌈 ",
       "suffix": " 🌈",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-skull",
@@ -4194,7 +4263,8 @@
       },
       "prefix": "💀 ",
       "suffix": " 💀",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-ghost",
@@ -4208,7 +4278,8 @@
       "mapping": {},
       "prefix": "👻 ",
       "suffix": " 👻",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-alien",
@@ -4285,7 +4356,8 @@
       },
       "prefix": "👽 ",
       "suffix": " 👽",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-money",
@@ -4362,7 +4434,8 @@
       },
       "prefix": "💸 ",
       "suffix": " 💸",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-lightning",
@@ -4439,7 +4512,8 @@
       },
       "prefix": "⚡ ",
       "suffix": " ⚡",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-music",
@@ -4506,7 +4580,8 @@
       },
       "prefix": "♫ ",
       "suffix": " ♫",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-bear-hug",
@@ -4520,7 +4595,8 @@
       "mapping": {},
       "prefix": "ʕ•ᴥ•ʔ ",
       "suffix": " ♡",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-kitty",
@@ -4534,7 +4610,8 @@
       "mapping": {},
       "prefix": "ฅ^•ﻌ•^ฅ ",
       "suffix": "",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-arrow-heart",
@@ -4601,7 +4678,8 @@
       },
       "prefix": "➳ ",
       "suffix": " ♡",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-brackets-soft",
@@ -4615,7 +4693,8 @@
       "mapping": {},
       "prefix": "꒰ ",
       "suffix": " ꒱",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-twinkle",
@@ -4629,7 +4708,8 @@
       "mapping": {},
       "prefix": "✧･ﾟ ",
       "suffix": " ✧･ﾟ",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "frame-peace",
@@ -4643,7 +4723,8 @@
       "mapping": {},
       "prefix": "☮︎ ",
       "suffix": " ✌︎",
-      "joiner": ""
+      "joiner": "",
+      "group": "Emoji frames"
     },
     {
       "id": "between-hearts",
@@ -4657,7 +4738,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": "",
-      "joiner": "♡"
+      "joiner": "♡",
+      "group": "Spaced out"
     },
     {
       "id": "between-stars",
@@ -4671,7 +4753,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": "",
-      "joiner": "⋆"
+      "joiner": "⋆",
+      "group": "Spaced out"
     },
     {
       "id": "between-spaced",
@@ -4685,7 +4768,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": "",
-      "joiner": " "
+      "joiner": " ",
+      "group": "Spaced out"
     },
     {
       "id": "between-dots",
@@ -4699,7 +4783,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": "",
-      "joiner": "·"
+      "joiner": "·",
+      "group": "Spaced out"
     },
     {
       "id": "between-sparkle",
@@ -4713,7 +4798,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": "",
-      "joiner": "✧"
+      "joiner": "✧",
+      "group": "Spaced out"
     },
     {
       "id": "between-flowers",
@@ -4727,7 +4813,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": "",
-      "joiner": "✿"
+      "joiner": "✿",
+      "group": "Spaced out"
     },
     {
       "id": "between-music",
@@ -4741,7 +4828,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": "",
-      "joiner": "♪"
+      "joiner": "♪",
+      "group": "Spaced out"
     },
     {
       "id": "between-wave",
@@ -4755,7 +4843,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": "",
-      "joiner": "~"
+      "joiner": "~",
+      "group": "Spaced out"
     },
     {
       "id": "between-bubbles",
@@ -4769,7 +4858,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": "",
-      "joiner": "°"
+      "joiner": "°",
+      "group": "Spaced out"
     },
     {
       "id": "between-arrows",
@@ -4783,7 +4873,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": "",
-      "joiner": "➝"
+      "joiner": "➝",
+      "group": "Spaced out"
     },
     {
       "id": "kaomoji-love",
@@ -4797,7 +4888,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": " (｡♡‿♡｡)",
-      "joiner": ""
+      "joiner": "",
+      "group": "Kaomoji"
     },
     {
       "id": "kaomoji-bear",
@@ -4811,7 +4903,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": " ʕ•ᴥ•ʔ",
-      "joiner": ""
+      "joiner": "",
+      "group": "Kaomoji"
     },
     {
       "id": "kaomoji-hug",
@@ -4825,7 +4918,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": " (づ｡◕‿‿◕｡)づ",
-      "joiner": ""
+      "joiner": "",
+      "group": "Kaomoji"
     },
     {
       "id": "kaomoji-flower",
@@ -4839,7 +4933,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": " (◕‿◕✿)",
-      "joiner": ""
+      "joiner": "",
+      "group": "Kaomoji"
     },
     {
       "id": "kaomoji-cheer",
@@ -4853,7 +4948,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": " ٩(◕‿◕)۶",
-      "joiner": ""
+      "joiner": "",
+      "group": "Kaomoji"
     },
     {
       "id": "kaomoji-happy",
@@ -4867,7 +4963,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": " (≧◡≦)",
-      "joiner": ""
+      "joiner": "",
+      "group": "Kaomoji"
     },
     {
       "id": "kaomoji-flip",
@@ -4881,7 +4978,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": " (╯°□°)╯︵ ┻━┻",
-      "joiner": ""
+      "joiner": "",
+      "group": "Kaomoji"
     },
     {
       "id": "kaomoji-shrug",
@@ -4895,7 +4993,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": " ¯\\_(ツ)_/¯",
-      "joiner": ""
+      "joiner": "",
+      "group": "Kaomoji"
     },
     {
       "id": "kaomoji-magic",
@@ -4909,7 +5008,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": " (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧",
-      "joiner": ""
+      "joiner": "",
+      "group": "Kaomoji"
     },
     {
       "id": "kaomoji-cool",
@@ -4923,7 +5023,8 @@
       "mapping": {},
       "prefix": "",
       "suffix": " (⌐■_■)",
-      "joiner": ""
+      "joiner": "",
+      "group": "Kaomoji"
     }
   ],
   "decorations": [],
@@ -4937,7 +5038,8 @@
       "secondary": "#FFE0EC",
       "accent": "#FFD84D",
       "dark": true,
-      "isPro": false
+      "isPro": false,
+      "group": "Colours"
     },
     {
       "id": "blush",
@@ -4948,7 +5050,8 @@
       "secondary": "#8A6A7C",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": false
+      "isPro": false,
+      "group": "Colours"
     },
     {
       "id": "sun",
@@ -4959,7 +5062,8 @@
       "secondary": "#6E5A10",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "mint",
@@ -4970,7 +5074,8 @@
       "secondary": "#3D6B58",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "peach",
@@ -4981,7 +5086,8 @@
       "secondary": "#7E5446",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "lemon",
@@ -4992,7 +5098,8 @@
       "secondary": "#6E6630",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "tangerine",
@@ -5003,7 +5110,8 @@
       "secondary": "#FFE6D1",
       "accent": "#22172F",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "midnight",
@@ -5014,7 +5122,8 @@
       "secondary": "#B9A8B8",
       "accent": "#FF3D8B",
       "dark": true,
-      "isPro": false
+      "isPro": false,
+      "group": "Colours"
     },
     {
       "id": "bubblegum",
@@ -5025,7 +5134,8 @@
       "secondary": "#6B2846",
       "accent": "#FFD84D",
       "dark": false,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "cherry",
@@ -5036,7 +5146,8 @@
       "secondary": "#FFD6DC",
       "accent": "#FFD84D",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "raspberry",
@@ -5047,7 +5158,8 @@
       "secondary": "#FFD0E2",
       "accent": "#FFD84D",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "coral",
@@ -5058,7 +5170,8 @@
       "secondary": "#FFE2DE",
       "accent": "#22172F",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "rose",
@@ -5069,7 +5182,8 @@
       "secondary": "#7D4F5B",
       "accent": "#E8304A",
       "dark": false,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "lime-pop",
@@ -5080,7 +5194,8 @@
       "secondary": "#4E5E1F",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "emerald",
@@ -5091,7 +5206,8 @@
       "secondary": "#D5F5EA",
       "accent": "#FFD84D",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "forest",
@@ -5102,7 +5218,8 @@
       "secondary": "#CDE5DA",
       "accent": "#FFD84D",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "sage",
@@ -5113,7 +5230,8 @@
       "secondary": "#55684F",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "ocean",
@@ -5124,7 +5242,8 @@
       "secondary": "#D6E4FF",
       "accent": "#FFD84D",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "butter",
@@ -5135,7 +5254,8 @@
       "secondary": "#7A6A48",
       "accent": "#FF8A2A",
       "dark": false,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "caramel",
@@ -5146,7 +5266,8 @@
       "secondary": "#FBE7D2",
       "accent": "#22172F",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "mocha",
@@ -5157,7 +5278,8 @@
       "secondary": "#CDB6A6",
       "accent": "#FF8FBF",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "cream",
@@ -5168,7 +5290,8 @@
       "secondary": "#7A6A62",
       "accent": "#E8304A",
       "dark": false,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "graphite",
@@ -5179,7 +5302,8 @@
       "secondary": "#B0B0B8",
       "accent": "#FFD84D",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "neon-night",
@@ -5190,7 +5314,8 @@
       "secondary": "#8F9BB8",
       "accent": "#38F2C0",
       "dark": true,
-      "isPro": true
+      "isPro": true,
+      "group": "Colours"
     },
     {
       "id": "sunset",
@@ -5203,7 +5328,8 @@
       "dark": false,
       "isPro": true,
       "image": "sunset.jpg",
-      "keyAlpha": 0.78
+      "keyAlpha": 0.78,
+      "group": "Nature & sky"
     },
     {
       "id": "starry-night",
@@ -5216,7 +5342,8 @@
       "dark": true,
       "isPro": true,
       "image": "starry-night.jpg",
-      "keyAlpha": 0.16
+      "keyAlpha": 0.16,
+      "group": "Nature & sky"
     },
     {
       "id": "candy-hearts",
@@ -5229,7 +5356,8 @@
       "dark": false,
       "isPro": true,
       "image": "candy-hearts.jpg",
-      "keyAlpha": 0.86
+      "keyAlpha": 0.86,
+      "group": "Cute & sweet"
     },
     {
       "id": "daisy-days",
@@ -5242,7 +5370,8 @@
       "dark": false,
       "isPro": true,
       "image": "daisy-days.jpg",
-      "keyAlpha": 0.86
+      "keyAlpha": 0.86,
+      "group": "Cute & sweet"
     },
     {
       "id": "aurora",
@@ -5255,7 +5384,8 @@
       "dark": true,
       "isPro": true,
       "image": "aurora.jpg",
-      "keyAlpha": 0.16
+      "keyAlpha": 0.16,
+      "group": "Nature & sky"
     },
     {
       "id": "dreamy",
@@ -5268,7 +5398,8 @@
       "dark": false,
       "isPro": true,
       "image": "dreamy.jpg",
-      "keyAlpha": 0.68
+      "keyAlpha": 0.68,
+      "group": "Cute & sweet"
     },
     {
       "id": "gingham",
@@ -5281,7 +5412,8 @@
       "dark": false,
       "isPro": true,
       "image": "gingham.jpg",
-      "keyAlpha": 0.9
+      "keyAlpha": 0.9,
+      "group": "Cute & sweet"
     },
     {
       "id": "ocean-waves",
@@ -5294,7 +5426,1128 @@
       "dark": true,
       "isPro": true,
       "image": "ocean-waves.jpg",
-      "keyAlpha": 0.2
+      "keyAlpha": 0.2,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "leaves",
+      "name": "Leaves",
+      "background": "#174D31",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#CDEBD7",
+      "accent": "#FFD84D",
+      "dark": true,
+      "isPro": true,
+      "image": "leaves.jpg",
+      "keyAlpha": 0.18,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "marble",
+      "name": "Marble",
+      "background": "#F3F0EC",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#6E6378",
+      "accent": "#C9A23F",
+      "dark": false,
+      "isPro": true,
+      "image": "marble.jpg",
+      "keyAlpha": 0.72,
+      "group": "Luxe & textures"
+    },
+    {
+      "id": "pink-glitter",
+      "name": "Pink Glitter",
+      "background": "#FF5AA0",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#7A3A58",
+      "accent": "#22172F",
+      "dark": false,
+      "isPro": true,
+      "image": "pink-glitter.jpg",
+      "keyAlpha": 0.82,
+      "group": "Cute & sweet"
+    },
+    {
+      "id": "clouds",
+      "name": "Clouds",
+      "background": "#A8DBFF",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#3A5A78",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "clouds.jpg",
+      "keyAlpha": 0.8,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "cherry-blossom",
+      "name": "Cherry Blossom",
+      "background": "#FFE8F0",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#7A3A58",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "cherry-blossom.jpg",
+      "keyAlpha": 0.8,
+      "group": "Cute & sweet"
+    },
+    {
+      "id": "checkers",
+      "name": "Checkers",
+      "background": "#E4D9FF",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5B4A8A",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "checkers.jpg",
+      "keyAlpha": 0.9,
+      "group": "Cute & sweet"
+    },
+    {
+      "id": "butterflies",
+      "name": "Butterflies",
+      "background": "#C9B2FA",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#4A3A75",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "butterflies.jpg",
+      "keyAlpha": 0.84,
+      "group": "Cute & sweet"
+    },
+    {
+      "id": "leopard",
+      "name": "Leopard",
+      "background": "#E6C08A",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#6B4A26",
+      "accent": "#22172F",
+      "dark": false,
+      "isPro": true,
+      "image": "leopard.jpg",
+      "keyAlpha": 0.84,
+      "group": "Luxe & textures"
+    },
+    {
+      "id": "lemons",
+      "name": "Lemonade",
+      "background": "#3FAACB",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#2E5A6B",
+      "accent": "#FFD84D",
+      "dark": false,
+      "isPro": true,
+      "image": "lemons.jpg",
+      "keyAlpha": 0.86,
+      "group": "Cute & sweet"
+    },
+    {
+      "id": "holo",
+      "name": "Holo",
+      "background": "#EDE4FF",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#6E6378",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "holo.jpg",
+      "keyAlpha": 0.62,
+      "group": "Cute & sweet"
+    },
+    {
+      "id": "snowfall",
+      "name": "Snowfall",
+      "background": "#0B2545",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#D6E4FF",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "snowfall.jpg",
+      "keyAlpha": 0.16,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "strawberries",
+      "name": "Strawberries",
+      "background": "#FFD6E0",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#7A3A58",
+      "accent": "#F0384F",
+      "dark": false,
+      "isPro": true,
+      "image": "strawberries.jpg",
+      "keyAlpha": 0.86,
+      "group": "Cute & sweet"
+    },
+    {
+      "id": "golden-lake",
+      "name": "Golden Lake",
+      "background": "#E89A6A",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A3A4A",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "golden-lake.jpg",
+      "keyAlpha": 0.78,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "neon-wave",
+      "name": "Neon Wave",
+      "background": "#0B1030",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#D6D3E8",
+      "accent": "#8B7BFF",
+      "dark": true,
+      "isPro": true,
+      "image": "neon-wave.jpg",
+      "keyAlpha": 0.16,
+      "group": "City & neon"
+    },
+    {
+      "id": "pastel-flow",
+      "name": "Pastel Flow",
+      "background": "#FCEFE3",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "pastel-flow.jpg",
+      "keyAlpha": 0.82,
+      "group": "Cute & sweet"
+    },
+    {
+      "id": "monstera",
+      "name": "Monstera",
+      "background": "#0F3324",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#CDEBD7",
+      "accent": "#FFD84D",
+      "dark": true,
+      "isPro": true,
+      "image": "monstera.jpg",
+      "keyAlpha": 0.16,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "london-nights",
+      "name": "London Nights",
+      "background": "#3B2A5C",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6DDF5",
+      "accent": "#FFB547",
+      "dark": true,
+      "isPro": true,
+      "image": "london-nights.jpg",
+      "keyAlpha": 0.18,
+      "group": "City & neon"
+    },
+    {
+      "id": "above-clouds",
+      "name": "Above the Clouds",
+      "background": "#C9B6E8",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "above-clouds.jpg",
+      "keyAlpha": 0.75,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "neon-lines",
+      "name": "Neon Lines",
+      "background": "#0A0F24",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#D6D3E8",
+      "accent": "#3B82F6",
+      "dark": true,
+      "isPro": true,
+      "image": "neon-lines.jpg",
+      "keyAlpha": 0.16,
+      "group": "City & neon"
+    },
+    {
+      "id": "zen",
+      "name": "Zen",
+      "background": "#7FA85A",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#2F4A22",
+      "accent": "#22172F",
+      "dark": false,
+      "isPro": true,
+      "image": "zen.jpg",
+      "keyAlpha": 0.8,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "sakura",
+      "name": "Sakura",
+      "background": "#F7C9D6",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#7A3A58",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "sakura.jpg",
+      "keyAlpha": 0.8,
+      "group": "Cute & sweet"
+    },
+    {
+      "id": "galaxy",
+      "name": "Galaxy",
+      "background": "#0B0F2E",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#D6D3E8",
+      "accent": "#B57BFF",
+      "dark": true,
+      "isPro": true,
+      "image": "galaxy.jpg",
+      "keyAlpha": 0.16,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "beach-day",
+      "name": "Beach Day",
+      "background": "#4FC7C7",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#1F4A55",
+      "accent": "#0E8A99",
+      "dark": false,
+      "isPro": true,
+      "image": "beach-day.jpg",
+      "keyAlpha": 0.8,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "gold-lines",
+      "name": "Gold Lines",
+      "background": "#141414",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E8DDC0",
+      "accent": "#D9B45A",
+      "dark": true,
+      "isPro": true,
+      "image": "gold-lines.jpg",
+      "keyAlpha": 0.14,
+      "group": "Luxe & textures"
+    },
+    {
+      "id": "aerial-ocean-waves",
+      "name": "Ocean From Above",
+      "background": "#35AEC8",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "aerial-ocean-waves.jpg",
+      "keyAlpha": 0.78,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "art-abstract-splatter",
+      "name": "Paint Splatter",
+      "background": "#A18F6F",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "art-abstract-splatter.jpg",
+      "keyAlpha": 0.78,
+      "group": "Art"
+    },
+    {
+      "id": "art-geometric-blocks",
+      "name": "Colour Blocks",
+      "background": "#CDBBA9",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "art-geometric-blocks.jpg",
+      "keyAlpha": 0.78,
+      "group": "Art"
+    },
+    {
+      "id": "art-stained-glass",
+      "name": "Stained Glass",
+      "background": "#271B20",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "art-stained-glass.jpg",
+      "keyAlpha": 0.2,
+      "group": "Art"
+    },
+    {
+      "id": "art-starry-swirls",
+      "name": "Starry Swirls",
+      "background": "#15232D",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "art-starry-swirls.jpg",
+      "keyAlpha": 0.2,
+      "group": "Art"
+    },
+    {
+      "id": "art-ukiyoe-wave",
+      "name": "Great Wave",
+      "background": "#ACAA9D",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "art-ukiyoe-wave.jpg",
+      "keyAlpha": 0.78,
+      "group": "Art"
+    },
+    {
+      "id": "art-water-lilies",
+      "name": "Water Lilies",
+      "background": "#969899",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "art-water-lilies.jpg",
+      "keyAlpha": 0.78,
+      "group": "Art"
+    },
+    {
+      "id": "autumn-amber-fall",
+      "name": "Autumn",
+      "background": "#714120",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "autumn-amber-fall.jpg",
+      "keyAlpha": 0.2,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "cafe-linen-morning",
+      "name": "Café Morning",
+      "background": "#DDC7AE",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "cafe-linen-morning.jpg",
+      "keyAlpha": 0.78,
+      "group": "Luxe & textures"
+    },
+    {
+      "id": "cherry-blossom-spring",
+      "name": "Spring Blossom",
+      "background": "#FBDDDB",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "cherry-blossom-spring.jpg",
+      "keyAlpha": 0.78,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "cyberpunk-city-night",
+      "name": "Cyberpunk",
+      "background": "#121342",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "cyberpunk-city-night.jpg",
+      "keyAlpha": 0.2,
+      "group": "City & neon"
+    },
+    {
+      "id": "dark-botanical-jungle",
+      "name": "Dark Jungle",
+      "background": "#0A130B",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "dark-botanical-jungle.jpg",
+      "keyAlpha": 0.2,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "dark-roast-coffee",
+      "name": "Dark Roast",
+      "background": "#271407",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "dark-roast-coffee.jpg",
+      "keyAlpha": 0.2,
+      "group": "Luxe & textures"
+    },
+    {
+      "id": "desert-dunes-minimal",
+      "name": "Desert Dunes",
+      "background": "#D0836F",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "desert-dunes-minimal.jpg",
+      "keyAlpha": 0.78,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "galaxy-nebula-night",
+      "name": "Nebula",
+      "background": "#090F32",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "galaxy-nebula-night.jpg",
+      "keyAlpha": 0.2,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "kpop-bubblegum-candy",
+      "name": "Bubblegum",
+      "background": "#F5D0D2",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "kpop-bubblegum-candy.jpg",
+      "keyAlpha": 0.78,
+      "group": "K-pop"
+    },
+    {
+      "id": "kpop-confetti-finale",
+      "name": "Confetti",
+      "background": "#F7CBCA",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "kpop-confetti-finale.jpg",
+      "keyAlpha": 0.78,
+      "group": "K-pop"
+    },
+    {
+      "id": "kpop-dark-concept",
+      "name": "Dark Concept",
+      "background": "#141519",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "kpop-dark-concept.jpg",
+      "keyAlpha": 0.2,
+      "group": "K-pop"
+    },
+    {
+      "id": "kpop-glitchcore-acid",
+      "name": "Glitchcore",
+      "background": "#122303",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "kpop-glitchcore-acid.jpg",
+      "keyAlpha": 0.2,
+      "group": "K-pop"
+    },
+    {
+      "id": "kpop-holographic-foil",
+      "name": "Holo Foil",
+      "background": "#D9CCF5",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "kpop-holographic-foil.jpg",
+      "keyAlpha": 0.78,
+      "group": "K-pop"
+    },
+    {
+      "id": "kpop-lightstick-ocean",
+      "name": "Lightstick Ocean",
+      "background": "#120E2C",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "kpop-lightstick-ocean.jpg",
+      "keyAlpha": 0.2,
+      "group": "K-pop"
+    },
+    {
+      "id": "kpop-stage-lights",
+      "name": "Stage Lights",
+      "background": "#552695",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "kpop-stage-lights.jpg",
+      "keyAlpha": 0.2,
+      "group": "K-pop"
+    },
+    {
+      "id": "kpop-y2k-chrome-hearts",
+      "name": "Y2K Hearts",
+      "background": "#EF7FC0",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "kpop-y2k-chrome-hearts.jpg",
+      "keyAlpha": 0.78,
+      "group": "K-pop"
+    },
+    {
+      "id": "movie-cinema-velvet",
+      "name": "Cinema",
+      "background": "#190D0C",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "movie-cinema-velvet.jpg",
+      "keyAlpha": 0.2,
+      "group": "Movies"
+    },
+    {
+      "id": "movie-clapperboard-gold",
+      "name": "Clapperboard",
+      "background": "#241A0F",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "movie-clapperboard-gold.jpg",
+      "keyAlpha": 0.2,
+      "group": "Movies"
+    },
+    {
+      "id": "movie-comic-popart",
+      "name": "Pop Art",
+      "background": "#9A6934",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "movie-comic-popart.jpg",
+      "keyAlpha": 0.2,
+      "group": "Movies"
+    },
+    {
+      "id": "movie-drive-in-night",
+      "name": "Drive-In",
+      "background": "#191927",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "movie-drive-in-night.jpg",
+      "keyAlpha": 0.2,
+      "group": "Movies"
+    },
+    {
+      "id": "movie-noir-blinds",
+      "name": "Film Noir",
+      "background": "#151411",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "movie-noir-blinds.jpg",
+      "keyAlpha": 0.2,
+      "group": "Movies"
+    },
+    {
+      "id": "movie-popcorn-night",
+      "name": "Popcorn",
+      "background": "#E7A63C",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "movie-popcorn-night.jpg",
+      "keyAlpha": 0.78,
+      "group": "Movies"
+    },
+    {
+      "id": "movie-scifi-corridor",
+      "name": "Sci-Fi",
+      "background": "#101719",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "movie-scifi-corridor.jpg",
+      "keyAlpha": 0.2,
+      "group": "Movies"
+    },
+    {
+      "id": "music-cassette-retro",
+      "name": "Mixtape",
+      "background": "#B89877",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "music-cassette-retro.jpg",
+      "keyAlpha": 0.78,
+      "group": "Music"
+    },
+    {
+      "id": "music-festival-sunset",
+      "name": "Festival",
+      "background": "#C67D4B",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "music-festival-sunset.jpg",
+      "keyAlpha": 0.78,
+      "group": "Music"
+    },
+    {
+      "id": "music-guitar-strings",
+      "name": "Guitar",
+      "background": "#623410",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "music-guitar-strings.jpg",
+      "keyAlpha": 0.2,
+      "group": "Music"
+    },
+    {
+      "id": "music-jazz-sax",
+      "name": "Jazz Club",
+      "background": "#190D03",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "music-jazz-sax.jpg",
+      "keyAlpha": 0.2,
+      "group": "Music"
+    },
+    {
+      "id": "music-neon-equalizer",
+      "name": "Equalizer",
+      "background": "#1B1444",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "music-neon-equalizer.jpg",
+      "keyAlpha": 0.2,
+      "group": "Music"
+    },
+    {
+      "id": "music-piano-ivory",
+      "name": "Piano",
+      "background": "#A19787",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "music-piano-ivory.jpg",
+      "keyAlpha": 0.78,
+      "group": "Music"
+    },
+    {
+      "id": "music-vinyl-amber",
+      "name": "Vinyl",
+      "background": "#29190D",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "music-vinyl-amber.jpg",
+      "keyAlpha": 0.2,
+      "group": "Music"
+    },
+    {
+      "id": "noir-gold-luxury",
+      "name": "Black & Gold",
+      "background": "#130C06",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "noir-gold-luxury.jpg",
+      "keyAlpha": 0.2,
+      "group": "Luxe & textures"
+    },
+    {
+      "id": "pastel-cloud-dream",
+      "name": "Cloud Dream",
+      "background": "#E9D1F1",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "pastel-cloud-dream.jpg",
+      "keyAlpha": 0.78,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "pride-ace-minimal",
+      "name": "Ace Pride",
+      "background": "#817B85",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "pride-ace-minimal.jpg",
+      "keyAlpha": 0.2,
+      "group": "Pride"
+    },
+    {
+      "id": "pride-bi-gradient",
+      "name": "Bi Pride",
+      "background": "#54177F",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "pride-bi-gradient.jpg",
+      "keyAlpha": 0.2,
+      "group": "Pride"
+    },
+    {
+      "id": "pride-disco-glam",
+      "name": "Disco Pride",
+      "background": "#441C31",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "pride-disco-glam.jpg",
+      "keyAlpha": 0.2,
+      "group": "Pride"
+    },
+    {
+      "id": "pride-lesbian-sunset",
+      "name": "Lesbian Pride",
+      "background": "#EEAC89",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "pride-lesbian-sunset.jpg",
+      "keyAlpha": 0.78,
+      "group": "Pride"
+    },
+    {
+      "id": "pride-pan-glow",
+      "name": "Pan Pride",
+      "background": "#D8B69A",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "pride-pan-glow.jpg",
+      "keyAlpha": 0.78,
+      "group": "Pride"
+    },
+    {
+      "id": "pride-progress-watercolor",
+      "name": "Progress Pride",
+      "background": "#E0C2A5",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "pride-progress-watercolor.jpg",
+      "keyAlpha": 0.78,
+      "group": "Pride"
+    },
+    {
+      "id": "pride-rainbow-silk",
+      "name": "Rainbow Silk",
+      "background": "#977466",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "pride-rainbow-silk.jpg",
+      "keyAlpha": 0.2,
+      "group": "Pride"
+    },
+    {
+      "id": "pride-trans-dream",
+      "name": "Trans Pride",
+      "background": "#DFD4E8",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "pride-trans-dream.jpg",
+      "keyAlpha": 0.78,
+      "group": "Pride"
+    },
+    {
+      "id": "rainy-window-city",
+      "name": "Rainy Window",
+      "background": "#2E2F30",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "rainy-window-city.jpg",
+      "keyAlpha": 0.2,
+      "group": "City & neon"
+    },
+    {
+      "id": "retro-70s-groovy",
+      "name": "Groovy 70s",
+      "background": "#EFA146",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "retro-70s-groovy.jpg",
+      "keyAlpha": 0.78,
+      "group": "Art"
+    },
+    {
+      "id": "sunset-beach-golden",
+      "name": "Golden Beach",
+      "background": "#C98061",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "sunset-beach-golden.jpg",
+      "keyAlpha": 0.78,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "tropical-daylight",
+      "name": "Tropical",
+      "background": "#CACCB5",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "tropical-daylight.jpg",
+      "keyAlpha": 0.78,
+      "group": "Nature & sky"
+    },
+    {
+      "id": "urban-neon-nights",
+      "name": "Neon Nights",
+      "background": "#1A112A",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "urban-neon-nights.jpg",
+      "keyAlpha": 0.2,
+      "group": "City & neon"
+    },
+    {
+      "id": "vaporwave-palm-sunset",
+      "name": "Vaporwave",
+      "background": "#AD2F88",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#E6E1F0",
+      "accent": "#FF3D8B",
+      "dark": true,
+      "isPro": true,
+      "image": "vaporwave-palm-sunset.jpg",
+      "keyAlpha": 0.2,
+      "group": "City & neon"
+    },
+    {
+      "id": "vintage-film-faded",
+      "name": "Vintage Film",
+      "background": "#C5AF8C",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "vintage-film-faded.jpg",
+      "keyAlpha": 0.78,
+      "group": "Luxe & textures"
+    },
+    {
+      "id": "white-marble-gold",
+      "name": "White Marble",
+      "background": "#ECEBE9",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "white-marble-gold.jpg",
+      "keyAlpha": 0.78,
+      "group": "Luxe & textures"
+    },
+    {
+      "id": "winter-snow-minimal",
+      "name": "Snow Day",
+      "background": "#EDF0F6",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A4A66",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "winter-snow-minimal.jpg",
+      "keyAlpha": 0.78,
+      "group": "Nature & sky"
     }
   ]
 }

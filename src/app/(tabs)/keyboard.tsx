@@ -1,43 +1,61 @@
-import { useCallback, useEffect, useState } from 'react';
-import { ImageBackground, Platform, Pressable, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
+import { useCallback, useState } from 'react';
+import { ImageBackground, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
-import { Camera, Check, ChevronDown, ChevronRight, ChevronUp, ExternalLink, Lock, RefreshCw, ShieldCheck, Trash2 } from 'lucide-react-native';
+import { Camera, Check, ChevronDown, ChevronRight, ChevronUp, ExternalLink, Languages, Lock, Mic, Palette, RefreshCw, ShieldCheck, Trash2 } from 'lucide-react-native';
 import NativeKeyboard, { type AndroidKeyboardStatus } from '@/nativeKeyboard';
 import { useComposer } from '../../state/ComposerContext';
-import { themes, type KeyboardTheme } from '../../styleEngine';
+import { getStyle, themes, type KeyboardTheme } from '../../styleEngine';
 import { colors, radii } from '../../theme/tokens';
-import { keyboardPictures } from '../../theme/keyboardPictures';
 import { pickKeyboardPhoto, removeKeyboardPhoto } from '../../tools/keyboardPhoto';
-import { ActionButton, Eyebrow, PageTitle, Screen, TopBar, type } from '../../components/ui';
+import { ActionButton, Chip, ChipRow, Eyebrow, PageTitle, Screen, TopBar, type } from '../../components/ui';
+import {
+  CUSTOM_KEY, DEFAULT_CUSTOM, KeyboardPreview, PHOTO_DIM_KEY, PHOTO_KEY, PHOTO_THEME, THEME_KEY,
+  customTheme, keyColor, pictureSource, type CustomColours,
+} from '../../components/KeyboardPreview';
 
-const THEME_KEY = 'lyfstyle.keyboardTheme';
-const PHOTO_KEY = 'lyfstyle.keyboardPhoto';
-
-/** The person's own photo, shown with white glass keys (matches the native keyboards). */
-const PHOTO_THEME: KeyboardTheme = {
-  id: 'custom-photo', name: 'Your photo', background: '#22172F', key: '#FFFFFF', text: '#FFFFFF',
-  secondary: '#EDE6F0', accent: '#FF3D8B', dark: true, isPro: true, image: '@photo', keyAlpha: 0.22,
-};
 const colourThemes = themes.filter((item) => !item.image);
-const pictureThemes = themes.filter((item) => item.image);
+const PICTURE_GROUPS = ['Cute & sweet', 'Nature & sky', 'Art', 'K-pop', 'Movies', 'Music', 'Pride', 'City & neon', 'Luxe & textures'];
+const pictureGroups = PICTURE_GROUPS
+  .map((group) => ({ group, items: themes.filter((item) => item.image && item.group === group) }))
+  .filter((entry) => entry.items.length);
+const PICTURES_SHOWN = 6;
+const DARKNESS = [
+  { label: 'None', value: 0 },
+  { label: 'Light', value: 0.15 },
+  { label: 'Medium', value: 0.3 },
+  { label: 'Dark', value: 0.5 },
+];
 
 export default function KeyboardScreen() {
-  const { pro } = useComposer();
+  const { pro, selectedStyle } = useComposer();
   const [status, setStatus] = useState<AndroidKeyboardStatus>({ enabled: false, selected: false });
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [themeId, setThemeId] = useState(themes[0].id);
   const [fullAccessOpen, setFullAccessOpen] = useState(false);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const current = themeId === PHOTO_THEME.id && photoUri ? PHOTO_THEME : themes.find((item) => item.id === themeId) ?? themes[0];
+  const [photoDim, setPhotoDim] = useState(0.3);
+  const [custom, setCustom] = useState<CustomColours | null>(null);
+  const [micOn, setMicOn] = useState(false);
+  const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const customOption = custom ? customTheme(custom) : null;
+  // The keyboard shows letters in the chosen style; whole-message frames are app-only.
+  const previewStyle = getStyle(selectedStyle).keyboard && !(getStyle(selectedStyle).isPro && !pro.isPro) ? selectedStyle : 'script';
+  const current = themeId === PHOTO_THEME.id && photoUri ? PHOTO_THEME
+    : themeId === 'custom-colors' && customOption ? customOption
+      : themes.find((item) => item.id === themeId) ?? themes[0];
 
-  useEffect(() => {
-    AsyncStorage.multiGet([THEME_KEY, PHOTO_KEY]).then(([[, theme], [, photo]]) => {
+  // Reload on focus: the colour wheel screen may have saved new colours.
+  useFocusEffect(useCallback(() => {
+    AsyncStorage.multiGet([THEME_KEY, PHOTO_KEY, PHOTO_DIM_KEY, CUSTOM_KEY]).then(([[, theme], [, photo], [, dim], [, saved]]) => {
       if (photo) setPhotoUri(photo);
-      if (theme && (themes.some((item) => item.id === theme) || (theme === PHOTO_THEME.id && photo))) setThemeId(theme);
+      if (dim) setPhotoDim(Number(dim));
+      const parsed = saved ? { ...DEFAULT_CUSTOM, ...(JSON.parse(saved) as Partial<CustomColours>) } : null;
+      setCustom(parsed);
+      if (theme && (themes.some((item) => item.id === theme) || (theme === PHOTO_THEME.id && photo) || (theme === 'custom-colors' && parsed))) setThemeId(theme);
     }).catch(() => undefined);
-  }, []);
+  }, []));
 
   const choosePhoto = async () => {
     if (!pro.isPro) {
@@ -68,9 +86,16 @@ export default function KeyboardScreen() {
     setNotice('Photo removed.');
   };
 
+  const changeDarkness = async (value: number) => {
+    setPhotoDim(value);
+    await AsyncStorage.setItem(PHOTO_DIM_KEY, String(value)).catch(() => undefined);
+    if (Platform.OS !== 'web') await NativeKeyboard.setPhotoDim(value).catch(() => undefined);
+  };
+
   const refresh = useCallback(async () => {
     if (Platform.OS !== 'android') return;
     try {
+      setMicOn(await NativeKeyboard.hasMicrophone());
       setStatus(await NativeKeyboard.getAndroidKeyboardStatus());
     } catch {
       setNotice('Keyboard status needs the Android app.');
@@ -103,7 +128,8 @@ export default function KeyboardScreen() {
     await AsyncStorage.setItem(THEME_KEY, theme.id).catch(() => undefined);
     if (Platform.OS === 'web') return;
     try {
-      await NativeKeyboard.setKeyboardTheme(theme.id);
+      if (theme.id === 'custom-colors' && custom) await NativeKeyboard.setCustomTheme(JSON.stringify(custom));
+      else await NativeKeyboard.setKeyboardTheme(theme.id);
       setNotice(Platform.OS === 'ios'
         ? `${theme.name} saved. With Full Access off, pick it from the 🎨 button on the keyboard.`
         : `${theme.name} is now your keyboard theme.`);
@@ -117,7 +143,7 @@ export default function KeyboardScreen() {
       <TopBar isPro={pro.isPro} />
       <PageTitle title="Your" mark="keyboard">Style as you type in any app. Pick a theme, then switch it on.</PageTitle>
 
-      <KeyboardPreview theme={current} photoUri={photoUri} />
+      <KeyboardPreview theme={current} photoUri={photoUri} photoDim={photoDim} styleId={previewStyle} />
 
       <View style={styles.photoCard}>
         <View style={styles.photoHead}>
@@ -136,18 +162,103 @@ export default function KeyboardScreen() {
             </Pressable>
           ) : null}
         </View>
+        {photoUri && pro.isPro ? (
+          <>
+            <Text style={styles.darkLabel}>DARKEN PHOTO SO KEYS STAND OUT</Text>
+            <ChipRow>
+              {DARKNESS.map((item) => (
+                <Chip key={item.label} label={item.label} active={Math.abs(photoDim - item.value) < 0.01} onPress={() => void changeDarkness(item.value)} />
+              ))}
+            </ChipRow>
+          </>
+        ) : null}
       </View>
 
-      <View style={styles.sectionHead}>
-        <Eyebrow>PICTURE THEMES · {pictureThemes.length}</Eyebrow>
-        <Text style={styles.sectionNote}>Pro</Text>
+      <Pressable accessibilityRole="button" onPress={() => router.push('/custom-theme')} style={({ pressed }) => [styles.photoCard, styles.mixCard, pressed && styles.pressed]}>
+        <View style={styles.photoHead}>
+          <Palette size={20} color={colors.ink} strokeWidth={2.2} />
+          <Text style={styles.photoTitle}>Mix your own colours</Text>
+          {!pro.isPro ? <Lock size={14} color={colors.ink} strokeWidth={2.4} /> : <ChevronRight size={18} color={colors.ink} />}
+        </View>
+        <Text style={[styles.photoCopy, styles.mixCopy]}>Pick the background, keys, letters and accent on a colour wheel.</Text>
+      </Pressable>
+
+      <View style={[styles.photoCard, styles.extraCard]}>
+        <View style={styles.photoHead}>
+          <Mic size={20} color={colors.ink} strokeWidth={2.2} />
+          <Text style={styles.photoTitle}>Speak to type</Text>
+          {micOn ? <Check size={18} color={colors.success} strokeWidth={3} /> : null}
+        </View>
+        {Platform.OS === 'android' ? (
+          <>
+            <Text style={styles.photoCopy}>Tap 🎙 on the Lyfstyle keyboard and talk. Your words go in with your chosen style.</Text>
+            {!micOn ? (
+              <ActionButton
+                variant="dark"
+                onPress={async () => {
+                  await NativeKeyboard.requestMicrophone().catch(() => undefined);
+                  setTimeout(() => { void refresh(); }, 1500);
+                }}
+              >
+                Allow the microphone
+              </ActionButton>
+            ) : null}
+          </>
+        ) : (
+          <Text style={[styles.photoCopy, styles.mixCopy]}>Apple doesn’t let any add-on keyboard use the microphone. Tap the 🎙 at the bottom right of your screen, under the keyboard, to speak instead.</Text>
+        )}
       </View>
-      <View style={styles.themeGrid}>
-        {photoUri ? <ThemeTile theme={PHOTO_THEME} photoUri={photoUri} active={themeId === PHOTO_THEME.id} locked={!pro.isPro} onPress={() => void chooseTheme(PHOTO_THEME)} /> : null}
-        {pictureThemes.map((theme) => (
-          <ThemeTile key={theme.id} theme={theme} active={theme.id === themeId} locked={theme.isPro && !pro.isPro} onPress={() => void chooseTheme(theme)} />
-        ))}
+
+      <View style={[styles.photoCard, styles.extraCard]}>
+        <View style={styles.photoHead}>
+          <Languages size={20} color={colors.ink} strokeWidth={2.2} />
+          <Text style={styles.photoTitle}>Translate as you type</Text>
+        </View>
+        <Text style={[styles.photoCopy, styles.mixCopy]}>
+          {Platform.OS === 'ios'
+            ? 'Type your message, tap 文A on the keyboard and pick a language. Works on iOS 26 or later using Apple’s on-device translation; download languages in Settings → Apps → Translate.'
+            : 'Type your message, tap 文A on the keyboard and pick a language. Translation happens on your phone; each language downloads once (about 30 MB).'}
+        </Text>
       </View>
+
+      {photoUri || customOption ? (
+        <>
+          <View style={styles.sectionHead}><Eyebrow>YOURS</Eyebrow></View>
+          <View style={styles.themeGrid}>
+            {photoUri ? <ThemeTile theme={PHOTO_THEME} photoUri={photoUri} active={themeId === PHOTO_THEME.id} locked={!pro.isPro} onPress={() => void chooseTheme(PHOTO_THEME)} /> : null}
+            {customOption ? <ThemeTile theme={customOption} active={themeId === customOption.id} locked={!pro.isPro} onPress={() => void chooseTheme(customOption)} /> : null}
+          </View>
+        </>
+      ) : null}
+
+      {pictureGroups.map(({ group, items }) => {
+        const expanded = openGroups.includes(group);
+        const shown = expanded ? items : items.slice(0, PICTURES_SHOWN);
+        return (
+          <View key={group}>
+            <View style={styles.sectionHead}>
+              <Eyebrow>{group.toUpperCase()} · {items.length}</Eyebrow>
+              <Text style={styles.sectionNote}>Pro</Text>
+            </View>
+            <View style={styles.themeGrid}>
+              {shown.map((theme) => (
+                <ThemeTile key={theme.id} theme={theme} active={theme.id === themeId} locked={theme.isPro && !pro.isPro} onPress={() => void chooseTheme(theme)} />
+              ))}
+            </View>
+            {items.length > PICTURES_SHOWN ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ expanded }}
+                onPress={() => setOpenGroups((current) => (expanded ? current.filter((id) => id !== group) : [...current, group]))}
+                style={({ pressed }) => [styles.more, pressed && styles.pressed]}
+              >
+                <Text style={styles.moreText}>{expanded ? 'Show less' : `Show all ${items.length}`}</Text>
+                {expanded ? <ChevronUp size={16} color={colors.ink} /> : <ChevronDown size={16} color={colors.ink} />}
+              </Pressable>
+            ) : null}
+          </View>
+        );
+      })}
 
       <View style={styles.sectionHead}>
         <Eyebrow>COLOUR THEMES · {colourThemes.length}</Eyebrow>
@@ -210,18 +321,6 @@ export default function KeyboardScreen() {
   );
 }
 
-function pictureSource(theme: KeyboardTheme, photoUri?: string | null): ImageSourcePropType | null {
-  if (!theme.image) return null;
-  if (theme.image === '@photo') return photoUri ? { uri: photoUri } : null;
-  return keyboardPictures[theme.image] ?? null;
-}
-
-/** Key colour with the theme's opacity, so picture themes show through. */
-function keyColor(theme: KeyboardTheme) {
-  const value = parseInt(theme.key.slice(1), 16);
-  return `rgba(${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255}, ${theme.keyAlpha ?? 1})`;
-}
-
 function ThemeTile({ theme, active, locked, onPress, photoUri }: { theme: KeyboardTheme; active: boolean; locked: boolean; onPress: () => void; photoUri?: string | null }) {
   const source = pictureSource(theme, photoUri);
   const body = (
@@ -245,55 +344,6 @@ function ThemeTile({ theme, active, locked, onPress, photoUri }: { theme: Keyboa
       {source ? <ImageBackground source={source} resizeMode="cover" style={styles.themeImage} imageStyle={styles.themeImageInner}>{body}</ImageBackground> : <View style={styles.themeInner}>{body}</View>}
     </Pressable>
   );
-}
-
-function KeyboardPreview({ theme, photoUri }: { theme: KeyboardTheme; photoUri?: string | null }) {
-  const rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
-  const source = pictureSource(theme, photoUri);
-  const keyBg = keyColor(theme);
-  const content = (
-    <>
-      <View style={styles.previewBar}>
-        {['𝓢𝓬𝓻𝓲𝓹𝓽', '✨ ✨', '𝗕𝗼𝗹𝗱', 'ⓑⓤⓑ', '(◕‿◕)'].map((label, index) => (
-          <View key={label} style={[styles.previewChip, { backgroundColor: index === 0 ? theme.accent : keyBg }]}>
-            <Text style={[styles.previewChipText, { color: index === 0 ? accentText(theme.accent) : theme.text }]}>{label}</Text>
-          </View>
-        ))}
-      </View>
-      {rows.map((row) => (
-        <View key={row} style={styles.previewRow}>
-          {Array.from(row).map((letter) => (
-            <View key={letter} style={[styles.previewKey, { backgroundColor: keyBg }]}>
-              <Text style={[styles.previewKeyText, { color: theme.text }]}>{letter}</Text>
-            </View>
-          ))}
-        </View>
-      ))}
-      <View style={styles.previewRow}>
-        <View style={[styles.previewKey, styles.previewWide, { backgroundColor: keyBg }]}><Text style={[styles.previewKeyText, { color: theme.text }]}>123</Text></View>
-        <View style={[styles.previewKey, styles.previewSpace, { backgroundColor: keyBg }]}><Text style={[styles.previewKeyText, { color: theme.secondary }]}>lyfstyle</Text></View>
-        <View style={[styles.previewKey, styles.previewWide, { backgroundColor: theme.accent }]}><Text style={[styles.previewKeyText, { color: accentText(theme.accent) }]}>↵</Text></View>
-      </View>
-    </>
-  );
-  const label = `Preview of the ${theme.name} keyboard`;
-  if (source) {
-    return (
-      <ImageBackground source={source} resizeMode="cover" accessibilityLabel={label} style={[styles.preview, { backgroundColor: theme.background }]} imageStyle={styles.previewImage}>
-        {theme.image === '@photo' ? <View style={styles.photoDim} /> : null}
-        {content}
-      </ImageBackground>
-    );
-  }
-  return <View style={[styles.preview, { backgroundColor: theme.background }]} accessibilityLabel={label}>{content}</View>;
-}
-
-function accentText(hex: string) {
-  const value = parseInt(hex.slice(1), 16);
-  const r = (value >> 16) & 255;
-  const g = (value >> 8) & 255;
-  const b = value & 255;
-  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.55 ? colors.ink : colors.white;
 }
 
 function StatusItem({ label, complete }: { label: string; complete: boolean }) {
@@ -323,15 +373,6 @@ function Step({ number, title, copy, action, onPress, busy = false }: {
 }
 
 const styles = StyleSheet.create({
-  preview: { borderRadius: radii.large, padding: 8, gap: 6, marginBottom: 18 },
-  previewBar: { flexDirection: 'row', gap: 5, overflow: 'hidden', marginBottom: 2 },
-  previewChip: { borderRadius: radii.pill, paddingHorizontal: 10, height: 28, justifyContent: 'center' },
-  previewChipText: { fontSize: 12 },
-  previewRow: { flexDirection: 'row', justifyContent: 'center', gap: 4 },
-  previewKey: { flex: 1, maxWidth: 34, height: 38, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
-  previewKeyText: { fontFamily: type.semibold, fontSize: 15 },
-  previewWide: { maxWidth: 56, flex: 1.6 },
-  previewSpace: { maxWidth: 220, flex: 6 },
   sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, marginTop: 8 },
   sectionNote: { fontFamily: type.bold, fontSize: 12, color: colors.muted },
   themeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
@@ -340,14 +381,18 @@ const styles = StyleSheet.create({
   themeImage: { width: '100%', padding: 9, minHeight: 64, justifyContent: 'space-between' },
   themeImageInner: { borderRadius: radii.medium - 3 },
   themeNameOnPicture: { textShadowColor: 'rgba(0,0,0,0.45)', textShadowRadius: 3, textShadowOffset: { width: 0, height: 1 } },
-  previewImage: { borderRadius: radii.large },
-  photoDim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: radii.large },
   photoCard: { backgroundColor: colors.surface, borderRadius: radii.large, padding: 16, marginBottom: 18 },
   photoHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   photoTitle: { flex: 1, fontFamily: type.displayBold, fontSize: 17, color: colors.ink },
   photoCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 19, color: colors.muted, marginTop: 4, marginBottom: 12 },
   photoActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   photoButton: { flex: 1 },
+  darkLabel: { fontFamily: type.black, fontSize: 10, letterSpacing: 1.1, color: colors.muted, marginTop: 14, marginBottom: 8 },
+  mixCard: { backgroundColor: colors.mintSoft },
+  mixCopy: { marginBottom: 0 },
+  extraCard: { backgroundColor: colors.sunSoft },
+  more: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 40, borderRadius: radii.pill, borderWidth: 2, borderColor: colors.lineSoft, marginBottom: 8 },
+  moreText: { fontFamily: type.black, fontSize: 13, color: colors.ink },
   photoRemove: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.lineSoft, alignItems: 'center', justifyContent: 'center' },
   themeActive: { borderColor: colors.ink },
   themeKeys: { flexDirection: 'row', gap: 3 },

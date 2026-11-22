@@ -319,7 +319,73 @@ catalogue.themes.push(
   pictureTheme('dreamy', 'Dreamy', '#FFD9CF', '#22172F', '#7E5446', '#FF3D8B', false, 0.68),
   pictureTheme('gingham', 'Picnic', '#FFE1EC', '#22172F', '#7A3A58', '#E8304A', false, 0.9),
   pictureTheme('ocean-waves', 'Ocean Waves', '#1D4ED8', '#FFFFFF', '#D6E4FF', '#FFD84D', true, 0.2),
+  // Textures (v1.2).
+  pictureTheme('leaves', 'Leaves', '#174D31', '#FFFFFF', '#CDEBD7', '#FFD84D', true, 0.18),
+  pictureTheme('marble', 'Marble', '#F3F0EC', '#22172F', '#6E6378', '#C9A23F', false, 0.72),
+  pictureTheme('pink-glitter', 'Pink Glitter', '#FF5AA0', '#22172F', '#7A3A58', '#22172F', false, 0.82),
+  pictureTheme('clouds', 'Clouds', '#A8DBFF', '#22172F', '#3A5A78', '#FF3D8B', false, 0.8),
+  pictureTheme('cherry-blossom', 'Cherry Blossom', '#FFE8F0', '#22172F', '#7A3A58', '#FF3D8B', false, 0.8),
+  pictureTheme('checkers', 'Checkers', '#E4D9FF', '#22172F', '#5B4A8A', '#FF3D8B', false, 0.9),
+  pictureTheme('butterflies', 'Butterflies', '#C9B2FA', '#22172F', '#4A3A75', '#FF3D8B', false, 0.84),
+  pictureTheme('leopard', 'Leopard', '#E6C08A', '#22172F', '#6B4A26', '#22172F', false, 0.84),
+  pictureTheme('lemons', 'Lemonade', '#3FAACB', '#22172F', '#2E5A6B', '#FFD84D', false, 0.86),
+  pictureTheme('holo', 'Holo', '#EDE4FF', '#22172F', '#6E6378', '#FF3D8B', false, 0.62),
+  pictureTheme('snowfall', 'Snowfall', '#0B2545', '#FFFFFF', '#D6E4FF', '#FF3D8B', true, 0.16),
+  pictureTheme('strawberries', 'Strawberries', '#FFD6E0', '#22172F', '#7A3A58', '#F0384F', false, 0.86),
+  // Photo-style pictures (v1.2, supplied artwork cut by hand into keyboard shape).
+  pictureTheme('golden-lake', 'Golden Lake', '#E89A6A', '#22172F', '#5A3A4A', '#FF3D8B', false, 0.78),
+  pictureTheme('neon-wave', 'Neon Wave', '#0B1030', '#FFFFFF', '#D6D3E8', '#8B7BFF', true, 0.16),
+  pictureTheme('pastel-flow', 'Pastel Flow', '#FCEFE3', '#22172F', '#5A4A66', '#FF3D8B', false, 0.82),
+  pictureTheme('monstera', 'Monstera', '#0F3324', '#FFFFFF', '#CDEBD7', '#FFD84D', true, 0.16),
+  pictureTheme('london-nights', 'London Nights', '#3B2A5C', '#FFFFFF', '#E6DDF5', '#FFB547', true, 0.18),
+  pictureTheme('above-clouds', 'Above the Clouds', '#C9B6E8', '#22172F', '#5A4A66', '#FF3D8B', false, 0.75),
+  pictureTheme('neon-lines', 'Neon Lines', '#0A0F24', '#FFFFFF', '#D6D3E8', '#3B82F6', true, 0.16),
+  pictureTheme('zen', 'Zen', '#7FA85A', '#22172F', '#2F4A22', '#22172F', false, 0.8),
+  pictureTheme('sakura', 'Sakura', '#F7C9D6', '#22172F', '#7A3A58', '#FF3D8B', false, 0.8),
+  pictureTheme('galaxy', 'Galaxy', '#0B0F2E', '#FFFFFF', '#D6D3E8', '#B57BFF', true, 0.16),
+  pictureTheme('beach-day', 'Beach Day', '#4FC7C7', '#22172F', '#1F4A55', '#0E8A99', false, 0.8),
+  pictureTheme('gold-lines', 'Gold Lines', '#141414', '#FFFFFF', '#E8DDC0', '#D9B45A', true, 0.14),
 );
+
+// Picture pack (v1.2): supplied artwork, cut to keyboard shape. List in keyboard-picture-pack.json.
+const pack = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'keyboard-picture-pack.json'), 'utf8'));
+for (const item of pack) {
+  catalogue.themes.push(item.dark
+    ? pictureTheme(item.id, item.name, item.background, '#FFFFFF', '#E6E1F0', '#FF3D8B', true, 0.2)
+    : pictureTheme(item.id, item.name, item.background, '#22172F', '#5A4A66', '#FF3D8B', false, 0.78));
+}
+
+// Theme groups, so the pickers can show sections instead of one long list.
+const THEME_GROUPS = {
+  'Cute & sweet': ['candy-hearts', 'daisy-days', 'gingham', 'pink-glitter', 'cherry-blossom', 'checkers', 'butterflies', 'strawberries', 'lemons', 'holo', 'dreamy', 'pastel-flow', 'sakura'],
+  'Nature & sky': ['sunset', 'starry-night', 'aurora', 'ocean-waves', 'leaves', 'clouds', 'snowfall', 'golden-lake', 'monstera', 'above-clouds', 'zen', 'galaxy', 'beach-day'],
+  'Luxe & textures': ['marble', 'leopard', 'gold-lines'],
+  'City & neon': ['london-nights', 'neon-wave', 'neon-lines'],
+};
+const packGroups = new Map(pack.map((item) => [item.id, item.group]));
+for (const item of catalogue.themes) {
+  item.group = !item.image ? 'Colours'
+    : packGroups.get(item.id) ?? Object.entries(THEME_GROUPS).find(([, ids]) => ids.includes(item.id))?.[0];
+  if (!item.group) throw new Error(`${item.id}: no theme group`);
+}
+
+// Font groups: nine clear sections instead of one long list (app and keyboard).
+const STYLE_GROUPS = {
+  'Cursive & cute': ['script', 'bold-script', 'tiny-cursive', 'cute-alpha', 'bubble-filled', 'dotted', 'wide-tiny'],
+  'Bold & clean': ['bold', 'bold-italic', 'sans-bold', 'sans-bold-italic', 'italic', 'sans', 'sans-italic', 'monospace', 'double-struck', 'small-caps', 'fullwidth'],
+  'Bubbles & boxes': ['circled', 'negative-circled', 'squared', 'negative-squared', 'squared-all', 'night-box', 'parenthesized', 'boxed'],
+  'Gothic & fancy': ['fraktur', 'bold-fraktur', 'rune', 'currency', 'greek', 'asian', 'wizard'],
+  Effects: ['glitch', 'slash', 'double-underline', 'overline', 'wavy', 'arrows-below', 'crossed', 'heart-top', 'rain', 'underline', 'strike'],
+  'Fun & flipped': ['superscript', 'subscript', 'upside-down', 'mirror'],
+};
+for (const style of catalogue.styles) {
+  if (style.id === 'normal') style.group = 'Normal';
+  else if (style.id.startsWith('between-')) style.group = 'Spaced out';
+  else if (style.id.startsWith('frame-')) style.group = 'Emoji frames';
+  else if (style.id.startsWith('kaomoji-')) style.group = 'Kaomoji';
+  else style.group = Object.entries(STYLE_GROUPS).find(([, ids]) => ids.includes(style.id))?.[0];
+  if (!style.group) throw new Error(`${style.id}: no font group`);
+}
 
 // Free tier (decided 2026-11-22): Script, Sans Bold and Sparkles are free, plus the Hot Pink,
 // Blush and Midnight themes. Everything else (incl. picture themes and photo upload) is Pro.
@@ -333,7 +399,7 @@ const styled = catalogue.styles.filter((style) => style.id !== 'normal');
 if (styled.length < 100) throw new Error(`Expected at least 100 styles, found ${styled.length}`);
 if (keyboardStyles.length !== 48) throw new Error(`Expected 48 keyboard styles, found ${keyboardStyles.length}`);
 if (new Set(catalogue.styles.map((style) => style.id)).size !== catalogue.styles.length) throw new Error('Duplicate style ids');
-if (catalogue.themes.length !== 32) throw new Error('Expected 32 themes (24 colour + 8 picture)');
+if (catalogue.themes.length !== 112) throw new Error('Expected 112 themes (24 colour + 88 picture)');
 for (const style of catalogue.styles) {
   if (style.fallback !== 'preserve') throw new Error(`${style.id}: unsafe fallback`);
   for (const [input, output] of Object.entries(style.mapping)) {

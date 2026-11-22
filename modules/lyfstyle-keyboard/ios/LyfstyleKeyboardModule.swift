@@ -60,6 +60,34 @@ public class LyfstyleKeyboardModule: Module {
       }
     }
 
+    // iPhone keyboards can't use the microphone (Apple rule); people use Apple's dictation mic instead.
+    AsyncFunction("hasMicrophone") { false }
+    AsyncFunction("requestMicrophone") {}
+
+    // Colours mixed on the colour wheel: JSON with background, key, text, accent, keyAlpha.
+    // Like the photo, the keyboard can only read this with Full Access on.
+    AsyncFunction("setCustomTheme") { (json: String) in
+      guard let defaults = UserDefaults(suiteName: self.appGroup) else {
+        throw KeyboardSetupError.appGroupUnavailable
+      }
+      guard let data = json.data(using: .utf8), (try? JSONSerialization.jsonObject(with: data)) != nil else {
+        throw KeyboardSetupError.invalidTheme
+      }
+      defaults.set(json, forKey: "customTheme")
+      defaults.set("custom-colors", forKey: "theme")
+      defaults.set(Date().timeIntervalSince1970, forKey: "themeUpdatedAt")
+      defaults.synchronize()
+    }
+
+    // How much to darken the person's photo behind the keys (0 = not at all, 0.8 = very dark).
+    AsyncFunction("setPhotoDim") { (value: Double) in
+      guard let defaults = UserDefaults(suiteName: self.appGroup) else {
+        throw KeyboardSetupError.appGroupUnavailable
+      }
+      defaults.set(min(max(value, 0), 0.8), forKey: "photoDim")
+      defaults.synchronize()
+    }
+
     // The keyboard reads this only with Full Access; otherwise people pick themes in the keyboard itself.
     AsyncFunction("setKeyboardTheme") { (themeId: String) in
       guard let defaults = UserDefaults(suiteName: self.appGroup) else {
@@ -75,4 +103,5 @@ public class LyfstyleKeyboardModule: Module {
 enum KeyboardSetupError: Error {
   case onlyAndroid
   case appGroupUnavailable
+  case invalidTheme
 }

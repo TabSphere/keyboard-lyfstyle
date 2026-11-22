@@ -97,7 +97,7 @@ export function TopBar({ isPro }: { isPro: boolean }) {
   );
 }
 
-export function BackBar({ title, fallback = '/' }: { title?: string; fallback?: '/' | '/tools' | '/settings' }) {
+export function BackBar({ title, fallback = '/' }: { title?: string; fallback?: '/' | '/tools' | '/settings' | '/keyboard' }) {
   const close = () => (router.canGoBack() ? router.back() : router.replace(fallback));
   return (
     <View style={styles.topBar}>

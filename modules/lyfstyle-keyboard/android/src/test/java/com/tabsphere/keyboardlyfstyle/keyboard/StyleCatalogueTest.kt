@@ -27,6 +27,19 @@ class StyleCatalogueTest {
     }
 
     @Test
+    fun plainUndoesEveryKeyboardStyleForTranslation() {
+        val message = "Hello there, see you at 9"
+        // Upside-down turns u into a plain n, and Greek shares Λ with another style's v: not exactly reversible.
+        val ambiguous = setOf("upside-down", "greek")
+        for (style in catalogue.keyboardStyles.filter { it.id !in ambiguous }) {
+            val styled = catalogue.transform(message, style.id)
+            val back = catalogue.plain(styled)
+            // Styles that swap letters for other plain letters can't be undone; everything else must round-trip.
+            if (styled.any { it.code > 127 }) assertEquals(style.id, message.lowercase(), back.lowercase())
+        }
+    }
+
+    @Test
     fun unknownStyleFallsBackToNormal() {
         assertEquals("normal", catalogue.style("unknown").id)
         assertEquals("A 👨‍👩‍👧‍👦", catalogue.transform("A 👨‍👩‍👧‍👦", "unknown"))

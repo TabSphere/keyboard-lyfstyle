@@ -68,6 +68,37 @@ class LyfstyleKeyboardModule : Module() {
       }
     }
 
+    // Voice typing in the keyboard needs the microphone permission, which only the app can ask for.
+    AsyncFunction("hasMicrophone") {
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      context.checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    }
+
+    AsyncFunction("requestMicrophone") {
+      val activity = appContext.currentActivity ?: throw IllegalStateException("No activity")
+      activity.requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), 4711)
+    }
+
+    // Colours mixed on the colour wheel: JSON with background, key, text, accent, keyAlpha.
+    AsyncFunction("setCustomTheme") { json: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      org.json.JSONObject(json) // reject malformed input before saving it
+      context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
+        .edit()
+        .putString("customTheme", json)
+        .putString("theme", "custom-colors")
+        .apply()
+    }
+
+    // How much to darken the person's photo behind the keys (0 = not at all, 0.8 = very dark).
+    AsyncFunction("setPhotoDim") { value: Double ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
+        .edit()
+        .putFloat("photoDim", value.toFloat().coerceIn(0f, 0.8f))
+        .apply()
+    }
+
     AsyncFunction("setKeyboardTheme") { themeId: String ->
       val context = appContext.reactContext ?: throw IllegalStateException("No application context")
       context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)

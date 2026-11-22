@@ -8,6 +8,8 @@ export type Lyfstyle = {
   id: string;
   name: string;
   category: string;
+  /** Section the style is listed under (e.g. "Cursive & cute"). */
+  group: string;
   description: string;
   kind: StyleKind;
   isPro: boolean;
@@ -30,6 +32,8 @@ export type KeyboardTheme = {
   isPro: boolean;
   /** Picture themes: image file in assets/keyboard-themes and key opacity. */
   image?: string;
+  /** Section in the theme pickers ("Colours", "K-pop", "Pride"…). */
+  group: string;
   keyAlpha?: number;
 };
 

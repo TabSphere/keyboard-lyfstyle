@@ -80,9 +80,10 @@ test('style selection never falls back to a Pro style', () => {
   assert.ok(availableStyles(false).every((style) => !style.isPro));
 });
 
-test('32 keyboard themes (8 picture), 3 free', () => {
-  assert.equal(themes.length, 32);
-  assert.equal(themes.filter((item) => item.image).length, 8);
+test('112 keyboard themes (88 picture), 3 free, all grouped', () => {
+  assert.equal(themes.length, 112);
+  assert.equal(themes.filter((item) => item.image).length, 88);
+  assert.ok(themes.every((item) => item.group));
   assert.deepEqual(themes.filter((item) => !item.isPro).map((item) => item.id).sort(), ['blush', 'midnight', 'pop-pink']);
   assert.ok(themes.every((item) => /^#[0-9A-F]{6}$/i.test(item.background) && /^#[0-9A-F]{6}$/i.test(item.accent)));
 });

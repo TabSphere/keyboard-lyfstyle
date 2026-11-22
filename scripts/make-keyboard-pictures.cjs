@@ -130,8 +130,156 @@ const designs = {
     return svg(`<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38B6FF"/><stop offset="0.55" stop-color="#1D4ED8"/><stop offset="1" stop-color="#132E8A"/></linearGradient>`,
       `<rect width="${W}" height="${H}" fill="url(#g)"/>${waves}${sparkle(1020, 170, 26, '#FFD84D', 0.9)}${sparkle(160, 720, 18, '#FFFFFF', 0.7)}`);
   },
+  // ---- Textures (v1.2) ----------------------------------------------------
+  leaves: () => {
+    const r = rng(23);
+    let leaves = '';
+    const greens = ['#2E8B57', '#3CB371', '#1F6F43', '#56C27A', '#7BD389'];
+    for (let i = 0; i < 46; i += 1) {
+      const x = r() * W;
+      const y = r() * H;
+      const s = 0.8 + r() * 1.4;
+      const a = r() * 360;
+      const g = greens[i % greens.length];
+      leaves += `<g transform="translate(${x} ${y}) rotate(${a}) scale(${s})"><path d="M0 0 C 40 -62 128 -62 170 0 C 128 62 40 62 0 0Z" fill="${g}"/><path d="M6 0 L 160 0" stroke="#0E3B24" stroke-opacity="0.35" stroke-width="3"/>${[40, 80, 120].map((v) => `<path d="M${v} 0 L ${v + 22} -24 M${v} 0 L ${v + 22} 24" stroke="#0E3B24" stroke-opacity="0.25" stroke-width="2"/>`).join('')}</g>`;
+    }
+    return svg(`<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#174D31"/><stop offset="1" stop-color="#0B2E1C"/></linearGradient>`,
+      `<rect width="${W}" height="${H}" fill="url(#g)"/>${leaves}`);
+  },
+  marble: () => {
+    const r = rng(3);
+    let veins = '';
+    for (let i = 0; i < 7; i += 1) {
+      // Long, gently drifting diagonal veins.
+      let y = r() * H;
+      let d = `M-50 ${y}`;
+      for (let x = 350; x <= W + 400; x += 400) {
+        const next = y + 60 + (r() - 0.3) * 160;
+        d += ` C ${x - 260} ${y + (r() - 0.5) * 90} ${x - 140} ${next + (r() - 0.5) * 90} ${x} ${next}`;
+        y = next;
+      }
+      veins += `<path d="${d}" fill="none" stroke="${i < 2 ? '#D9B45A' : '#9C97A6'}" stroke-width="${i < 2 ? 3 : 1.5 + r() * 2.5}" stroke-opacity="${i < 2 ? 0.8 : 0.35}"/>`;
+    }
+    return svg(
+      `<filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.004 0.012" numOctaves="4" seed="8"/><feColorMatrix values="0 0 0 0 0.55  0 0 0 0 0.53  0 0 0 0 0.6  0 0 0 -1.6 1.1"/></filter>`,
+      `<rect width="${W}" height="${H}" fill="#F8F5F1"/><rect width="${W}" height="${H}" filter="url(#n)" opacity="0.55"/>${veins}`,
+    );
+  },
+  'pink-glitter': () => {
+    const r = rng(99);
+    let dots = '';
+    for (let i = 0; i < 1400; i += 1) {
+      const c = r();
+      dots += `<circle cx="${r() * W}" cy="${r() * H}" r="${0.8 + r() * 2.6}" fill="${c < 0.5 ? '#FFFFFF' : c < 0.8 ? '#FFC2DA' : '#FFD84D'}" opacity="${0.25 + r() * 0.75}"/>`;
+    }
+    for (let i = 0; i < 26; i += 1) dots += sparkle(r() * W, r() * H, 8 + r() * 16, '#FFFFFF', 0.9);
+    return svg(`<radialGradient id="g" cx="0.4" cy="0.3" r="1"><stop offset="0" stop-color="#FF8CC0"/><stop offset="1" stop-color="#E81E74"/></radialGradient>`,
+      `<rect width="${W}" height="${H}" fill="url(#g)"/>${dots}`);
+  },
+  clouds: () => {
+    const cloud = (x, y, s, o) => `<g transform="translate(${x} ${y}) scale(${s})" opacity="${o}" fill="#FFFFFF"><circle cx="0" cy="0" r="60"/><circle cx="70" cy="-30" r="80"/><circle cx="150" cy="0" r="62"/><circle cx="80" cy="30" r="58"/><rect x="0" y="0" width="150" height="62"/></g>`;
+    return svg(
+      `<linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CC8FF"/><stop offset="1" stop-color="#D6F0FF"/></linearGradient><filter id="b"><feGaussianBlur stdDeviation="3"/></filter>`,
+      `<rect width="${W}" height="${H}" fill="url(#g)"/><g filter="url(#b)">${cloud(60, 140, 1.2, 0.95)}${cloud(720, 90, 1, 0.9)}${cloud(380, 430, 1.5, 0.95)}${cloud(900, 520, 1.3, 0.92)}${cloud(-40, 720, 1.4, 0.95)}${cloud(620, 780, 1.1, 0.9)}</g>`,
+    );
+  },
+  'cherry-blossom': () => {
+    const r = rng(17);
+    const blossom = (x, y, s) => {
+      let petals = '';
+      for (let i = 0; i < 5; i += 1) petals += `<ellipse cx="0" cy="-16" rx="11" ry="17" fill="#FFB7CF" transform="rotate(${i * 72})"/>`;
+      return `<g transform="translate(${x} ${y}) scale(${s})">${petals}<circle r="6" fill="#FF6F9F"/></g>`;
+    };
+    let flowers = '';
+    const along = [[120, 240], [260, 200], [380, 270], [520, 210], [640, 300], [760, 260], [880, 330], [1010, 300], [1120, 380], [300, 120], [700, 170]];
+    along.forEach(([x, y]) => { flowers += blossom(x + (r() - 0.5) * 40, y + (r() - 0.5) * 40, 1.2 + r() * 0.8); });
+    for (let i = 0; i < 40; i += 1) flowers += `<ellipse cx="${r() * W}" cy="${380 + r() * 520}" rx="7" ry="11" fill="#FFC9DA" opacity="${0.5 + r() * 0.5}" transform="rotate(${r() * 360} 0 0)"/>`;
+    return svg(`<linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF4F8"/><stop offset="1" stop-color="#FFE0EC"/></linearGradient>`,
+      `<rect width="${W}" height="${H}" fill="url(#g)"/><path d="M-20 260 C 200 190 360 290 560 230 S 900 330 1240 390" stroke="#6B4339" stroke-width="16" fill="none" stroke-linecap="round"/><path d="M300 245 C 330 180 300 140 320 100 M700 260 C 690 210 720 190 700 150" stroke="#6B4339" stroke-width="9" fill="none" stroke-linecap="round"/>${flowers}`);
+  },
+  checkers: () => {
+    const size = 100;
+    return svg(
+      `<pattern id="p" width="${size * 2}" height="${size * 2}" patternUnits="userSpaceOnUse"><rect width="${size * 2}" height="${size * 2}" fill="#FFFFFF"/><rect width="${size}" height="${size}" fill="#C7B3FF"/><rect x="${size}" y="${size}" width="${size}" height="${size}" fill="#C7B3FF"/></pattern>`,
+      `<rect width="${W}" height="${H}" fill="url(#p)"/>${sparkle(160, 160, 30, '#FF3D8B')}${sparkle(1040, 720, 36, '#FF3D8B')}${heart(980, 120, 56, '#FF3D8B', 12)}${heart(120, 700, 50, '#FF3D8B', -10)}`,
+    );
+  },
+  butterflies: () => {
+    const r = rng(31);
+    const butterfly = (x, y, s, a, c1, c2) => `<g transform="translate(${x} ${y}) rotate(${a}) scale(${s})"><ellipse cx="-22" cy="-16" rx="22" ry="28" fill="${c1}" transform="rotate(-25 -22 -16)"/><ellipse cx="22" cy="-16" rx="22" ry="28" fill="${c1}" transform="rotate(25 22 -16)"/><ellipse cx="-16" cy="20" rx="14" ry="18" fill="${c2}" transform="rotate(25 -16 20)"/><ellipse cx="16" cy="20" rx="14" ry="18" fill="${c2}" transform="rotate(-25 16 20)"/><rect x="-3" y="-30" width="6" height="60" rx="3" fill="#3A2A55"/></g>`;
+    const colours = [['#FF8FBF', '#FFD84D'], ['#FFFFFF', '#FFC2DA'], ['#8FD3FF', '#FFFFFF'], ['#FFD84D', '#FF8FBF']];
+    let body = '';
+    for (let i = 0; i < 22; i += 1) {
+      const [c1, c2] = colours[i % colours.length];
+      body += butterfly(r() * W, r() * H, 0.9 + r() * 1.1, (r() - 0.5) * 60, c1, c2);
+    }
+    return svg(`<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D9C8FF"/><stop offset="1" stop-color="#B79CF5"/></linearGradient>`,
+      `<rect width="${W}" height="${H}" fill="url(#g)"/>${body}`);
+  },
+  leopard: () => {
+    const r = rng(77);
+    let spots = '';
+    for (let i = 0; i < 70; i += 1) {
+      const x = r() * W;
+      const y = r() * H;
+      const s = 18 + r() * 22;
+      spots += `<g transform="translate(${x} ${y}) rotate(${r() * 360})"><ellipse rx="${s * 0.8}" ry="${s * 0.62}" fill="#B9773A"/><path d="M${-s} 0 A ${s} ${s * 0.8} 0 0 1 ${s * 0.3} ${-s * 0.8}" stroke="#3B2314" stroke-width="${s * 0.32}" fill="none" stroke-linecap="round"/><path d="M${s} ${s * 0.1} A ${s} ${s * 0.8} 0 0 1 ${-s * 0.2} ${s * 0.82}" stroke="#3B2314" stroke-width="${s * 0.3}" fill="none" stroke-linecap="round"/></g>`;
+    }
+    return svg('', `<rect width="${W}" height="${H}" fill="#E6C08A"/>${spots}`);
+  },
+  lemons: () => {
+    const r = rng(52);
+    const slice = (x, y, s, a) => {
+      let segments = '';
+      for (let i = 0; i < 8; i += 1) segments += `<path d="M0 0 L ${50 * Math.cos((i * Math.PI) / 4)} ${50 * Math.sin((i * Math.PI) / 4)}" stroke="#FFFFFF" stroke-width="5"/>`;
+      return `<g transform="translate(${x} ${y}) rotate(${a}) scale(${s})"><circle r="64" fill="#FFE34D"/><circle r="56" fill="#FFF7C2"/><circle r="50" fill="#FFE34D"/>${segments}<circle r="6" fill="#FFFFFF"/></g>`;
+    };
+    let body = '';
+    for (let i = 0; i < 18; i += 1) body += slice(r() * W, r() * H, 0.7 + r() * 0.8, r() * 90);
+    return svg(`<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4FC3D9"/><stop offset="1" stop-color="#2E8FB8"/></linearGradient>`,
+      `<rect width="${W}" height="${H}" fill="url(#g)"/>${body}`);
+  },
+  holo: () => svg(
+    `<filter id="b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="80"/></filter>`,
+    `<rect width="${W}" height="${H}" fill="#F3ECFF"/>
+     <g filter="url(#b)">
+       <ellipse cx="200" cy="180" rx="320" ry="200" fill="#A8E8CF"/>
+       <ellipse cx="900" cy="220" rx="340" ry="220" fill="#C7B3FF"/>
+       <ellipse cx="520" cy="560" rx="380" ry="220" fill="#FFC2DA"/>
+       <ellipse cx="1100" cy="760" rx="260" ry="200" fill="#8FD3FF"/>
+       <ellipse cx="120" cy="800" rx="260" ry="180" fill="#FFE68A"/>
+     </g>${sparkle(980, 140, 22, '#FFFFFF', 0.9)}${sparkle(260, 640, 16, '#FFFFFF', 0.8)}`,
+  ),
+  snowfall: () => {
+    const r = rng(25);
+    let snow = '';
+    for (let i = 0; i < 160; i += 1) snow += `<circle cx="${r() * W}" cy="${r() * H}" r="${1.2 + r() * 3.2}" fill="#FFFFFF" opacity="${0.4 + r() * 0.6}"/>`;
+    for (let i = 0; i < 14; i += 1) {
+      const x = r() * W;
+      const y = r() * H;
+      const s = 14 + r() * 20;
+      let arms = '';
+      for (let k = 0; k < 6; k += 1) arms += `<path d="M0 0 L0 ${-s} M0 ${-s * 0.6} L${s * 0.25} ${-s * 0.85} M0 ${-s * 0.6} L${-s * 0.25} ${-s * 0.85}" transform="rotate(${k * 60})"/>`;
+      snow += `<g transform="translate(${x} ${y})" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.85">${arms}</g>`;
+    }
+    return svg(`<linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B2545"/><stop offset="1" stop-color="#1B4F72"/></linearGradient>`,
+      `<rect width="${W}" height="${H}" fill="url(#g)"/>${snow}<path d="M0 800 C 300 760 600 820 900 780 S 1200 790 1200 790 L1200 900 L0 900Z" fill="#FFFFFF" opacity="0.9"/>`);
+  },
+  strawberries: () => {
+    const r = rng(64);
+    const berry = (x, y, s, a) => {
+      let seeds = '';
+      for (let i = 0; i < 9; i += 1) seeds += `<ellipse cx="${-18 + (i % 3) * 18}" cy="${-4 + Math.floor(i / 3) * 16}" rx="2.5" ry="4" fill="#FFE48A"/>`;
+      return `<g transform="translate(${x} ${y}) rotate(${a}) scale(${s})"><path d="M-36 -18 C -36 -40 36 -40 36 -18 C 36 10 10 40 0 46 C -10 40 -36 10 -36 -18Z" fill="#F0384F"/>${seeds}<path d="M-26 -30 L -10 -40 L 0 -30 L 10 -40 L 26 -30 L 10 -24 L 0 -28 L -10 -24Z" fill="#3CB371"/></g>`;
+    };
+    let body = '';
+    for (let i = 0; i < 26; i += 1) body += berry(r() * W, r() * H, 0.8 + r() * 0.9, (r() - 0.5) * 60);
+    return svg(`<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE3EA"/><stop offset="1" stop-color="#FFC9D6"/></linearGradient>`,
+      `<rect width="${W}" height="${H}" fill="url(#g)"/>${body}`);
+  },
 };
 
-Promise.all(Object.entries(designs).map(([id, draw]) =>
+const only = process.argv.slice(2);
+Promise.all(Object.entries(designs).filter(([id]) => !only.length || only.includes(id)).map(([id, draw]) =>
   sharp(Buffer.from(draw())).jpeg({ quality: 84, mozjpeg: true }).toFile(path.join(out, `${id}.jpg`)).then((info) => `${id}: ${Math.round(info.size / 1024)} KB`),
 )).then((lines) => console.log(lines.join('\n')));

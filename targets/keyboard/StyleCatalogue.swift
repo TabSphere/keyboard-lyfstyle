@@ -79,6 +79,38 @@ final class StyleCatalogue {
         data.styles.filter { $0.id != "normal" && $0.worksInKeyboard }
     }
 
+    /// Styled character → plain letter, across every keyboard style (skips plain ASCII outputs).
+    private lazy var reverse: [String: String] = {
+        var map: [String: String] = [:]
+        for style in data.styles where style.worksInKeyboard && style.kind != "normal" {
+            for (plain, styled) in style.mapping where styled != plain && styled.unicodeScalars.contains(where: { $0.value > 127 }) {
+                if map[styled] == nil { map[styled] = plain }
+            }
+        }
+        return map
+    }()
+
+    /// Turns fancy text back into plain letters (used before translating).
+    func plain(_ input: String) -> String {
+        // Styled letters may be one or two Characters (e.g. letter + combining mark), so try pairs first.
+        let characters = Array(input)
+        var output = ""
+        var index = 0
+        while index < characters.count {
+            if index + 1 < characters.count, let hit = reverse[String(characters[index...index + 1])] {
+                output += hit
+                index += 2
+            } else if let hit = reverse[String(characters[index])] {
+                output += hit
+                index += 1
+            } else {
+                output.append(characters[index])
+                index += 1
+            }
+        }
+        return output
+    }
+
     func transform(_ input: String, styleId: String) -> String {
         let selected = style(id: styleId)
         guard selected.kind != "normal" else { return input }

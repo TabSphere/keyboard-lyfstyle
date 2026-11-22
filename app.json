@@ -69,7 +69,7 @@
         {
           "photosPermission": "Lyfstyle uses a photo you choose as your keyboard background. It stays on your device.",
           "cameraPermission": false,
-          "microphonePermission": false
+          "microphonePermission": "Lyfstyle uses the microphone only while you tap the mic on the Lyfstyle keyboard to speak instead of type."
         }
       ]
     ],
