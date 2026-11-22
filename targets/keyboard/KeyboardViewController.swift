@@ -38,12 +38,12 @@ final class KeyboardViewController: UIInputViewController {
     ]
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        palette = StyleCatalogue.shared.theme(id: UserDefaults.standard.string(forKey: "theme") ?? "violet")
+        palette = StyleCatalogue.shared.theme(id: UserDefaults.standard.string(forKey: "theme") ?? "pop-pink")
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 
     required init?(coder: NSCoder) {
-        palette = StyleCatalogue.shared.theme(id: UserDefaults.standard.string(forKey: "theme") ?? "violet")
+        palette = StyleCatalogue.shared.theme(id: UserDefaults.standard.string(forKey: "theme") ?? "pop-pink")
         super.init(coder: coder)
     }
 
@@ -121,7 +121,7 @@ final class KeyboardViewController: UIInputViewController {
             defaults.set(selectedStyle, forKey: "style")
         }
         if !unlocked && palette.requiresPro {
-            palette = catalogue.theme(id: "violet")
+            palette = catalogue.theme(id: "pop-pink")
             defaults.set(palette.id, forKey: "theme")
         }
         defaults.set(direct ? "storekit" : shared ? "app-group" : "none", forKey: "entitlementLastSource")

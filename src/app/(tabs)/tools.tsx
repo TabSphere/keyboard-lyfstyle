@@ -8,7 +8,7 @@ import { PageTitle, ProLabel, Screen, TopBar, type } from '../../components/ui';
 const TOOLS: { href: Href; emoji: string; title: string; copy: string; tint: string; pro?: boolean }[] = [
   { href: '/tool/card', emoji: '🖼️', title: 'Story card maker', copy: 'Put your styled text on a colourful card and share it as an image.', tint: colors.sun },
   { href: '/tool/emoji-art', emoji: '💖', title: 'Emoji letters', copy: 'Draw a word in giant letters made of any emoji.', tint: colors.pinkSoft },
-  { href: '/tool/usernames', emoji: '@', title: 'Username ideas', copy: 'Handles you can actually use, plus a styled display name.', tint: colors.violetSoft },
+  { href: '/tool/usernames', emoji: '@', title: 'Username ideas', copy: 'Handles you can actually use, plus a styled display name.', tint: colors.peachSoft },
   { href: '/tool/repeater', emoji: '🔁', title: 'Text repeater', copy: 'Repeat a word or message up to 500 times.', tint: colors.mintSoft },
   { href: '/tool/symbols', emoji: '(◕‿◕)', title: 'Symbols & kaomoji', copy: 'Hearts, stars, arrows, dividers and cute faces to copy.', tint: colors.sunSoft },
 ];

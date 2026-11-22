@@ -33,7 +33,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
     private val rows = LinearLayout(service).apply { orientation = VERTICAL }
     private var selectedStyle = preferences.getString("style", "script") ?: "script"
     private var normalMode = preferences.getBoolean("normalMode", false)
-    private var theme = catalogue.theme(preferences.getString("theme", "violet") ?: "violet")
+    private var theme = catalogue.theme(preferences.getString("theme", "pop-pink") ?: "pop-pink")
     private var panel = Panel.NONE
     private var shifted = true
     private var capsLock = false
@@ -93,7 +93,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         }
         normalMode = preferences.getBoolean("normalMode", normalMode)
         theme = catalogue.theme(preferences.getString("theme", theme.id) ?: theme.id)
-        if (theme.isPro && !isPro()) theme = catalogue.theme("violet")
+        if (theme.isPro && !isPro()) theme = catalogue.theme("pop-pink")
         panel = Panel.NONE
         rebuild()
     }

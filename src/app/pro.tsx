@@ -16,7 +16,7 @@ export default function ProScreen() {
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
 
   const footer = pro.isPro ? (
-    <ActionButton onPress={close} variant="primary" icon={<Check size={17} color={colors.white} />}>Back to styling</ActionButton>
+    <ActionButton onPress={close} variant="primary" icon={<Check size={17} color={colors.onBrand} />}>Back to styling</ActionButton>
   ) : (
     <View style={styles.footerRow}>
       <View style={styles.priceBlock}>
@@ -47,7 +47,7 @@ export default function ProScreen() {
       </View>
 
       <View style={styles.list}>
-        <Benefit tint={colors.violetSoft} big={`${proStyles}`} text="more text styles: wings, ribbons, runes, brush and every emoji frame" />
+        <Benefit tint={colors.peachSoft} big={`${proStyles}`} text="more text styles: wings, ribbons, runes, brush and every emoji frame" />
         <Benefit tint={colors.pinkSoft} big={`${proThemes}`} text="extra keyboard themes, from Cherry to Neon Night" />
         <Benefit tint={colors.mintSoft} big={`${proPacks}`} text={`preset packs (Savage, Gym, Travel, Gaming). ${presetCount} bios in total`} />
         <Benefit tint={colors.sunSoft} big="6" text="extra story-card backgrounds" />
@@ -86,12 +86,12 @@ function Benefit({ big, text, tint }: { big: string; text: string; tint: string 
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, minHeight: 52 },
   close: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
-  hero: { backgroundColor: colors.violet, borderRadius: radii.large, padding: 22, marginTop: 8 },
-  heroEyebrow: { fontFamily: type.black, fontSize: 11, letterSpacing: 1.4, color: colors.sun },
-  heroTitle: { fontFamily: type.display, fontSize: 40, lineHeight: 48, letterSpacing: -1.2, color: colors.white, marginTop: 8 },
+  hero: { backgroundColor: colors.brand, borderRadius: radii.large, padding: 22, marginTop: 8 },
+  heroEyebrow: { fontFamily: type.black, fontSize: 11, letterSpacing: 1.4, color: colors.white },
+  heroTitle: { fontFamily: type.display, fontSize: 40, lineHeight: 48, letterSpacing: -1.2, color: colors.ink, marginTop: 8 },
   heroMark: { backgroundColor: colors.sun, color: colors.ink },
-  specimens: { marginTop: 18, gap: 6, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.25)', paddingTop: 14 },
-  specimen: { color: colors.white, fontSize: 18, lineHeight: 26 },
+  specimens: { marginTop: 18, gap: 6, borderTopWidth: 1, borderTopColor: 'rgba(34,23,47,0.2)', paddingTop: 14 },
+  specimen: { color: colors.ink, fontSize: 18, lineHeight: 26 },
   list: { gap: 8, marginTop: 14 },
   benefit: { flexDirection: 'row', alignItems: 'center', gap: 14, borderRadius: radii.medium, padding: 14 },
   benefitBig: { fontFamily: type.display, fontSize: 30, color: colors.ink, minWidth: 48, textAlign: 'center' },
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   promiseRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   promiseText: { fontFamily: type.bold, fontSize: 14, color: colors.ink },
   status: { fontFamily: type.sans, color: colors.muted, fontSize: 12, marginTop: 12 },
-  message: { fontFamily: type.semibold, color: colors.violetDeep, fontSize: 13, lineHeight: 19, marginTop: 12 },
+  message: { fontFamily: type.semibold, color: colors.brandDeep, fontSize: 13, lineHeight: 19, marginTop: 12 },
   restore: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, marginTop: 10 },
   restoreText: { fontFamily: type.bold, color: colors.ink, fontSize: 14 },
   legal: { fontFamily: type.sans, color: colors.muted, fontSize: 11, lineHeight: 17, textAlign: 'center' },

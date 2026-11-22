@@ -135,13 +135,13 @@ export default function KeyboardScreen() {
 
       <View style={styles.privacy}>
         <View style={styles.privacyHead}>
-          <ShieldCheck size={22} color={colors.violet} strokeWidth={2} />
+          <ShieldCheck size={22} color={colors.brand} strokeWidth={2} />
           <Text style={styles.privacyTitle}>Your typing stays yours.</Text>
         </View>
         <Text style={styles.privacyCopy}>No account, ads, analytics or keystroke uploads. Password, email, web address, phone, number and one-time-code fields always type normal text.</Text>
         <Pressable accessibilityRole="button" onPress={() => router.push('/privacy')} style={styles.privacyLink}>
           <Text style={styles.privacyLinkText}>Read the privacy note</Text>
-          <ChevronRight size={16} color={colors.violet} />
+          <ChevronRight size={16} color={colors.brand} />
         </Pressable>
       </View>
 
@@ -251,12 +251,12 @@ const styles = StyleSheet.create({
   stepNumber: { width: 26, height: 26, borderRadius: 13, backgroundColor: colors.sun, textAlign: 'center', lineHeight: 26, fontFamily: type.black, fontSize: 13, color: colors.ink, overflow: 'hidden' },
   stepTitle: { fontFamily: type.displayBold, fontSize: 19, color: colors.ink },
   stepCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 20, color: colors.muted, marginBottom: 6 },
-  privacy: { backgroundColor: colors.violetSoft, borderRadius: radii.large, padding: 16, marginTop: 20 },
+  privacy: { backgroundColor: colors.peachSoft, borderRadius: radii.large, padding: 16, marginTop: 20 },
   privacyHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   privacyTitle: { fontFamily: type.displayBold, fontSize: 19, color: colors.ink },
   privacyCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 20, color: colors.muted, marginTop: 6 },
   privacyLink: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8, minHeight: 36 },
-  privacyLinkText: { fontFamily: type.black, fontSize: 13, color: colors.violet },
+  privacyLinkText: { fontFamily: type.black, fontSize: 13, color: colors.brand },
   faq: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 56, marginTop: 10 },
   faqTitle: { fontFamily: type.bold, fontSize: 14, color: colors.ink, flex: 1 },
   faqCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 20, color: colors.muted },

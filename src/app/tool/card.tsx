@@ -11,14 +11,14 @@ import { ActionButton, BackBar, Chip, ChipRow, Eyebrow, PageTitle, Screen, type 
 type Background = { id: string; name: string; fill: string; text: string; accent: string; isPro: boolean };
 
 const BACKGROUNDS: Background[] = [
-  { id: 'violet', name: 'Violet', fill: colors.violet, text: colors.white, accent: colors.sun, isPro: false },
-  { id: 'sun', name: 'Sun', fill: colors.sun, text: colors.ink, accent: colors.violet, isPro: false },
+  { id: 'pop-pink', name: 'Hot pink', fill: colors.brand, text: colors.ink, accent: colors.sun, isPro: false },
+  { id: 'sun', name: 'Sun', fill: colors.sun, text: colors.ink, accent: colors.brand, isPro: false },
   { id: 'blush', name: 'Blush', fill: colors.pinkSoft, text: colors.ink, accent: colors.pink, isPro: false },
-  { id: 'mint', name: 'Mint', fill: colors.mint, text: colors.ink, accent: colors.violet, isPro: false },
+  { id: 'mint', name: 'Mint', fill: colors.mint, text: colors.ink, accent: colors.brand, isPro: false },
   { id: 'plum', name: 'Plum', fill: colors.ink, text: colors.white, accent: colors.pink, isPro: false },
-  { id: 'paper', name: 'Paper', fill: colors.white, text: colors.ink, accent: colors.violet, isPro: false },
-  { id: 'bubblegum', name: 'Bubblegum', fill: colors.pink, text: colors.white, accent: colors.sun, isPro: true },
-  { id: 'lilac', name: 'Lilac', fill: colors.lilac, text: colors.ink, accent: colors.white, isPro: true },
+  { id: 'paper', name: 'Paper', fill: colors.white, text: colors.ink, accent: colors.brand, isPro: false },
+  { id: 'emerald', name: 'Emerald', fill: '#12B886', text: colors.white, accent: colors.sun, isPro: true },
+  { id: 'candy', name: 'Candy', fill: colors.lilac, text: colors.ink, accent: colors.white, isPro: true },
   { id: 'ocean', name: 'Ocean', fill: '#2563EB', text: colors.white, accent: colors.mint, isPro: true },
   { id: 'cherry', name: 'Cherry', fill: '#E8304A', text: colors.white, accent: colors.sun, isPro: true },
   { id: 'neon', name: 'Neon Night', fill: '#0F0F1A', text: '#E8FFF9', accent: '#38F2C0', isPro: true },
@@ -92,7 +92,7 @@ export default function CardMakerScreen() {
       <Eyebrow>CAPTION</Eyebrow>
       <TextInput accessibilityLabel="Card caption" value={caption} onChangeText={setCaption} maxLength={40} style={styles.input} placeholder="@yourname" placeholderTextColor={colors.tertiary} />
 
-      <ActionButton onPress={share} busy={busy} variant={locked ? 'sun' : 'primary'} icon={<Share2 size={17} color={locked ? colors.ink : colors.white} />} style={styles.share}>
+      <ActionButton onPress={share} busy={busy} variant={locked ? 'sun' : 'primary'} icon={<Share2 size={17} color={colors.ink} />} style={styles.share}>
         {locked ? 'Unlock with Pro' : 'Share as image'}
       </ActionButton>
       {message ? <Text accessibilityLiveRegion="polite" style={styles.message}>{message}</Text> : null}

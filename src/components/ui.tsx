@@ -59,11 +59,11 @@ export function Screen({ children, scroll = true, contentStyle, footer }: PropsW
   );
 }
 
-/** "lyf" in violet + "style" in plum ink, set in Bricolage Grotesque. */
+/** "lyf" in hot pink + "style" in plum ink, set in Bricolage Grotesque. */
 export function Wordmark({ size = 24, light = false }: { size?: number; light?: boolean }) {
   return (
     <Text accessibilityRole="header" accessibilityLabel="Lyfstyle" style={[styles.wordmark, { fontSize: size, lineHeight: size * 1.15 }]}>
-      <Text style={{ color: light ? colors.sun : colors.violet }}>lyf</Text>
+      <Text style={{ color: light ? colors.sun : colors.brand }}>lyf</Text>
       <Text style={{ color: light ? colors.white : colors.ink }}>style</Text>
     </Text>
   );
@@ -175,10 +175,10 @@ export function ActionButton({
 }
 
 const buttonFill: Record<ButtonVariant, string> = {
-  primary: colors.violet, sun: colors.sun, pink: colors.pink, dark: colors.ink, outline: colors.surface, soft: colors.violetSoft,
+  primary: colors.brand, sun: colors.sun, pink: colors.pink, dark: colors.ink, outline: colors.surface, soft: colors.peachSoft,
 };
 const buttonText: Record<ButtonVariant, string> = {
-  primary: colors.white, sun: colors.ink, pink: colors.white, dark: colors.white, outline: colors.ink, soft: colors.violetDeep,
+  primary: colors.onBrand, sun: colors.ink, pink: colors.white, dark: colors.white, outline: colors.ink, soft: colors.brandDeep,
 };
 
 /** Rounded filter chip. */

@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   rowSubtitle: { fontFamily: type.sans, fontSize: 12, color: colors.muted, marginTop: 2 },
   section: { marginTop: 24, alignItems: 'stretch' },
   copy: { fontFamily: type.sans, fontSize: 13, lineHeight: 20, color: colors.muted, marginTop: 6, marginBottom: 12 },
-  message: { fontFamily: type.semibold, color: colors.violetDeep, fontSize: 13, marginTop: 10 },
+  message: { fontFamily: type.semibold, color: colors.brandDeep, fontSize: 13, marginTop: 10 },
   reset: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 6 },
   resetText: { fontFamily: type.black, fontSize: 14, color: colors.ink, textDecorationLine: 'underline' },
   footer: { fontFamily: type.semibold, fontSize: 12, color: colors.tertiary, textAlign: 'center', marginTop: 32 },

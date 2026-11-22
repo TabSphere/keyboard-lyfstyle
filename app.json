@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#6A3DF5"
+      "backgroundColor": "#FF3D8B"
     },
     "ios": {
       "appleTeamId": "GZRWULYGLN",
@@ -32,7 +32,7 @@
       "versionCode": 1,
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
-        "backgroundColor": "#6A3DF5",
+        "backgroundColor": "#FF3D8B",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"

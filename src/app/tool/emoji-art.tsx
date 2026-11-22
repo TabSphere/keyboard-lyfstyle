@@ -51,7 +51,7 @@ export default function EmojiArtScreen() {
       <ActionButton
         onPress={() => copy('art', art)}
         disabled={!art}
-        icon={<Copy size={16} color={colors.white} />}
+        icon={<Copy size={16} color={colors.onBrand} />}
       >
         {copiedKey === 'art' ? 'Copied!' : 'Copy emoji letters'}
       </ActionButton>

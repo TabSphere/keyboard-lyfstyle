@@ -71,12 +71,12 @@ export default function WriteScreen() {
             maxLength={MAX_LENGTH}
             multiline
             placeholder="Type your bio, caption or name…"
-            placeholderTextColor="#C9B8FF"
+            placeholderTextColor="rgba(255,255,255,0.75)"
             style={styles.input}
           />
           {composer.text ? (
             <Pressable accessibilityRole="button" accessibilityLabel="Clear text" onPress={() => composer.setText('')} hitSlop={10} style={styles.clear}>
-              <X size={16} color={colors.violet} strokeWidth={3} />
+              <X size={16} color={colors.brand} strokeWidth={3} />
             </Pressable>
           ) : null}
         </View>
@@ -110,7 +110,7 @@ export default function WriteScreen() {
       <ChipRow>
         <Chip label={`All ${allStyles.length - 1}`} active={filter === 'all'} onPress={() => setFilter('all')} />
         <Chip label="♡ Saved" active={filter === 'saved'} onPress={() => setFilter('saved')} tint={colors.pinkSoft} />
-        <Chip label="Recent" active={filter === 'recent'} onPress={() => setFilter('recent')} tint={colors.violetSoft} />
+        <Chip label="Recent" active={filter === 'recent'} onPress={() => setFilter('recent')} tint={colors.peachSoft} />
         {categories.map((category, index) => (
           <Chip
             key={category}
@@ -182,16 +182,16 @@ export default function WriteScreen() {
 }
 
 const styles = StyleSheet.create({
-  hero: { backgroundColor: colors.violet, borderRadius: radii.large, padding: 16, marginTop: 6, marginBottom: 16 },
+  hero: { backgroundColor: colors.brand, borderRadius: radii.large, padding: 16, marginTop: 6, marginBottom: 16 },
   heroTop: { flexDirection: 'row', justifyContent: 'space-between' },
-  heroLabel: { fontFamily: type.black, fontSize: 11, letterSpacing: 1.2, color: '#D9CCFF' },
-  counter: { fontFamily: type.semibold, fontSize: 11, color: '#D9CCFF' },
+  heroLabel: { fontFamily: type.black, fontSize: 11, letterSpacing: 1.2, color: colors.ink },
+  counter: { fontFamily: type.semibold, fontSize: 11, color: colors.ink },
   inputRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   input: { flex: 1, fontFamily: type.bold, fontSize: 20, lineHeight: 27, color: colors.white, minHeight: 56, paddingVertical: 8, textAlignVertical: 'top' },
   clear: { marginTop: 10, width: 26, height: 26, borderRadius: 13, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
   previewBox: { backgroundColor: colors.white, borderRadius: radii.medium, padding: 14, marginTop: 8 },
   previewHead: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  previewName: { fontFamily: type.black, fontSize: 11, letterSpacing: 1, color: colors.violet, textTransform: 'uppercase' },
+  previewName: { fontFamily: type.black, fontSize: 11, letterSpacing: 1, color: colors.brand, textTransform: 'uppercase' },
   previewText: { fontSize: 24, lineHeight: 34, color: colors.ink, marginTop: 6, minHeight: 34 },
   heroActions: { flexDirection: 'row', gap: 8, marginTop: 12 },
   heroCopy: { flex: 1, height: 48, borderRadius: radii.pill, backgroundColor: colors.sun, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7 },
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   feed: { marginTop: 14, gap: 9 },
   empty: { fontFamily: type.sans, fontSize: 14, color: colors.muted, textAlign: 'center', paddingVertical: 28 },
   card: { borderRadius: radii.medium, paddingVertical: 12, paddingLeft: 14, paddingRight: 10, flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 2, borderColor: 'transparent' },
-  cardActive: { borderColor: colors.violet },
+  cardActive: { borderColor: colors.brand },
   cardBody: { flex: 1 },
   cardText: { fontSize: 17, lineHeight: 24, color: colors.ink },
   cardMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 3 },

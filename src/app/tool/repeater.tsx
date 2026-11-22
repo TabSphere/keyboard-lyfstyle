@@ -49,7 +49,7 @@ export default function RepeaterScreen() {
 
       <View style={styles.preview}><Text selectable style={styles.previewText} numberOfLines={12}>{preview || 'Type something above.'}</Text></View>
 
-      <ActionButton onPress={() => copy('rep', output)} disabled={!output} icon={<Copy size={16} color={colors.white} />}>
+      <ActionButton onPress={() => copy('rep', output)} disabled={!output} icon={<Copy size={16} color={colors.onBrand} />}>
         {copiedKey === 'rep' ? 'Copied!' : `Copy ${count}×`}
       </ActionButton>
     </Screen>

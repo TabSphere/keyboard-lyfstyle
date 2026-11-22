@@ -64,7 +64,7 @@ export default function PresetsScreen() {
                 {locked ? <ProLabel /> : <Text style={styles.hint}>{copiedKey === key ? 'Copied ✓' : 'Tap to copy'}</Text>}
                 {!locked ? (
                   <Pressable accessibilityRole="button" accessibilityLabel="Edit this preset in Write" onPress={() => edit(item)} hitSlop={8} style={styles.edit}>
-                    <PenLine size={14} color={colors.violet} strokeWidth={2.4} />
+                    <PenLine size={14} color={colors.brand} strokeWidth={2.4} />
                     <Text style={styles.editText}>Edit</Text>
                   </Pressable>
                 ) : null}
@@ -87,6 +87,6 @@ const styles = StyleSheet.create({
   cardFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 },
   hint: { fontFamily: type.black, fontSize: 10, letterSpacing: 0.8, color: colors.muted, textTransform: 'uppercase' },
   edit: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.white, borderRadius: radii.pill, paddingHorizontal: 10, height: 28 },
-  editText: { fontFamily: type.black, fontSize: 12, color: colors.violet },
+  editText: { fontFamily: type.black, fontSize: 12, color: colors.brand },
   pressed: { opacity: 0.75 },
 });
