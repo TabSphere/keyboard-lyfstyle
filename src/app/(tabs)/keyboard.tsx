@@ -170,6 +170,17 @@ export default function KeyboardScreen() {
                 <Chip key={item.label} label={item.label} active={Math.abs(photoDim - item.value) < 0.01} onPress={() => void changeDarkness(item.value)} />
               ))}
             </ChipRow>
+            {Platform.OS === 'ios' ? (
+              <View style={styles.fullAccess}>
+                <Text style={styles.fullAccessTitle}>One more step on iPhone</Text>
+                <Text style={styles.fullAccessCopy}>
+                  iPhone only lets the keyboard see your photo when Full Access is on. Open Settings → Keyboards → Lyfstyle → turn on Allow Full Access. Then pick “Your photo” from the 🎨 button on the keyboard.
+                </Text>
+                <ActionButton variant="dark" onPress={() => run(NativeKeyboard.openKeyboardSettings)} icon={<ExternalLink size={16} color={colors.white} />}>
+                  Open Settings
+                </ActionButton>
+              </View>
+            ) : null}
           </>
         ) : null}
       </View>
@@ -391,6 +402,9 @@ const styles = StyleSheet.create({
   mixCard: { backgroundColor: colors.mintSoft },
   mixCopy: { marginBottom: 0 },
   extraCard: { backgroundColor: colors.sunSoft },
+  fullAccess: { backgroundColor: colors.pinkSoft, borderRadius: radii.medium, padding: 12, marginTop: 14, gap: 6 },
+  fullAccessTitle: { fontFamily: type.black, fontSize: 14, color: colors.ink },
+  fullAccessCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 19, color: colors.ink, marginBottom: 4 },
   more: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 40, borderRadius: radii.pill, borderWidth: 2, borderColor: colors.lineSoft, marginBottom: 8 },
   moreText: { fontFamily: type.black, fontSize: 13, color: colors.ink },
   photoRemove: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.lineSoft, alignItems: 'center', justifyContent: 'center' },

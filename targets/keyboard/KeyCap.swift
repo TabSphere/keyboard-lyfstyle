@@ -23,7 +23,8 @@ final class KeyCap: UIControl {
         super.init(frame: .zero)
         isExclusiveTouch = false
         body.isUserInteractionEnabled = false
-        body.layer.cornerRadius = 8
+        body.layer.cornerRadius = 9
+        body.layer.cornerCurve = .continuous
         body.layer.shadowColor = UIColor.black.cgColor
         body.layer.shadowOffset = CGSize(width: 0, height: 1)
         body.layer.shadowRadius = 0

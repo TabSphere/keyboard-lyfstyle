@@ -113,7 +113,12 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(hex: palette.background)
+        // The keyboard is a rounded panel (like iPhone's own keyboard), not a square box:
+        // the view stays clear and the background view carries the colour or picture.
+        view.backgroundColor = .clear
+        backgroundView.backgroundColor = UIColor(hex: palette.background)
+        backgroundView.layer.cornerRadius = 22
+        backgroundView.layer.cornerCurve = .continuous
         root.axis = .vertical
         root.spacing = 2
         root.translatesAutoresizingMaskIntoConstraints = false
@@ -230,7 +235,7 @@ final class KeyboardViewController: UIInputViewController {
         letterCaps = []
         shiftCap = nil
         root.arrangedSubviews.forEach { root.removeArrangedSubview($0); $0.removeFromSuperview() }
-        view.backgroundColor = UIColor(hex: palette.background)
+        backgroundView.backgroundColor = UIColor(hex: palette.background)
         applyBackground()
         root.addArrangedSubview(styleBar())
         let content = UIStackView()
@@ -442,6 +447,10 @@ final class KeyboardViewController: UIInputViewController {
     private func themesPanel() -> UIView {
         let (scroll, column) = verticalScroll()
         if !isPro { column.addArrangedSubview(sectionLabel("🔒 Unlock every theme with Lifetime Pro in the app")) }
+        if !hasFullAccess {
+            // iPhone only lets a keyboard read the photo and colours saved in the app when Full Access is on.
+            column.addArrangedSubview(notice("Your photo & colours need Full Access: Settings → General → Keyboard → Keyboards → Lyfstyle → Allow Full Access"))
+        }
         let mine = [photoTheme, customTheme].compactMap { $0 }
         var sections: [(String, [KeyboardPalette])] = [("Yours", mine)]
         for group in Self.pictureGroups {
@@ -463,9 +472,6 @@ final class KeyboardViewController: UIInputViewController {
                 column.addArrangedSubview(row)
                 index += 3
             }
-        }
-        if !hasFullAccess {
-            column.addArrangedSubview(sectionLabel("Turn on Full Access to use your own photo and colours"))
         }
         return scroll
     }
@@ -518,6 +524,28 @@ final class KeyboardViewController: UIInputViewController {
             column.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor, constant: -6),
         ])
         return (scroll, column)
+    }
+
+    /// A highlighted, wrapping note at the top of a panel.
+    private func notice(_ text: String) -> UIView {
+        let label = UILabel()
+        label.text = text
+        label.font = .systemFont(ofSize: 12, weight: .semibold)
+        label.textColor = readableColor(on: palette.accent)
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        let box = UIView()
+        box.backgroundColor = UIColor(hex: palette.accent)
+        box.layer.cornerRadius = 10
+        label.translatesAutoresizingMaskIntoConstraints = false
+        box.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: box.leadingAnchor, constant: 10),
+            label.trailingAnchor.constraint(equalTo: box.trailingAnchor, constant: -10),
+            label.topAnchor.constraint(equalTo: box.topAnchor, constant: 7),
+            label.bottomAnchor.constraint(equalTo: box.bottomAnchor, constant: -7),
+        ])
+        return box
     }
 
     private func sectionLabel(_ title: String) -> UILabel {
