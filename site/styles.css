@@ -1,0 +1,25 @@
+:root { --pink: #FF3D8B; --sun: #FFD84D; --ink: #22172F; --muted: #6E6378; --blush: #FFF3F6; --line: #F3DCE5; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--blush); color: var(--ink); font: 17px/1.6 Nunito, system-ui, sans-serif; }
+a { color: var(--pink); font-weight: 800; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+header { padding: 22px 0; }
+header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mark { font: 800 28px/1 'Bricolage Grotesque', sans-serif; letter-spacing: -1px; color: var(--ink); text-decoration: none; }
+.mark span { color: var(--pink); }
+nav { display: flex; gap: 16px; } nav a { text-decoration: none; color: var(--ink); font-size: 15px; }
+h1 { font: 800 clamp(40px, 8vw, 64px)/1.02 'Bricolage Grotesque', sans-serif; letter-spacing: -1.5px; margin: 26px 0 14px; }
+h1 mark { background: var(--sun); color: var(--ink); padding: 0 8px; border-radius: 8px; }
+h2 { font: 800 24px/1.2 'Bricolage Grotesque', sans-serif; margin: 34px 0 8px; }
+p, li { color: #3b3145; } p + p { margin-top: 10px; } ul { padding-left: 20px; } li + li { margin-top: 6px; }
+.lede { font-size: 20px; color: var(--muted); }
+.card { background: #fff; border-radius: 22px; padding: 22px; margin: 18px 0; box-shadow: 0 1px 0 var(--line); }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
+.pill { background: var(--ink); color: #fff; border-radius: 99px; padding: 8px 14px; font-weight: 800; font-size: 14px; }
+.shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 26px 0; }
+.shots img { width: 100%; border-radius: 18px; display: block; }
+.stores { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.store { display: inline-block; background: var(--ink); color: #fff; text-decoration: none; padding: 12px 18px; border-radius: 14px; font-size: 15px; }
+.updated { font-size: 14px; color: var(--muted); }
+footer { padding: 40px 0 50px; color: var(--muted); font-size: 14px; }
+@media (max-width: 560px) { .shots { grid-template-columns: 1fr 1fr; } .shots img:nth-child(3) { display: none; } nav { gap: 12px; } }

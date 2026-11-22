@@ -11,7 +11,9 @@ export function usePro() {
   }, []);
 
   return {
-    isPro: false,
+    // Web has no store. `lyfstyle.demoPro = 1` in localStorage shows the unlocked app
+    // (used to capture store screenshots); it unlocks nothing on phones.
+    isPro: typeof localStorage !== 'undefined' && localStorage.getItem('lyfstyle.demoPro') === '1',
     price: '',
     connected: false,
     busy,
