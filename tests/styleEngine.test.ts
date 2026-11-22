@@ -2,21 +2,30 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import golden from '../shared/golden-tests.json';
 import {
-  applyDecoration,
   availableStyles,
   catalogue,
   compatibilityMessage,
   getStyle,
+  keyboardStyles,
+  themes,
   transformText,
   unsupportedCharacters,
 } from '../src/styleEngine';
 
-test('catalogue has the agreed 12 free and 12 Pro styles', () => {
-  const styled = catalogue.styles.filter((style) => style.id !== 'normal');
-  assert.equal(styled.length, 24);
-  assert.equal(styled.filter((style) => !style.isPro).length, 12);
-  assert.equal(styled.filter((style) => style.isPro).length, 12);
-  assert.equal(new Set(styled.map((style) => style.id)).size, 24);
+const styled = catalogue.styles.filter((style) => style.id !== 'normal');
+
+test('catalogue has 100 styles with a generous free tier', () => {
+  assert.equal(styled.length, 100);
+  assert.equal(new Set(styled.map((style) => style.id)).size, 100);
+  const free = styled.filter((style) => !style.isPro).length;
+  assert.ok(free >= 35 && free <= 45, `free styles: ${free}`);
+});
+
+test('only per-character styles reach the keyboards', () => {
+  const keyboard = keyboardStyles();
+  assert.equal(keyboard.length, 48);
+  assert.ok(keyboard.every((style) => style.kind === 'alphabet' || style.kind === 'overlay'));
+  assert.ok(styled.filter((style) => style.kind === 'composite').every((style) => !style.keyboard));
 });
 
 test('normal mode preserves every input exactly', () => {
@@ -41,28 +50,46 @@ test('capital-only styles preserve lowercase instead of changing case', () => {
 });
 
 test('combining styles remain deterministic', () => {
-  assert.equal(transformText('H̶', 'normal'), 'H̶');
   assert.equal(transformText('H', 'strike'), 'H̶');
   assert.equal(transformText('H', 'underline'), 'H̲');
+  assert.equal(transformText('H', 'slash'), 'H̸');
+});
+
+test('new alphabets map both cases', () => {
+  assert.equal(transformText('Ab', 'wizard'), 'ᗩᗷ');
+  assert.equal(transformText('Hi', 'bubble-filled'), '🅗🅘');
+});
+
+test('emoji frames wrap the whole message and use their base font', () => {
+  assert.equal(transformText('hi', 'frame-sparkles'), '✨ 𝓱𝓲 ✨');
+  assert.equal(transformText('hi', 'frame-bow'), '🎀 hi 🎀');
+  assert.equal(transformText('   ', 'frame-bow'), '   ', 'empty text gets no frame');
+});
+
+test('joiners go between letters only, not around spaces or emoji', () => {
+  assert.equal(transformText('love you', 'between-hearts'), 'l♡o♡v♡e y♡o♡u');
+  assert.equal(transformText('a😀b', 'between-stars'), 'a😀b');
+});
+
+test('kaomoji styles add a face after the text', () => {
+  assert.equal(transformText('hello', 'kaomoji-bear'), 'hello ʕ•ᴥ•ʔ');
 });
 
 test('style selection never falls back to a Pro style', () => {
   assert.equal(getStyle('does-not-exist').id, 'normal');
-  assert.equal(availableStyles(false).length, 12);
-  assert.equal(availableStyles(true).length, 24);
+  assert.equal(availableStyles(true).length, 100);
   assert.ok(availableStyles(false).every((style) => !style.isPro));
 });
 
-test('decorations are explicit composer operations', () => {
-  assert.equal(applyDecoration('Lyfstyle', 'corner-frame'), '「 Lyfstyle 」');
-  assert.equal(applyDecoration('Bio', 'fine-divider'), 'Bio\n──────────');
-  assert.equal(applyDecoration('Plain', 'unknown'), 'Plain');
+test('24 keyboard themes, 8 free', () => {
+  assert.equal(themes.length, 24);
+  assert.equal(themes.filter((item) => !item.isPro).length, 8);
+  assert.ok(themes.every((item) => /^#[0-9A-F]{6}$/i.test(item.background) && /^#[0-9A-F]{6}$/i.test(item.accent)));
 });
 
-test('all mathematical styles produce supplementary code points without replacement characters', () => {
-  for (const style of catalogue.styles.filter((item) => item.category === 'Classic' || item.category === 'Bold')) {
-    const output = transformText('Az', style.id);
-    assert.ok(!output.includes('�'), style.id);
+test('no style produces replacement characters', () => {
+  for (const style of styled) {
+    assert.ok(!transformText('Az09', style.id).includes('�'), style.id);
   }
 });
 

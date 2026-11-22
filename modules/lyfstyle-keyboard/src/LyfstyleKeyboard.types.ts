@@ -9,4 +9,5 @@ export type LyfstyleKeyboardNativeModule = {
   getAndroidKeyboardStatus(): Promise<AndroidKeyboardStatus>;
   setProUnlocked(value: boolean): Promise<void>;
   isProSyncAvailable(): Promise<boolean>;
+  setKeyboardTheme(themeId: string): Promise<void>;
 };

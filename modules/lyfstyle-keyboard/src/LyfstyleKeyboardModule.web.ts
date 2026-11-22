@@ -10,4 +10,5 @@ export default {
   getAndroidKeyboardStatus: async (): Promise<AndroidKeyboardStatus> => ({ enabled: false, selected: false }),
   setProUnlocked: unavailable,
   isProSyncAvailable: async (): Promise<boolean> => false,
+  setKeyboardTheme: async (): Promise<void> => undefined,
 };

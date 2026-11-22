@@ -7,6 +7,7 @@ declare class LyfstyleKeyboardModule extends NativeModule<LyfstyleKeyboardNative
   getAndroidKeyboardStatus(): Promise<import('./LyfstyleKeyboard.types').AndroidKeyboardStatus>;
   setProUnlocked(value: boolean): Promise<void>;
   isProSyncAvailable(): Promise<boolean>;
+  setKeyboardTheme(themeId: string): Promise<void>;
 }
 
 export default requireNativeModule<LyfstyleKeyboardModule>('LyfstyleKeyboard');

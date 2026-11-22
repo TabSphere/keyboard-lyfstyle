@@ -9,6 +9,7 @@ import android.inputmethodservice.InputMethodService
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
+import android.text.TextUtils
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.View
@@ -19,16 +20,21 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 
+/**
+ * Lyfstyle keyboard (Pop Sugar). A style bar sits above the keys; the ☺ and 🎨
+ * buttons swap the letter rows for the symbols panel or the theme picker.
+ */
 class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayout(service) {
+    private enum class Panel { NONE, SYMBOLS, THEMES }
+
     private val preferences = service.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
     private val catalogue = StyleCatalogue(service)
     private val handler = Handler(Looper.getMainLooper())
     private val rows = LinearLayout(service).apply { orientation = VERTICAL }
-    private var drawer: LinearLayout? = null
     private var selectedStyle = preferences.getString("style", "script") ?: "script"
     private var normalMode = preferences.getBoolean("normalMode", false)
-    private var favouritesOnly = false
-    private var theme = catalogue.theme(preferences.getString("theme", "porcelain") ?: "porcelain")
+    private var theme = catalogue.theme(preferences.getString("theme", "violet") ?: "violet")
+    private var panel = Panel.NONE
     private var shifted = true
     private var capsLock = false
     private var symbols = false
@@ -59,6 +65,15 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         listOf(".", ",", "?", "!", "'", "…"),
     )
 
+    // Symbols panel content: (title, items, items per row).
+    private val symbolGroups = listOf(
+        Triple("Hearts", listOf("♡", "♥", "❥", "❣", "💕", "💖", "🫶", "ღ", "𓆩♡𓆪", "ᥫ᭡"), 5),
+        Triple("Stars", listOf("✦", "✧", "★", "☆", "⋆", "✩", "✨", "⋆｡˚", "✧･ﾟ", "彡"), 5),
+        Triple("Cute", listOf("ʚ", "ɞ", "꒰", "꒱", "🎀", "🌸", "✿", "☁︎", "☾", "🦋"), 5),
+        Triple("Arrows & lines", listOf("➜", "➳", "⇢", "↳", "⤷", "──────", "⋆⋅☆⋅⋆", "— ❧ —", "「 」", "꧁ ꧂"), 5),
+        Triple("Kaomoji", listOf("(｡♡‿♡｡)", "ʕ•ᴥ•ʔ", "(◕‿◕✿)", "(づ｡◕‿‿◕｡)づ", "٩(◕‿◕)۶", "(≧◡≦)", "(⌐■_■)", "¯\\_(ツ)_/¯", "ฅ^•ﻌ•^ฅ", "(˘︶˘).｡*♡"), 2),
+    )
+
     init {
         orientation = VERTICAL
         fitsSystemWindows = false
@@ -72,12 +87,14 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
                 inputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES != 0
         } ?: true
         selectedStyle = preferences.getString("style", selectedStyle) ?: "script"
-        if (!isPro() && catalogue.style(selectedStyle).isPro) {
+        if (!isAvailable(catalogue.style(selectedStyle))) {
             selectedStyle = "script"
             preferences.edit().putString("style", selectedStyle).apply()
         }
         normalMode = preferences.getBoolean("normalMode", normalMode)
         theme = catalogue.theme(preferences.getString("theme", theme.id) ?: theme.id)
+        if (theme.isPro && !isPro()) theme = catalogue.theme("violet")
+        panel = Panel.NONE
         rebuild()
     }
 
@@ -100,25 +117,43 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
     private fun rebuild() {
         removeAllViews()
         setBackgroundColor(Color.parseColor(theme.background))
-        setPadding(dp(5), dp(5), dp(5), dp(8))
-        addView(createToolbar())
-        if (drawer != null) addView(createStyleDrawer())
+        setPadding(dp(5), dp(6), dp(5), dp(8))
+        addView(createStyleBar())
         rows.removeAllViews()
-        addView(rows, LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f))
-        if (symbols) buildSymbolRows() else buildLetterRows()
-        buildBottomRow()
-        minimumHeight = dp(270)
+        addView(rows, LayoutParams(LayoutParams.MATCH_PARENT, dp(196)))
+        when (panel) {
+            Panel.SYMBOLS -> rows.addView(symbolsPanel(), LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+            Panel.THEMES -> rows.addView(themesPanel(), LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+            Panel.NONE -> if (symbols) buildSymbolRows() else buildLetterRows()
+        }
+        addView(bottomRow(), LayoutParams(LayoutParams.MATCH_PARENT, dp(50)))
     }
 
-    private fun createToolbar(): View {
+    // ---- Style bar ---------------------------------------------------------
+
+    private fun createStyleBar(): View {
         val bar = LinearLayout(context).apply { orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        val effectiveStyle = effectiveStyleId()
-        val activeName = if (effectiveStyle == "normal") "Normal Text" else catalogue.style(effectiveStyle).name
-        bar.addView(key(activeName, 2.7f, accent = drawer != null) {
-            drawer = if (drawer == null) LinearLayout(context) else null
-            rebuild()
-        }.apply { contentDescription = "Choose typing style. Current style $activeName" })
-        bar.addView(key(if (normalMode || safeNormal) "Aa ✓" else "Aa", 1.0f, accent = normalMode || safeNormal) {
+        val scroll = HorizontalScrollView(context).apply { isHorizontalScrollBarEnabled = false }
+        val chips = LinearLayout(context).apply { orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        val recents = recentIds()
+        val ordered = catalogue.keyboardStyles
+            .filter { isAvailable(it) }
+            .sortedBy { style -> recents.indexOf(style.id).let { if (it < 0) 100 else it } }
+        val effective = effectiveStyleId()
+        ordered.forEach { style ->
+            val active = style.id == effective
+            chips.addView(chip(catalogue.transform(style.name, style.id), active) {
+                selectedStyle = style.id
+                normalMode = false
+                preferences.edit().putString("style", style.id).putBoolean("normalMode", false).apply()
+                rememberRecent(style.id)
+                panel = Panel.NONE
+                rebuild()
+            }.apply { contentDescription = "${style.name} style${if (active) ", selected" else ""}" })
+        }
+        scroll.addView(chips)
+        bar.addView(scroll, LayoutParams(0, dp(44), 1f))
+        bar.addView(chip(if (normalMode || safeNormal) "Aa ✓" else "Aa", normalMode || safeNormal) {
             if (!safeNormal) {
                 normalMode = !normalMode
                 preferences.edit().putBoolean("normalMode", normalMode).apply()
@@ -128,58 +163,106 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
             contentDescription = if (safeNormal) "Normal text required for this field" else "Toggle normal text"
             isEnabled = !safeNormal
         })
-        val isFavourite = favouriteIds().contains(selectedStyle)
-        bar.addView(key(if (isFavourite) "★" else "☆", 0.72f) {
-            val favourites = favouriteIds().toMutableSet()
-            if (!favourites.add(selectedStyle)) favourites.remove(selectedStyle)
-            preferences.edit().putStringSet("favourites", favourites).apply()
-            rebuild()
-        }.apply { contentDescription = if (isFavourite) "Remove current style from favourites" else "Favourite current style" })
-        bar.addView(key("◐", 0.78f) {
-            val themes = catalogue.themes
-            theme = themes[(themes.indexOfFirst { it.id == theme.id } + 1) % themes.size]
-            preferences.edit().putString("theme", theme.id).apply()
-            rebuild()
-        }.apply { contentDescription = "Keyboard theme ${theme.name}. Tap for next theme." })
+        bar.addView(chip("☺", panel == Panel.SYMBOLS) { togglePanel(Panel.SYMBOLS) }.apply { contentDescription = "Symbols and kaomoji" })
+        bar.addView(chip("🎨", panel == Panel.THEMES) { togglePanel(Panel.THEMES) }.apply { contentDescription = "Keyboard themes. Current theme ${theme.name}" })
         return bar
     }
 
-    private fun createStyleDrawer(): View {
-        val container = LinearLayout(context).apply { orientation = VERTICAL }
-        val scroll = HorizontalScrollView(context).apply { isHorizontalScrollBarEnabled = false }
-        val list = LinearLayout(context).apply { orientation = HORIZONTAL }
-        val favourites = favouriteIds()
-        val available = catalogue.styles.filter { it.id != "normal" && (isPro() || !it.isPro) }
-        val ordered = available.sortedByDescending { recentIds().indexOf(it.id).let { index -> if (index < 0) -100 else 100 - index } }
-        val visible = ordered.filter { !favouritesOnly || favourites.contains(it.id) }
-        if (visible.isEmpty()) {
-            list.addView(TextView(context).apply {
-                text = "No saved styles yet. Tap the star to save one."
-                setTextColor(Color.parseColor(theme.secondary)); textSize = 14f; setPadding(dp(16), dp(16), dp(16), dp(16))
-            })
-        }
-        visible.forEach { style ->
-            val sample = catalogue.transform("Aa", style.id)
-            list.addView(key("$sample\n${style.name}", 0f, accent = style.id == selectedStyle && !normalMode) {
-                selectedStyle = style.id
-                normalMode = false
-                preferences.edit().putString("style", style.id).putBoolean("normalMode", false).apply()
-                rememberRecent(style.id)
-                rebuild()
-            }.apply {
-                layoutParams = LayoutParams(dp(116), dp(56)).apply { setMargins(dp(3), dp(3), dp(3), dp(3)) }
-                contentDescription = "${style.name} style${if (favourites.contains(style.id)) ", favourite" else ""}"
-            })
-        }
-        scroll.addView(list)
-        container.addView(scroll)
-        container.addView(key(if (favouritesOnly) "Show all styles" else "Favourites only", 0f) {
-            favouritesOnly = !favouritesOnly
-            rebuild()
-        }.apply { layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, dp(38)) })
-        drawer = container
-        return container
+    private fun togglePanel(target: Panel) {
+        panel = if (panel == target) Panel.NONE else target
+        rebuild()
     }
+
+    private fun chip(label: String, active: Boolean, action: () -> Unit): Button = Button(context).apply {
+        text = label
+        textSize = 14f
+        isAllCaps = false
+        maxLines = 1
+        ellipsize = TextUtils.TruncateAt.END
+        includeFontPadding = false
+        stateListAnimator = null
+        setPadding(dp(12), 0, dp(12), 0)
+        minWidth = dp(44); minimumWidth = dp(44)
+        minHeight = dp(34); minimumHeight = dp(34)
+        val fill = Color.parseColor(if (active) theme.accent else theme.key)
+        setTextColor(if (active) readableOn(theme.accent) else Color.parseColor(theme.text))
+        background = StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_pressed), pill(shiftColor(fill, 0.86f)))
+            addState(intArrayOf(), pill(fill))
+        }
+        setOnClickListener { performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP); action() }
+        layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, dp(34)).apply { setMargins(dp(3), 0, dp(3), 0) }
+    }
+
+    // ---- Panels ------------------------------------------------------------
+
+    private fun symbolsPanel(): View {
+        val scroll = ScrollView(context).apply { isVerticalScrollBarEnabled = false }
+        val column = LinearLayout(context).apply { orientation = VERTICAL; setPadding(0, dp(2), 0, dp(2)) }
+        symbolGroups.forEach { (title, items, perRow) ->
+            column.addView(sectionLabel(title))
+            items.chunked(perRow).forEach { chunk ->
+                val row = keyRow()
+                chunk.forEach { item -> row.addView(key(item, 1f, textSizeOverride = if (perRow <= 2) 14f else 18f) { commitRaw(item) }) }
+                repeat(perRow - chunk.size) { row.addView(View(context), LayoutParams(0, 1, 1f)) }
+                column.addView(row, LayoutParams(LayoutParams.MATCH_PARENT, dp(44)))
+            }
+        }
+        scroll.addView(column)
+        return scroll
+    }
+
+    private fun themesPanel(): View {
+        val scroll = ScrollView(context).apply { isVerticalScrollBarEnabled = false }
+        val column = LinearLayout(context).apply { orientation = VERTICAL; setPadding(0, dp(2), 0, dp(2)) }
+        column.addView(sectionLabel(if (isPro()) "Pick a theme" else "Pick a theme · 🔒 unlock more with Lifetime Pro in the app"))
+        catalogue.themes.chunked(3).forEach { chunk ->
+            val row = keyRow()
+            chunk.forEach { option -> row.addView(themeSwatch(option)) }
+            column.addView(row, LayoutParams(LayoutParams.MATCH_PARENT, dp(52)))
+        }
+        scroll.addView(column)
+        return scroll
+    }
+
+    private fun themeSwatch(option: KeyboardPalette): Button {
+        val locked = option.isPro && !isPro()
+        val active = option.id == theme.id
+        return Button(context).apply {
+            text = "${if (locked) "🔒 " else if (active) "✓ " else ""}${option.name}"
+            textSize = 12f
+            isAllCaps = false
+            maxLines = 1
+            stateListAnimator = null
+            setTextColor(Color.parseColor(option.text))
+            background = GradientDrawable().apply {
+                cornerRadius = dp(12).toFloat()
+                setColor(Color.parseColor(option.background))
+                setStroke(dp(if (active) 3 else 1), if (active) Color.parseColor(option.accent) else Color.parseColor(option.key))
+            }
+            alpha = if (locked) 0.6f else 1f
+            contentDescription = "${option.name} theme${if (locked) ", Pro" else ""}${if (active) ", selected" else ""}"
+            setOnClickListener {
+                if (locked) return@setOnClickListener
+                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                theme = option
+                preferences.edit().putString("theme", option.id).apply()
+                panel = Panel.NONE
+                rebuild()
+            }
+            layoutParams = LayoutParams(0, LayoutParams.MATCH_PARENT, 1f).apply { setMargins(dp(3), dp(3), dp(3), dp(3)) }
+        }
+    }
+
+    private fun sectionLabel(title: String) = TextView(context).apply {
+        text = title.uppercase()
+        textSize = 10f
+        letterSpacing = 0.08f
+        setTextColor(Color.parseColor(theme.secondary))
+        setPadding(dp(6), dp(8), dp(6), dp(2))
+    }
+
+    // ---- Keys ----------------------------------------------------------------
 
     private fun buildLetterRows() {
         letterRows.forEachIndexed { index, letters ->
@@ -215,24 +298,31 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         }
     }
 
-    private fun buildBottomRow() {
+    private fun bottomRow(): View {
         val row = keyRow()
-        row.addView(key(if (symbols) "ABC" else "123", 1.25f) {
-            symbols = !symbols; secondarySymbols = false; rebuild()
+        val label = when {
+            panel != Panel.NONE -> "ABC"
+            symbols -> "ABC"
+            else -> "123"
+        }
+        row.addView(key(label, 1.25f) {
+            if (panel != Panel.NONE) panel = Panel.NONE else { symbols = !symbols; secondarySymbols = false }
+            rebuild()
         })
         row.addView(key("🌐", 1.05f) {
             service.switchToNextInputMethod(false)
         }.apply { contentDescription = "Switch to next keyboard" })
-        row.addView(key("space", 4.5f) { commitText(" ") })
+        row.addView(key("lyfstyle", 4.5f, secondaryText = true) { commitText(" ") }.apply { contentDescription = "Space" })
         row.addView(key(".", 0.8f) { commitText(".") })
+        if (panel != Panel.NONE) row.addView(deleteKey())
         row.addView(key("↵", 1.35f, accent = true) {
             val info = service.currentInputEditorInfo
             val action = info?.imeOptions?.and(EditorInfo.IME_MASK_ACTION) ?: EditorInfo.IME_ACTION_NONE
             if (action != EditorInfo.IME_ACTION_NONE && action != EditorInfo.IME_ACTION_UNSPECIFIED) {
                 service.currentInputConnection?.performEditorAction(action)
-            } else commitText("\n")
-        })
-        rows.addView(row, LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f))
+            } else commitRaw("\n")
+        }.apply { contentDescription = "Return" })
+        return row
     }
 
     private fun keyRow() = LinearLayout(context).apply {
@@ -241,17 +331,30 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         setPadding(0, dp(2), 0, dp(2))
     }
 
-    private fun key(label: String, weight: Float, accent: Boolean = false, action: () -> Unit): Button {
+    private fun key(
+        label: String,
+        weight: Float,
+        accent: Boolean = false,
+        secondaryText: Boolean = false,
+        textSizeOverride: Float? = null,
+        action: () -> Unit,
+    ): Button {
         return Button(context).apply {
             text = label
-            textSize = if (label.length > 6) 11f else 17f
+            textSize = textSizeOverride ?: if (label.length > 6) 12f else 18f
             isAllCaps = false
             gravity = Gravity.CENTER
-            maxLines = 2
+            maxLines = 1
             includeFontPadding = false
-            setTextColor(Color.parseColor(if (accent && theme.id != "mono") theme.background else theme.text))
+            setTextColor(
+                when {
+                    accent -> readableOn(theme.accent)
+                    secondaryText -> Color.parseColor(theme.secondary)
+                    else -> Color.parseColor(theme.text)
+                },
+            )
             setPadding(dp(2), 0, dp(2), 0)
-            minHeight = dp(46); minimumHeight = dp(46)
+            minHeight = dp(42); minimumHeight = dp(42)
             val fill = Color.parseColor(if (accent) theme.accent else theme.key)
             background = StateListDrawable().apply {
                 addState(intArrayOf(android.R.attr.state_pressed), roundedKey(shiftColor(fill, 0.86f)))
@@ -270,11 +373,23 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         setColor(fill)
     }
 
+    private fun pill(fill: Int) = GradientDrawable().apply {
+        cornerRadius = dp(17).toFloat()
+        setColor(fill)
+    }
+
     private fun shiftColor(color: Int, factor: Float): Int = Color.rgb(
         (Color.red(color) * factor).toInt().coerceIn(0, 255),
         (Color.green(color) * factor).toInt().coerceIn(0, 255),
         (Color.blue(color) * factor).toInt().coerceIn(0, 255),
     )
+
+    /** Plum ink on light accents, white on dark ones. */
+    private fun readableOn(hex: String): Int {
+        val color = Color.parseColor(hex)
+        val luminance = (0.2126 * Color.red(color) + 0.7152 * Color.green(color) + 0.0722 * Color.blue(color)) / 255
+        return if (luminance > 0.55) Color.parseColor("#22172F") else Color.WHITE
+    }
 
     private fun deleteKey(): Button = key("⌫", 1.35f) { deleteLastGrapheme() }.apply {
         contentDescription = "Delete previous visible character. Hold to repeat."
@@ -295,9 +410,11 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
 
     private fun letterLabel(letter: String): String = if (shifted || capsLock) letter.uppercase() else letter
 
+    private fun isAvailable(style: TextStyle) = style.keyboard && (isPro() || !style.isPro)
+
     private fun effectiveStyleId(): String {
         if (normalMode || safeNormal) return "normal"
-        return if (!isPro() && catalogue.style(selectedStyle).isPro) "script" else selectedStyle
+        return if (!isAvailable(catalogue.style(selectedStyle))) "script" else selectedStyle
     }
 
     private fun commitText(raw: String) {
@@ -307,6 +424,11 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
             shifted = false
             rebuild()
         }
+    }
+
+    /** Symbols, kaomoji and new lines are inserted exactly as shown. */
+    private fun commitRaw(text: String) {
+        service.currentInputConnection?.commitText(text, 1)
     }
 
     fun deleteLastGrapheme() {
@@ -326,7 +448,6 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
     }
 
     private fun isPro() = preferences.getBoolean("proUnlocked", false)
-    private fun favouriteIds() = preferences.getStringSet("favourites", emptySet()) ?: emptySet()
     private fun recentIds() = (preferences.getString("recents", "") ?: "").split(',').filter { it.isNotBlank() }
     private fun rememberRecent(id: String) {
         val updated = (listOf(id) + recentIds().filter { it != id }).take(6)

@@ -33,11 +33,14 @@ class StyleCatalogueTest {
     }
 
     @Test
-    fun freeAndProCatalogueCountsMatchProductContract() {
+    fun catalogueCountsMatchProductContract() {
         val styled = catalogue.styles.filter { it.id != "normal" }
-        assertEquals(24, styled.size)
-        assertEquals(12, styled.count { !it.isPro })
-        assertEquals(12, styled.count { it.isPro })
+        assertEquals(100, styled.size)
+        // Only per-character styles reach the keyboard; frames and joiners are app-only.
+        assertEquals(48, catalogue.keyboardStyles.size)
+        assertTrue(catalogue.keyboardStyles.all { it.kind == "alphabet" || it.kind == "overlay" })
+        assertEquals(24, catalogue.themes.size)
+        assertEquals(8, catalogue.themes.count { !it.isPro })
         assertTrue(catalogue.styles.all { it.mapping.values.none { output -> output.isEmpty() } })
     }
 }

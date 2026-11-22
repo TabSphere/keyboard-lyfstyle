@@ -7,11 +7,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "lyfstyle",
-    "backgroundColor": "#FAFAFA",
+    "backgroundColor": "#FFF3F6",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1B1916"
+      "backgroundColor": "#6A3DF5"
     },
     "ios": {
       "appleTeamId": "GZRWULYGLN",
@@ -32,7 +32,7 @@
       "versionCode": 1,
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
-        "backgroundColor": "#1B1916",
+        "backgroundColor": "#6A3DF5",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"

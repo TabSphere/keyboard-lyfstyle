@@ -42,5 +42,13 @@ class LyfstyleKeyboardModule : Module() {
     }
 
     AsyncFunction("isProSyncAvailable") { true }
+
+    AsyncFunction("setKeyboardTheme") { themeId: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
+        .edit()
+        .putString("theme", themeId)
+        .apply()
+    }
   }
 }

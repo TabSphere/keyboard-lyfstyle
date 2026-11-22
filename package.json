@@ -17,9 +17,8 @@
   },
   "dependencies": {
     "@bacons/apple-targets": "5.0.0",
-    "@expo-google-fonts/fraunces": "^0.4.1",
-    "@expo-google-fonts/geist": "^0.4.2",
-    "@expo-google-fonts/geist-mono": "^0.4.3",
+    "@expo-google-fonts/bricolage-grotesque": "^0.4.1",
+    "@expo-google-fonts/nunito": "^0.4.2",
     "@expo/metro-runtime": "~55.0.12",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~55.0.32",
@@ -31,6 +30,7 @@
     "expo-iap": "^6.5.1",
     "expo-linking": "~55.0.17",
     "expo-router": "~55.0.18",
+    "expo-sharing": "~55.0.25",
     "expo-splash-screen": "~55.0.25",
     "expo-status-bar": "~55.0.6",
     "lucide-react-native": "^1.77.0",
@@ -40,6 +40,7 @@
     "react-native-safe-area-context": "~5.6.2",
     "react-native-screens": "~4.23.0",
     "react-native-svg": "15.15.3",
+    "react-native-view-shot": "4.0.3",
     "react-native-web": "^0.21.0"
   },
   "devDependencies": {

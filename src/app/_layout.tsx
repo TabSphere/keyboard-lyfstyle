@@ -4,14 +4,17 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Fraunces_600SemiBold, Fraunces_600SemiBold_Italic } from '@expo-google-fonts/fraunces';
 import {
-  Geist_400Regular,
-  Geist_500Medium,
-  Geist_600SemiBold,
-  Geist_700Bold,
-} from '@expo-google-fonts/geist';
-import { GeistMono_500Medium } from '@expo-google-fonts/geist-mono';
+  BricolageGrotesque_700Bold,
+  BricolageGrotesque_800ExtraBold,
+} from '@expo-google-fonts/bricolage-grotesque';
+import {
+  Nunito_400Regular,
+  Nunito_500Medium,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+  Nunito_900Black,
+} from '@expo-google-fonts/nunito';
 import { useFonts } from 'expo-font';
 import { ComposerProvider } from '../state/ComposerContext';
 import { colors } from '../theme/tokens';
@@ -20,13 +23,13 @@ void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    Fraunces_600SemiBold,
-    Fraunces_600SemiBold_Italic,
-    Geist_400Regular,
-    Geist_500Medium,
-    Geist_600SemiBold,
-    Geist_700Bold,
-    GeistMono_500Medium,
+    BricolageGrotesque_700Bold,
+    BricolageGrotesque_800ExtraBold,
+    Nunito_400Regular,
+    Nunito_500Medium,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
+    Nunito_900Black,
   });
 
   useEffect(() => {
@@ -42,8 +45,14 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas } }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="pro" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="settings" />
           <Stack.Screen name="privacy" />
           <Stack.Screen name="about" />
+          <Stack.Screen name="tool/repeater" />
+          <Stack.Screen name="tool/emoji-art" />
+          <Stack.Screen name="tool/card" />
+          <Stack.Screen name="tool/usernames" />
+          <Stack.Screen name="tool/symbols" />
         </Stack>
       </ComposerProvider>
     </SafeAreaProvider>

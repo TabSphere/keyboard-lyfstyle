@@ -33,6 +33,16 @@ public class LyfstyleKeyboardModule: Module {
     AsyncFunction("isProSyncAvailable") {
       UserDefaults(suiteName: self.appGroup) != nil
     }
+
+    // The keyboard reads this only with Full Access; otherwise people pick themes in the keyboard itself.
+    AsyncFunction("setKeyboardTheme") { (themeId: String) in
+      guard let defaults = UserDefaults(suiteName: self.appGroup) else {
+        throw KeyboardSetupError.appGroupUnavailable
+      }
+      defaults.set(themeId, forKey: "theme")
+      defaults.set(Date().timeIntervalSince1970, forKey: "themeUpdatedAt")
+      defaults.synchronize()
+    }
   }
 }
 

@@ -8,7 +8,11 @@ struct TextStyle: Decodable {
     let kind: String
     let isPro: Bool
     let fallback: String
+    /// Nil or true for per-letter styles; false for app-only composites (frames, joiners).
+    let keyboard: Bool?
     let mapping: [String: String]
+
+    var worksInKeyboard: Bool { keyboard ?? true }
 }
 
 struct KeyboardPalette: Decodable {
@@ -20,6 +24,9 @@ struct KeyboardPalette: Decodable {
     let secondary: String
     let accent: String
     let dark: Bool
+    let isPro: Bool?
+
+    var requiresPro: Bool { isPro ?? false }
 }
 
 struct StyleCatalogueData: Decodable {
@@ -62,6 +69,10 @@ final class StyleCatalogue {
 
     func theme(id: String) -> KeyboardPalette {
         data.themes.first { $0.id == id } ?? data.themes[0]
+    }
+
+    var keyboardStyles: [TextStyle] {
+        data.styles.filter { $0.id != "normal" && $0.worksInKeyboard }
     }
 
     func transform(_ input: String, styleId: String) -> String {

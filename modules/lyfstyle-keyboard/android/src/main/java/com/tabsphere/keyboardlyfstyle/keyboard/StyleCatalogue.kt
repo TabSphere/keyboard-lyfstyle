@@ -10,6 +10,7 @@ data class TextStyle(
     val description: String,
     val kind: String,
     val isPro: Boolean,
+    val keyboard: Boolean,
     val mapping: Map<String, String>,
 )
 
@@ -22,6 +23,7 @@ data class KeyboardPalette(
     val secondary: String,
     val accent: String,
     val dark: Boolean,
+    val isPro: Boolean,
 )
 
 class StyleCatalogue private constructor(private val root: JSONObject) {
@@ -44,6 +46,8 @@ class StyleCatalogue private constructor(private val root: JSONObject) {
                 description = item.getString("description"),
                 kind = item.getString("kind"),
                 isPro = item.getBoolean("isPro"),
+                // Composite styles (frames, joiners) are app-only.
+                keyboard = item.optBoolean("keyboard", true),
                 mapping = mapping,
             )
         }
@@ -56,9 +60,11 @@ class StyleCatalogue private constructor(private val root: JSONObject) {
                 background = item.getString("background"), key = item.getString("key"),
                 text = item.getString("text"), secondary = item.getString("secondary"),
                 accent = item.getString("accent"), dark = item.getBoolean("dark"),
+                isPro = item.optBoolean("isPro", false),
             )
         }
     }
+    val keyboardStyles: List<TextStyle> get() = styles.filter { it.keyboard && it.id != "normal" }
 
     fun style(id: String): TextStyle = styles.firstOrNull { it.id == id } ?: styles.first { it.id == "normal" }
     fun theme(id: String): KeyboardPalette = themes.firstOrNull { it.id == id } ?: themes.first()
