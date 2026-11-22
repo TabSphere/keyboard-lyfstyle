@@ -42,6 +42,9 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: android-actions/setup-android@v3
+        with:
+          # The default list includes the retired 'tools' package, which makes sdkmanager fail.
+          packages: platform-tools
       - run: npm ci
       - run: npx expo prebuild --platform android --clean
       - uses: gradle/actions/setup-gradle@v4
@@ -63,9 +66,12 @@ jobs:
           if-no-files-found: error
 
   ios:
-    runs-on: macos-15
+    # Expo SDK 55 needs Xcode 26 (Swift 6.2); macos-15 defaults to Xcode 16.
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
+      - name: Show Xcode version
+        run: xcodebuild -version
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -81,9 +87,13 @@ jobs:
       - run: pod install --project-directory=ios
       - name: Build app and keyboard without signing
         run: |
+          # Prebuild names the workspace after the app's display name (currently "Lyfstyle").
+          WORKSPACE=$(ls -d ios/*.xcworkspace | head -n 1)
+          SCHEME=$(basename "$WORKSPACE" .xcworkspace)
+          echo "Building $WORKSPACE (scheme $SCHEME)"
           xcodebuild \
-            -workspace ios/keyboardlyfstyle.xcworkspace \
-            -scheme keyboardlyfstyle \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
