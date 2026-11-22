@@ -169,6 +169,15 @@ const moreFonts = [
   alphabet('dotted', 'Sprinkles', fromString('ȧḃċḋėḟġḣıȷkŀṁṅȯṗqṙṡṫüvẇẋẏż'), { category: 'Cute', isPro: true }),
   alphabet('mirror', 'Mirror', fromString('ɒdɔbɘʇϱʜiįʞlmnoqpɿƨƚυvwxγz'), { category: 'Playful', isPro: true }),
   alphabet('wide-tiny', 'Tiny Wide', fromString('ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖᑫʳˢᵗᵘᵛʷˣʸᶻ'), { category: 'Cute' }),
+  // v1.2 additions (all Pro). Only scripts that iPhone and Android both have fonts for.
+  alphabet('thai-twist', 'Thai Twist', fromString('ค๒ς๔єŦﻮђเןкɭ๓ภ๏קợгรՇยשฬאץչ'), { category: 'Fancy', isPro: true }),
+  alphabet('faux-cyrillic', 'Cyrillic', fromString('ДБҀↁЄFБНІЈЌLМИФРQЯЅГЦVЩЖЧZ'), { category: 'Fancy', isPro: true }),
+  alphabet('tribal', 'Tribal', fromString('ልጌርዕቿቻኗዘጎጋጕረጠክዐየዒዪነፕሁሀሠሸሃጊ'), { category: 'Fancy', isPro: true }),
+  alphabet('totem', 'Totem', fromString('ᏗᏰፈᎴᏋᎦᎶᏂᎥᏠᏦᏝᎷᏁᎧᎮᎤᏒᏕᏖᏬᏉᏇጀᎩፚ'), { category: 'Fancy', isPro: true }),
+  alphabet('crossbar', 'Crossbar', fromString('ȺɃȻĐɆFǤĦƗɈꝀŁMNØⱣꝖɌSŦɄVWXɎƵ'), { category: 'Fancy', isPro: true }),
+  alphabet('witchy', 'Witchy', fromString('ąɓçđęƒğĥįĵķļɱńǫƥʠŗşţųṽŵẋɣž'), { category: 'Fancy', isPro: true }),
+  alphabet('curvy', 'Curvy', fromString('ɑɓƈɗɛƒɠɦıʝƙʅɱɲσρզɾʂƭυʋɯ×ყȥ'), { category: 'Cute', isPro: true }),
+  alphabet('mythic', 'Mythic', fromString('αвcdєfghíjklmnσpqrstuvwxчz'), { category: 'Cute', isPro: true }),
 ];
 
 const moreEffects = [
@@ -182,6 +191,10 @@ const moreEffects = [
   overlay('heart-top', 'Love Notes', '͆', { isPro: true }),
   overlay('rain', 'Rain', '̤', { isPro: true }),
   overlay('boxed', 'Boxed', '⃞', { isPro: true, category: 'Playful' }),
+  overlay('halo', 'Halo', '̊', { isPro: true }),
+  overlay('freckles', 'Freckles', '̣', { isPro: true }),
+  overlay('tilde', 'Tilde Waves', '̃', { isPro: true }),
+  overlay('sweet-dots', 'Sweet Dots', '̈', { isPro: true }),
 ];
 
 styles.push(...moreFonts, ...moreEffects);
@@ -371,11 +384,12 @@ for (const item of catalogue.themes) {
 
 // Font groups: nine clear sections instead of one long list (app and keyboard).
 const STYLE_GROUPS = {
-  'Cursive & cute': ['script', 'bold-script', 'tiny-cursive', 'cute-alpha', 'bubble-filled', 'dotted', 'wide-tiny'],
+  'Cursive & cute': ['script', 'bold-script', 'tiny-cursive', 'cute-alpha', 'bubble-filled', 'dotted', 'wide-tiny', 'curvy', 'mythic'],
   'Bold & clean': ['bold', 'bold-italic', 'sans-bold', 'sans-bold-italic', 'italic', 'sans', 'sans-italic', 'monospace', 'double-struck', 'small-caps', 'fullwidth'],
   'Bubbles & boxes': ['circled', 'negative-circled', 'squared', 'negative-squared', 'squared-all', 'night-box', 'parenthesized', 'boxed'],
-  'Gothic & fancy': ['fraktur', 'bold-fraktur', 'rune', 'currency', 'greek', 'asian', 'wizard'],
-  Effects: ['glitch', 'slash', 'double-underline', 'overline', 'wavy', 'arrows-below', 'crossed', 'heart-top', 'rain', 'underline', 'strike'],
+  'Gothic & fancy': ['fraktur', 'bold-fraktur', 'rune', 'currency', 'greek', 'asian', 'wizard', 'crossbar', 'witchy'],
+  'Around the world': ['thai-twist', 'faux-cyrillic', 'tribal', 'totem'],
+  Effects: ['glitch', 'slash', 'double-underline', 'overline', 'wavy', 'arrows-below', 'crossed', 'heart-top', 'rain', 'underline', 'strike', 'halo', 'freckles', 'tilde', 'sweet-dots'],
   'Fun & flipped': ['superscript', 'subscript', 'upside-down', 'mirror'],
 };
 for (const style of catalogue.styles) {
@@ -396,8 +410,8 @@ for (const item of catalogue.themes) item.isPro = !FREE_THEMES.has(item.id);
 
 const keyboardStyles = catalogue.styles.filter((style) => style.keyboard !== false && style.id !== 'normal');
 const styled = catalogue.styles.filter((style) => style.id !== 'normal');
-if (styled.length < 100) throw new Error(`Expected at least 100 styles, found ${styled.length}`);
-if (keyboardStyles.length !== 48) throw new Error(`Expected 48 keyboard styles, found ${keyboardStyles.length}`);
+if (styled.length !== 112) throw new Error(`Expected 112 styles, found ${styled.length}`);
+if (keyboardStyles.length !== 60) throw new Error(`Expected 60 keyboard styles, found ${keyboardStyles.length}`);
 if (new Set(catalogue.styles.map((style) => style.id)).size !== catalogue.styles.length) throw new Error('Duplicate style ids');
 if (catalogue.themes.length !== 112) throw new Error('Expected 112 themes (24 colour + 88 picture)');
 for (const style of catalogue.styles) {

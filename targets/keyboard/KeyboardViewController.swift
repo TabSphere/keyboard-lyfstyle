@@ -15,7 +15,7 @@ import Translation
 final class KeyboardViewController: UIInputViewController {
     private enum Panel { case none, fonts, symbols, themes, voice, translate }
 
-    private static let fontGroups = ["Cursive & cute", "Bold & clean", "Bubbles & boxes", "Gothic & fancy", "Effects", "Fun & flipped"]
+    private static let fontGroups = ["Cursive & cute", "Bold & clean", "Bubbles & boxes", "Gothic & fancy", "Around the world", "Effects", "Fun & flipped"]
     private static let pictureGroups = ["Cute & sweet", "Nature & sky", "Art", "K-pop", "Movies", "Music", "Pride", "City & neon", "Luxe & textures"]
     private enum CapKind { case letter, function, accent }
 
@@ -188,9 +188,11 @@ final class KeyboardViewController: UIInputViewController {
               let id = shared.string(forKey: "theme") else { return }
         let updated = shared.double(forKey: "themeUpdatedAt")
         guard updated > defaults.double(forKey: "themeAppliedAt") else { return }
-        defaults.set(updated, forKey: "themeAppliedAt")
         let candidate = resolveTheme(id: id)
-        guard !candidate.requiresPro || isPro || shared.bool(forKey: "proUnlocked") else { return }
+        // Only mark the app's choice as applied once it really is: if Pro or the photo isn't
+        // visible yet, try again next time the keyboard opens instead of skipping it for good.
+        guard candidate.id == id, !candidate.requiresPro || isPro || shared.bool(forKey: "proUnlocked") else { return }
+        defaults.set(updated, forKey: "themeAppliedAt")
         palette = candidate
         defaults.set(candidate.id, forKey: "theme")
     }
@@ -451,12 +453,20 @@ final class KeyboardViewController: UIInputViewController {
             // iPhone only lets a keyboard read the photo and colours saved in the app when Full Access is on.
             column.addArrangedSubview(notice("Your photo & colours need Full Access: Settings → General → Keyboard → Keyboards → Lyfstyle → Allow Full Access"))
         }
+        if hasFullAccess, photoURL == nil, customTheme == nil {
+            column.addArrangedSubview(sectionLabel("No photo yet: choose one in the Lyfstyle app → Keyboard tab"))
+        }
         let mine = [photoTheme, customTheme].compactMap { $0 }
         var sections: [(String, [KeyboardPalette])] = [("Yours", mine)]
         for group in Self.pictureGroups {
             sections.append((group, catalogue.data.themes.filter { $0.image != nil && $0.group == group }))
         }
         sections.append(("Colours", catalogue.data.themes.filter { $0.image == nil }))
+        defer {
+            // What the keyboard can see, so problems with "Your photo" are easy to spot.
+            let pro = isPro || (sharedDefaults?.bool(forKey: "proUnlocked") ?? false)
+            column.addArrangedSubview(sectionLabel("Full Access \(hasFullAccess ? "on" : "off") · Photo \(photoURL != nil ? "found" : "not found") · Pro \(pro ? "yes" : "no")"))
+        }
         for (title, options) in sections where !options.isEmpty {
             column.addArrangedSubview(sectionLabel(title))
             var index = 0

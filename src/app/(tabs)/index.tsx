@@ -16,6 +16,7 @@ const GROUPS: { id: string; label: string }[] = [
   { id: 'Bold & clean', label: '𝗕𝗼𝗹𝗱 & clean' },
   { id: 'Bubbles & boxes', label: 'Ⓑⓤⓑⓑⓛⓔⓢ & boxes' },
   { id: 'Gothic & fancy', label: '𝔊𝔬𝔱𝔥𝔦𝔠 & fancy' },
+  { id: 'Around the world', label: 'ค๓๏ภɭ Around the world' },
   { id: 'Effects', label: 'G̴l̴i̴t̴c̴h̴ & effects' },
   { id: 'Fun & flipped', label: '🙃 Fun & flipped' },
   { id: 'Spaced out', label: 's ♡ p ♡ a ♡ c ♡ e' },

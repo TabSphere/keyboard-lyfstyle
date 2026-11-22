@@ -14,15 +14,15 @@ import {
 
 const styled = catalogue.styles.filter((style) => style.id !== 'normal');
 
-test('catalogue has 100 styles; Script, Sans Bold and Sparkles are free', () => {
-  assert.equal(styled.length, 100);
-  assert.equal(new Set(styled.map((style) => style.id)).size, 100);
+test('catalogue has 112 styles; Script, Sans Bold and Sparkles are free', () => {
+  assert.equal(styled.length, 112);
+  assert.equal(new Set(styled.map((style) => style.id)).size, 112);
   assert.deepEqual(styled.filter((style) => !style.isPro).map((style) => style.id).sort(), ['frame-sparkles', 'sans-bold', 'script']);
 });
 
 test('only per-character styles reach the keyboards', () => {
   const keyboard = keyboardStyles();
-  assert.equal(keyboard.length, 48);
+  assert.equal(keyboard.length, 60);
   assert.ok(keyboard.every((style) => style.kind === 'alphabet' || style.kind === 'overlay'));
   assert.ok(styled.filter((style) => style.kind === 'composite').every((style) => !style.keyboard));
 });
@@ -76,7 +76,7 @@ test('kaomoji styles add a face after the text', () => {
 
 test('style selection never falls back to a Pro style', () => {
   assert.equal(getStyle('does-not-exist').id, 'normal');
-  assert.equal(availableStyles(true).length, 100);
+  assert.equal(availableStyles(true).length, 112);
   assert.ok(availableStyles(false).every((style) => !style.isPro));
 });
 

@@ -1207,7 +1207,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
     private companion object {
         const val ROW_HEIGHT = 54
         const val CUSTOM_ID = "custom-colors"
-        val FONT_GROUPS = listOf("Cursive & cute", "Bold & clean", "Bubbles & boxes", "Gothic & fancy", "Effects", "Fun & flipped")
+        val FONT_GROUPS = listOf("Cursive & cute", "Bold & clean", "Bubbles & boxes", "Gothic & fancy", "Around the world", "Effects", "Fun & flipped")
         val PICTURE_GROUPS = listOf("Cute & sweet", "Nature & sky", "Art", "K-pop", "Movies", "Music", "Pride", "City & neon", "Luxe & textures")
 
         /** The person's own photo as a theme: white glass keys over a dimmed picture. */

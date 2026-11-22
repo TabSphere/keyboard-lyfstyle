@@ -29,8 +29,8 @@ class StyleCatalogueTest {
     @Test
     fun plainUndoesEveryKeyboardStyleForTranslation() {
         val message = "Hello there, see you at 9"
-        // Upside-down turns u into a plain n, and Greek shares Λ with another style's v: not exactly reversible.
-        val ambiguous = setOf("upside-down", "greek")
+        // These share a letter shape with another style (e.g. Greek Λ, Crossbar Ŧ), or swap in plain letters, so they are not exactly reversible.
+        val ambiguous = setOf("upside-down", "greek", "crossbar", "curvy")
         for (style in catalogue.keyboardStyles.filter { it.id !in ambiguous }) {
             val styled = catalogue.transform(message, style.id)
             val back = catalogue.plain(styled)
@@ -48,9 +48,9 @@ class StyleCatalogueTest {
     @Test
     fun catalogueCountsMatchProductContract() {
         val styled = catalogue.styles.filter { it.id != "normal" }
-        assertEquals(100, styled.size)
+        assertEquals(112, styled.size)
         // Only per-character styles reach the keyboard; frames and joiners are app-only.
-        assertEquals(48, catalogue.keyboardStyles.size)
+        assertEquals(60, catalogue.keyboardStyles.size)
         assertTrue(catalogue.keyboardStyles.all { it.kind == "alphabet" || it.kind == "overlay" })
         assertEquals(112, catalogue.themes.size)
         assertEquals(88, catalogue.themes.count { it.image != null })
