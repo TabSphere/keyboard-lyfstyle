@@ -36,6 +36,6 @@ const styles = StyleSheet.create({
   back: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 6 },
   backText: { fontFamily: type.bold, fontSize: 9, letterSpacing: 1, color: colors.ink },
   section: { paddingVertical: 22, borderTopWidth: 1, borderTopColor: colors.line },
-  sectionTitle: { fontFamily: type.serif, color: colors.ink, fontSize: 29, lineHeight: 34, marginTop: 7 },
+  sectionTitle: { fontFamily: type.display, color: colors.ink, fontSize: 29, lineHeight: 34, marginTop: 7 },
   sectionCopy: { fontFamily: type.sans, color: colors.muted, fontSize: 14, lineHeight: 23, marginTop: 8 },
 });

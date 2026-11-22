@@ -77,7 +77,7 @@ export default function LooksScreen() {
                 hitSlop={8}
                 style={({ pressed }) => [styles.favorite, pressed && styles.pressed]}
               >
-                <Star size={19} color={favorite ? colors.coralDark : colors.muted} fill={favorite ? colors.coralDark : 'transparent'} strokeWidth={1.5} />
+                <Star size={19} color={favorite ? colors.ink : colors.muted} fill={favorite ? colors.accent : 'transparent'} strokeWidth={1.5} />
               </Pressable>
             </View>
           );
@@ -128,16 +128,16 @@ const styles = StyleSheet.create({
   filterScroll: { marginHorizontal: -22 },
   filters: { paddingHorizontal: 22, gap: 6, paddingBottom: 22 },
   filter: { paddingHorizontal: 13, minHeight: 36, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: colors.line },
-  filterActive: { borderBottomColor: colors.coralDark, backgroundColor: colors.paper },
+  filterActive: { borderBottomColor: colors.ink, backgroundColor: colors.accent },
   filterText: { fontFamily: type.medium, color: colors.muted, fontSize: 12 },
   filterTextActive: { color: colors.ink },
   collectionHeading: { flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.ink },
   resultCount: { fontFamily: type.bold, fontSize: 9, letterSpacing: 1, color: colors.muted },
   styleList: { width: '100%' },
   styleRow: { flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.line, paddingRight: 2 },
-  styleRowSelected: { backgroundColor: colors.paper },
+  styleRowSelected: { backgroundColor: colors.surface },
   styleMain: { flex: 1, flexDirection: 'row', gap: 13, paddingVertical: 19, alignItems: 'flex-start' },
-  styleIndex: { fontFamily: type.bold, fontSize: 9, color: colors.coralDark, marginTop: 5, width: 18 },
+  styleIndex: { fontFamily: type.bold, fontSize: 9, color: colors.muted, marginTop: 5, width: 18 },
   styleCopy: { flex: 1 },
   styleNameRow: { flexDirection: 'row', gap: 9, alignItems: 'center' },
   styleName: { fontFamily: type.semibold, color: colors.ink, fontSize: 13 },
@@ -146,12 +146,12 @@ const styles = StyleSheet.create({
   favorite: { width: 42, height: 48, justifyContent: 'center', alignItems: 'flex-end' },
   pressed: { opacity: 0.6 },
   empty: { paddingVertical: 44, alignItems: 'flex-start' },
-  emptyTitle: { fontFamily: type.serif, color: colors.ink, fontSize: 31 },
+  emptyTitle: { fontFamily: type.display, color: colors.ink, fontSize: 31 },
   emptyCopy: { fontFamily: type.sans, color: colors.muted, fontSize: 14, marginTop: 6 },
-  emptyAction: { marginTop: 18, borderBottomWidth: 1, borderBottomColor: colors.coralDark, paddingBottom: 4 },
-  emptyActionText: { fontFamily: type.semibold, color: colors.coralDark, fontSize: 13 },
+  emptyAction: { marginTop: 18, borderBottomWidth: 1, borderBottomColor: colors.ink, paddingBottom: 4 },
+  emptyActionText: { fontFamily: type.semibold, color: colors.ink, fontSize: 13 },
   themeSection: { marginTop: 42 },
-  themeTitle: { fontFamily: type.serifItalic, color: colors.ink, fontSize: 35, marginTop: 6 },
+  themeTitle: { fontFamily: type.display, color: colors.ink, fontSize: 35, marginTop: 6 },
   themeIntro: { fontFamily: type.sans, color: colors.muted, fontSize: 13, lineHeight: 20, marginTop: 8, maxWidth: 450 },
   themeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 20 },
   themeCard: { width: '47%', minWidth: 145, flexGrow: 1, borderWidth: 1, padding: 10, borderRadius: 8 },

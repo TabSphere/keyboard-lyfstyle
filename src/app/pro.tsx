@@ -49,7 +49,7 @@ export default function ProScreen() {
             onPress={pro.purchase}
             busy={pro.busy}
             variant="primary"
-            icon={<LockKeyhole size={17} color={colors.white} />}
+            icon={<LockKeyhole size={17} color={colors.onAccent} />}
           >
             {pro.price ? `Unlock lifetime · ${pro.price}` : 'Unlock Lifetime Pro'}
           </ActionButton>
@@ -72,7 +72,7 @@ export default function ProScreen() {
 function Benefit({ children }: { children: string }) {
   return (
     <View style={styles.benefit}>
-      <Check size={16} color={colors.coralDark} strokeWidth={1.8} />
+      <Check size={16} color={colors.ink} strokeWidth={1.8} />
       <Text style={styles.benefitText}>{children}</Text>
     </View>
   );
@@ -83,10 +83,10 @@ const styles = StyleSheet.create({
   topbar: { paddingHorizontal: 22, paddingTop: 8, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   close: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   hero: { backgroundColor: colors.ink, paddingHorizontal: 24, paddingTop: 29, paddingBottom: 26 },
-  title: { fontFamily: type.serif, fontSize: 51, lineHeight: 51, letterSpacing: -1.2, color: colors.ivory, marginTop: 17 },
-  titleItalic: { fontFamily: type.serifItalic, color: '#FF8B70' },
-  specimen: { marginTop: 29, paddingTop: 19, borderTopWidth: 1, borderTopColor: '#484942', gap: 10 },
-  specimenText: { color: colors.ivory, fontSize: 19, lineHeight: 28 },
+  title: { fontFamily: type.display, fontSize: 51, lineHeight: 51, letterSpacing: -1.2, color: colors.canvas, marginTop: 17 },
+  titleItalic: { fontFamily: type.display, color: colors.accent },
+  specimen: { marginTop: 29, paddingTop: 19, borderTopWidth: 1, borderTopColor: '#2E2E33', gap: 10 },
+  specimenText: { color: colors.canvas, fontSize: 19, lineHeight: 28 },
   body: { paddingHorizontal: 24, paddingTop: 25, paddingBottom: 38 },
   intro: { fontFamily: type.sans, color: colors.muted, fontSize: 14, lineHeight: 22 },
   benefits: { marginTop: 22, gap: 13 },
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   benefitText: { flex: 1, fontFamily: type.medium, color: colors.ink, fontSize: 13, lineHeight: 20 },
   priceBlock: { marginVertical: 25, paddingVertical: 19, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line },
   priceLabel: { fontFamily: type.bold, color: colors.muted, fontSize: 9, letterSpacing: 1.2 },
-  price: { fontFamily: type.serif, color: colors.ink, fontSize: 38, marginTop: 4 },
+  price: { fontFamily: type.display, color: colors.ink, fontSize: 38, marginTop: 4 },
   priceNote: { fontFamily: type.sans, color: colors.muted, fontSize: 11, lineHeight: 17, marginTop: 5 },
   storeStatus: { fontFamily: type.sans, color: colors.muted, fontSize: 11, lineHeight: 17, marginTop: 12 },
   message: { fontFamily: type.medium, color: colors.success, fontSize: 12, lineHeight: 19, marginTop: 12 },

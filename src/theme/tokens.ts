@@ -1,11 +1,14 @@
+// Lyfstyle v2 palette: "Ink + Highlighter".
+// The UI stays neutral; the highlighter is used for fills (selected states, primary
+// actions, marker highlights), never as text on light backgrounds (contrast is too low).
 export const colors = {
-  ivory: '#F4F1EA',
-  paper: '#FCFAF5',
-  ink: '#1D1D1B',
-  muted: '#6B675F',
-  coral: '#E85D3F',
-  coralDark: '#B43E28',
-  line: '#D8D2C7',
+  canvas: '#F7F7F5', // page background; also light text on ink surfaces
+  surface: '#FFFFFF', // cards and raised areas
+  ink: '#111114', // primary text, dark surfaces
+  muted: '#64646B', // secondary text
+  accent: '#D9FF3F', // highlighter fill
+  onAccent: '#111114', // text and icons drawn on the highlighter
+  line: '#E2E2DE',
   success: '#216B4B',
   white: '#FFFFFF',
 } as const;

@@ -1,0 +1,45 @@
+name: Tester APK
+
+# Builds a standalone Android APK (JS bundled, no dev server needed) for side-loading
+# onto test phones. Signed with the throwaway debug key from prebuild, so it can never
+# be uploaded to Google Play. Run it from the Actions tab, or push to a test/** branch.
+on:
+  workflow_dispatch:
+  push:
+    branches: ['test/**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tester-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - run: npm ci
+      - run: npx expo prebuild --platform android --clean
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build release APK (debug-signed)
+        env:
+          NODE_ENV: production
+        run: ./android/gradlew -p android :app:assembleRelease --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lyfstyle-tester-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
