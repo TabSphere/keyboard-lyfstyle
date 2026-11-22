@@ -21,12 +21,12 @@ Where each field goes:
 fancy,text,cute,aesthetic,bio,cursive,style,symbols,kaomoji,emoji,themes,letters,caption,cool
 ```
 
-**Description — App Store** (1367/4000):
+**Description — App Store** (1363/4000):
 
 ```
 Make every word stand out.
 
-Lyfstyle turns your words into 𝒸𝓊𝓇𝓈𝒾𝓋ℯ, 𝗯𝗼𝗹𝗱, ⓑⓤⓑⓑⓛⓔⓢ, 𝔤𝔬𝔱𝔥𝔦𝔠 and ✨ sparkly ✨ text for bios, captions, names and chats. Type once, see every look, then copy and paste anywhere. Or switch to the Lyfstyle keyboard and type in style in any app.
+Lyfstyle turns your words into cursive, bold, bubbles, gothic and sparkly text for bios, captions, names and chats. Type once, see every look, then copy and paste anywhere. Or switch to the Lyfstyle keyboard and type in style in any app.
 
 WHAT'S INSIDE
 • 100+ text styles in easy groups: cursive & cute, bold & clean, bubbles, gothic, glitch effects, emoji frames and kaomoji
@@ -89,12 +89,12 @@ Styled letters are Unicode characters, so they work in Instagram, TikTok, WhatsA
 schrift,font,fonts,schön,aesthetic,bio,schreibschrift,fett,text,symbole,kaomoji,emoji,themes,stil
 ```
 
-**Description — App Store** (1507/4000):
+**Description — App Store** (1503/4000):
 
 ```
 Lass jedes Wort auffallen.
 
-Lyfstyle verwandelt deine Wörter in 𝓋ℯ𝓇𝓈𝓅𝒾ℯ𝓁𝓉, 𝗳𝗲𝘁𝘁, Ⓑⓛⓐⓢⓔⓝ, 𝔤𝔬𝔱𝔦𝔰𝔠𝔥 und ✨ glitzernden ✨ Text – für Bios, Captions, Namen und Chats. Einmal tippen, jeden Look sehen, kopieren und überall einfügen. Oder wechsle zur Lyfstyle-Tastatur und schreib in jeder App mit Style.
+Lyfstyle verwandelt deine Wörter in verspielt, fett, Blasen, gotisch und glitzernden Text – für Bios, Captions, Namen und Chats. Einmal tippen, jeden Look sehen, kopieren und überall einfügen. Oder wechsle zur Lyfstyle-Tastatur und schreib in jeder App mit Style.
 
 DAS STECKT DRIN
 • 100+ Textstile in übersichtlichen Gruppen: verspielt & süß, fett & klar, Blasen, Gotisch, Glitch-Effekte, Emoji-Rahmen und Kaomoji
@@ -157,12 +157,12 @@ Gestylte Buchstaben sind Unicode-Zeichen und funktionieren in Instagram, TikTok,
 police,écriture,jolie,aesthetic,bio,cursive,gras,texte,symboles,kaomoji,emoji,thèmes,lettres
 ```
 
-**Description — App Store** (1576/4000):
+**Description — App Store** (1572/4000):
 
 ```
 Fais briller chaque mot.
 
-Lyfstyle transforme tes mots en 𝒸𝓊𝓇𝓈𝒾𝓋ℯ, 𝗴𝗿𝗮𝘀, ⓑⓤⓛⓛⓔⓢ, 𝔤𝔬𝔱𝔥𝔦𝔮𝔲𝔢 et en texte ✨ pailleté ✨ pour tes bios, légendes, pseudos et discussions. Tape une fois, découvre tous les styles, copie et colle partout. Ou passe au clavier Lyfstyle et écris avec style dans n’importe quelle app.
+Lyfstyle transforme tes mots en cursive, gras, bulles, gothique et en texte pailleté pour tes bios, légendes, pseudos et discussions. Tape une fois, découvre tous les styles, copie et colle partout. Ou passe au clavier Lyfstyle et écris avec style dans n’importe quelle app.
 
 AU PROGRAMME
 • 100+ styles de texte rangés par groupes : cursive et mignon, gras et net, bulles, gothique, effets glitch, cadres emoji et kaomoji
@@ -225,12 +225,12 @@ Les lettres stylées sont des caractères Unicode : elles fonctionnent sur Insta
 fuentes,tipografía,bonitas,aesthetic,bio,cursiva,negrita,texto,símbolos,kaomoji,emoji,temas,estilo
 ```
 
-**Description — App Store** (1510/4000):
+**Description — App Store** (1506/4000):
 
 ```
 Haz que cada palabra destaque.
 
-Lyfstyle convierte tus palabras en 𝒸𝓊𝓇𝓈𝒾𝓋𝒶, 𝗻𝗲𝗴𝗿𝗶𝘁𝗮, ⓑⓤⓡⓑⓤⓙⓐⓢ, 𝔢𝔩𝔢𝔤𝔞𝔫𝔱𝔢 y texto ✨ brillante ✨ para tu bio, tus pies de foto, tu nombre y tus chats. Escribe una vez, mira todos los estilos, copia y pega donde quieras. O cambia al teclado Lyfstyle y escribe con estilo en cualquier app.
+Lyfstyle convierte tus palabras en cursiva, negrita, burbujas, elegante y texto brillante para tu bio, tus pies de foto, tu nombre y tus chats. Escribe una vez, mira todos los estilos, copia y pega donde quieras. O cambia al teclado Lyfstyle y escribe con estilo en cualquier app.
 
 QUÉ INCLUYE
 • 100+ estilos de texto en grupos claros: cursiva y cuqui, negrita y limpia, burbujas, gótica, efectos glitch, marcos con emoji y kaomoji
@@ -293,12 +293,12 @@ Las letras con estilo son caracteres Unicode, así que funcionan en Instagram, T
 fontes,letras,diferentes,fofas,aesthetic,bio,cursiva,negrito,símbolos,kaomoji,emoji,temas,nick
 ```
 
-**Description — App Store** (1475/4000):
+**Description — App Store** (1471/4000):
 
 ```
 Faça cada palavra brilhar.
 
-O Lyfstyle transforma suas palavras em 𝒸𝓊𝓇𝓈𝒾𝓋𝒶, 𝗻𝗲𝗴𝗿𝗶𝘁𝗼, ⓑⓞⓛⓗⓐⓢ, 𝔢𝔰𝔱𝔦𝔩𝔬𝔰𝔞 e texto ✨ brilhante ✨ para bio, legendas, nomes e conversas. Digite uma vez, veja todos os estilos, copie e cole onde quiser. Ou troque para o teclado Lyfstyle e escreva com estilo em qualquer app.
+O Lyfstyle transforma suas palavras em cursiva, negrito, bolhas, estilosa e texto brilhante para bio, legendas, nomes e conversas. Digite uma vez, veja todos os estilos, copie e cole onde quiser. Ou troque para o teclado Lyfstyle e escreva com estilo em qualquer app.
 
 O QUE TEM DENTRO
 • 100+ estilos de texto em grupos organizados: cursiva e fofa, negrito e clean, bolhas, gótica, efeitos glitch, molduras com emoji e kaomoji
@@ -361,12 +361,12 @@ As letras estilizadas são caracteres Unicode, então funcionam no Instagram, Ti
 caratteri,scritte,carine,aesthetic,bio,corsivo,grassetto,testo,simboli,kaomoji,emoji,temi,stile
 ```
 
-**Description — App Store** (1510/4000):
+**Description — App Store** (1506/4000):
 
 ```
 Fai risaltare ogni parola.
 
-Lyfstyle trasforma le tue parole in 𝒸ℴ𝓇𝓈𝒾𝓋ℴ, 𝗴𝗿𝗮𝘀𝘀𝗲𝘁𝘁𝗼, ⓑⓞⓛⓛⓔ, 𝔤𝔬𝔱𝔦𝔠𝔬 e testo ✨ scintillante ✨ per bio, didascalie, nomi e chat. Scrivi una volta, guarda tutti gli stili, copia e incolla dove vuoi. Oppure passa alla tastiera Lyfstyle e scrivi con stile in qualsiasi app.
+Lyfstyle trasforma le tue parole in corsivo, grassetto, bolle, gotico e testo scintillante per bio, didascalie, nomi e chat. Scrivi una volta, guarda tutti gli stili, copia e incolla dove vuoi. Oppure passa alla tastiera Lyfstyle e scrivi con stile in qualsiasi app.
 
 COSA TROVI DENTRO
 • 100+ stili di testo in gruppi ordinati: corsivo e carino, grassetto e pulito, bolle, gotico, effetti glitch, cornici emoji e kaomoji
@@ -429,12 +429,12 @@ Le lettere stilizzate sono caratteri Unicode: funzionano su Instagram, TikTok, W
 lettertypes,letters,schattig,aesthetic,bio,sierlijk,vet,tekst,symbolen,kaomoji,emoji,thema,stijl
 ```
 
-**Description — App Store** (1503/4000):
+**Description — App Store** (1499/4000):
 
 ```
 Laat elk woord opvallen.
 
-Lyfstyle maakt van je woorden 𝓈𝒾ℯ𝓇𝓁𝒾𝒿𝓀, 𝘃𝗲𝘁, ⓑⓤⓑⓑⓔⓛⓢ, 𝔤𝔬𝔱𝔦𝔰𝔠𝔥 en ✨ glinsterende ✨ tekst voor je bio, captions, namen en chats. Eén keer typen, elke stijl zien, kopiëren en overal plakken. Of schakel over naar het Lyfstyle-toetsenbord en typ in stijl in elke app.
+Lyfstyle maakt van je woorden sierlijk, vet, bubbels, gotisch en glinsterende tekst voor je bio, captions, namen en chats. Eén keer typen, elke stijl zien, kopiëren en overal plakken. Of schakel over naar het Lyfstyle-toetsenbord en typ in stijl in elke app.
 
 WAT ZIT ERIN
 • 100+ tekststijlen in duidelijke groepen: sierlijk en schattig, vet en strak, bubbels, gotisch, glitch-effecten, emoji-kaders en kaomoji
@@ -497,12 +497,12 @@ Gestylde letters zijn Unicode-tekens, dus ze werken in Instagram, TikTok, WhatsA
 文字,かわいい,おしゃれ,装飾,筆記体,太字,記号,顔文字,絵文字,着せ替え,プロフィール,ネーム,テキスト
 ```
 
-**Description — App Store** (768/4000):
+**Description — App Store** (764/4000):
 
 ```
 言葉をもっとかわいく、もっと目立たせよう。
 
-Lyfstyleなら、𝒞𝓊𝓉ℯ, 𝗕𝗼𝗹𝗱, Ⓑⓤⓑⓑⓛⓔ, 𝔊𝔬𝔱𝔥𝔦𝔠 や ✨ キラキラ ✨ の文字でプロフィール、キャプション、名前、チャットを飾れます。一度入力するだけで全スタイルをプレビューして、コピー＆ペースト。Lyfstyleキーボードに切り替えれば、どのアプリでもそのままおしゃれに入力できます。
+Lyfstyleなら、Cute, Bold, Bubble, Gothic や キラキラ の文字でプロフィール、キャプション、名前、チャットを飾れます。一度入力するだけで全スタイルをプレビューして、コピー＆ペースト。Lyfstyleキーボードに切り替えれば、どのアプリでもそのままおしゃれに入力できます。
 
 主な機能
 • 100+種類の文字スタイルをグループで整理：筆記体＆かわいい、太字＆シンプル、バブル、ゴシック、グリッチ、絵文字フレーム、顔文字
@@ -565,12 +565,12 @@ Script、Sans Bold、Sparklesは無料。Lifetime Proなら1回の支払いで�
 글씨체,예쁜글씨,특수문자,감성,필기체,굵은글씨,이모티콘,이모지,카오모지,테마,프로필,닉네임,꾸미기
 ```
 
-**Description — App Store** (798/4000):
+**Description — App Store** (794/4000):
 
 ```
 모든 글자를 돋보이게.
 
-Lyfstyle로 𝒞𝓊𝓉ℯ, 𝗕𝗼𝗹𝗱, Ⓑⓤⓑⓑⓛⓔ, 𝔊𝔬𝔱𝔥𝔦𝔠, ✨ 반짝이 ✨ 같은 글씨체를 프로필, 캡션, 닉네임, 채팅에 써 보세요. 한 번만 입력하면 모든 스타일을 미리 보고 복사해서 어디든 붙여 넣을 수 있어요. Lyfstyle 키보드로 바꾸면 어떤 앱에서든 바로 예쁘게 입력할 수 있어요.
+Lyfstyle로 Cute, Bold, Bubble, Gothic, 반짝이 같은 글씨체를 프로필, 캡션, 닉네임, 채팅에 써 보세요. 한 번만 입력하면 모든 스타일을 미리 보고 복사해서 어디든 붙여 넣을 수 있어요. Lyfstyle 키보드로 바꾸면 어떤 앱에서든 바로 예쁘게 입력할 수 있어요.
 
 주요 기능
 • 보기 쉽게 그룹으로 정리한 글씨체 100+가지: 필기체·귀여운, 굵고 깔끔한, 버블, 고딕, 글리치 효과, 이모지 프레임, 카오모지

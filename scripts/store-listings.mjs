@@ -19,8 +19,13 @@ const style = (word, id) => {
 
 const LIMITS = { appName: 30, subtitle: 30, shortDescription: 80, description: 4000, keywords: 100 };
 
-/** Sample words shown in the style they name. */
-const samples = (cursive, bold, bubbles, gothic) =>
+/**
+ * Sample words shown in the style they name. They stay as a placeholder here and are
+ * resolved per store: styled on Google Play, plain on the App Store, which rejects
+ * styled letters and emoji in descriptions.
+ */
+const samples = (cursive, bold, bubbles, gothic) => `{{S:${cursive}|${bold}|${bubbles}|${gothic}}}`;
+const styledSamples = (cursive, bold, bubbles, gothic) =>
   `${style(cursive, 'script')}, ${style(bold, 'sans-bold')}, ${style(bubbles, 'circled')}, ${style(gothic, 'fraktur')}`;
 
 const languages = {
@@ -262,7 +267,12 @@ const languages = {
 
 function description(lang, platform) {
   const bullets = [...lang.bullets, platform === 'ios' ? lang.ios : lang.android].map((line) => `• ${line}`).join('\n');
-  return [lang.intro, `${lang.insideTitle}\n${bullets}`, `${lang.payTitle}\n${lang.payText}`, `${lang.privacyTitle}\n${lang.privacyText}`, lang.paste].join('\n\n');
+  const text = [lang.intro, `${lang.insideTitle}\n${bullets}`, `${lang.payTitle}\n${lang.payText}`, `${lang.privacyTitle}\n${lang.privacyText}`, lang.paste].join('\n\n');
+  const withSamples = text.replace(/\{\{S:([^}]*)\}\}/g, (_, words) =>
+    platform === 'ios' ? words.split('|').join(', ') : styledSamples(...words.split('|')),
+  );
+  // App Store: "✨ sparkly ✨" becomes "sparkly".
+  return platform === 'ios' ? withSamples.replace(/✨ ?([^✨]+?) ?✨/g, '$1') : withSamples;
 }
 
 // Apple counts characters; count by code point so emoji and styled letters count as one.
@@ -289,6 +299,10 @@ for (const [code, lang] of Object.entries(languages)) {
   check('appStoreDescription', listing.appStoreDescription, LIMITS.description);
   check('playDescription', listing.playDescription, LIMITS.description);
   if (/\s,|,\s/.test(listing.keywords)) problems.push(`${code} keywords: no spaces around commas`);
+  if ([...listing.appStoreDescription].some((ch) => ch.codePointAt(0) > 0xffff || /[①-⓿☀-➿]/.test(ch))) problems.push(`${code}: App Store description has emoji or styled letters`);
+  if ([...listing.appStoreDescription].some((ch) => ch.codePointAt(0) > 0xffff || /[①-⓿☀-➿]/.test(ch))) {
+    problems.push(`${code}: App Store description has emoji or styled letters (App Store Connect rejects them)`);
+  }
   if (/android|google/i.test(listing.appStoreDescription)) problems.push(`${code}: App Store text mentions Android`);
   output[code] = listing;
 }
