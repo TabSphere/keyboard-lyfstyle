@@ -44,6 +44,11 @@
   .pixel .bezel { position: relative; width: 100%; height: 100%; border-radius: 12% / 5.4%; background: #060606; padding: 3.4%; }
   .pixel .screen { border-radius: 9.6% / 4.4%; }
   .pixel .hole { position: absolute; z-index: 5; left: 50%; transform: translateX(-50%); background: #000; border-radius: 50%; box-shadow: 0 0 0 1.5px #1c1c1c; }
+  /* iPad Pro-style: thin aluminium band, even black border, front camera on the long edge */
+  .ipad .frame { border-radius: 5.2% / 3.9%; background: linear-gradient(135deg, #e9eaec 0%, #a7abb0 30%, #e1e3e6 55%, #8f9499 80%, #d2d5d9 100%); padding: 0.9%; }
+  .ipad .bezel { position: relative; width: 100%; height: 100%; border-radius: 4.6% / 3.45%; background: #070707; padding: 2.6%; }
+  .ipad .screen { border-radius: 2.6% / 1.95%; }
+  .ipad .cam { position: absolute; z-index: 5; left: 50%; transform: translateX(-50%); background: #1a1a1a; border-radius: 50%; }
   .pixel .btn { position: absolute; background: linear-gradient(90deg, #8a9096, #dfe2e6, #8a9096); border-radius: 3px; }
 
   /* ---------- phone UI (drawn at 430 x 932 for iPhone, 412 x 915 for Android) ---------- */
@@ -155,7 +160,18 @@ function chat({ android, theme, styleId, panel, typed, messages, photo, translat
 }
 
 function appScreen({ android, shot }) {
-  return `<div class="ui appbg ${android ? 'android' : ''}">${STATUS(android)}<img class="appshot" src="app/${shot}.png"></div>`;
+  return `<div class="ui appbg ${android ? 'android' : ''}">${STATUS(android)}<img class="appshot" src="${window.IPAD ? 'app-ipad' : 'app'}/${shot}.png"></div>`;
+}
+
+// iPad Pro 13-inch-like frame; the screen is drawn at 1032 x 1376.
+function ipadDevice({ w, x, y, content }) {
+  const sw = 774, sh = 1032, pad = 0.035; // drawn at 75% then scaled up, like the iPad keyboard's larger keys
+  const screenW = w * (1 - pad * 2), screenH = screenW * sh / sw, h = screenH + w * pad * 2, scale = screenW / sw;
+  return `<div class="device ipad" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"><div class="shadow"></div>
+    <div class="frame" style="width:${w}px;height:${h}px"><div class="bezel">
+      <div class="screen" style="left:${w * pad - w * 0.009}px;top:${w * pad - w * 0.009}px;width:${screenW}px;height:${screenH}px">
+        <div class="canvas" style="width:${sw}px;height:${sh}px;transform:scale(${scale})">${content}</div></div>
+      <div class="cam" style="top:${w * 0.012}px;width:${w * 0.01}px;height:${w * 0.01}px"></div></div></div></div>`;
 }
 
 // iPhone 16 Pro Max-like and Pixel 9 Pro-like frames. `w` = outer device width in slide px.
@@ -226,18 +242,20 @@ if (params.get('feature')) {
 const platform = params.get('p') || 'ios';
 const index = Number(params.get('i') || 0);
 const android = platform === 'android';
-const W = android ? 360 : 430, H = android ? 640 : 932;
+const ipad = platform === 'ipad';
+window.IPAD = ipad;
+const W = ipad ? 1032 : android ? 360 : 430, H = ipad ? 1376 : android ? 640 : 932;
 const s = SLIDES[index];
-const titleSize = android ? 32 : 40;
-const devW = android ? 226 : 318;
-const devY = android ? 196 : 244;
+const titleSize = ipad ? 62 : android ? 32 : 40;
+const devW = ipad ? 800 : android ? 226 : 318;
+const devY = ipad ? 330 : android ? 196 : 244;
 const shade = s.tone === 'light'
   ? 'linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.1) 38%, rgba(0,0,0,0) 60%)'
   : 'linear-gradient(180deg, rgba(255,255,255,.78) 0%, rgba(255,255,255,.35) 30%, rgba(255,255,255,0) 52%)';
 document.getElementById('root').innerHTML = `<div class="slide" style="width:${W}px;height:${H}px">
   <div class="bgimg" style="background-image:url(bg/${s.bg}.png)"></div><div class="shade" style="background:${shade}"></div>
-  <div class="copy ${s.tone}" style="top:${android ? 26 : 52}px"><div class="kicker">${s.kicker}</div><h1 style="font-size:${titleSize}px">${s.title}</h1><p>${s.sub}</p></div>
-  ${device({ android, w: devW, x: (W - devW) / 2, y: devY, content: s.screen(android) })}
+  <div class="copy ${s.tone}" style="top:${ipad ? 70 : android ? 26 : 52}px"><div class="kicker">${s.kicker}</div><h1 style="font-size:${titleSize}px">${s.title}</h1><p>${s.sub}</p></div>
+  ${ipad ? ipadDevice({ w: devW, x: (W - devW) / 2, y: devY, content: s.screen(false) }) : device({ android, w: devW, x: (W - devW) / 2, y: devY, content: s.screen(android) })}
 </div>`;
 </script>
 </body>

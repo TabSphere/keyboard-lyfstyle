@@ -1,0 +1,113 @@
+<template>
+<style>
+@font-face { font-family: 'Bricolage'; src: url('assets/fonts/BricolageGrotesque_800ExtraBold.ttf'); font-weight: 800; }
+#root { position: absolute; inset: 0; overflow: hidden; font-family: Inter, sans-serif; }
+.ground { position: absolute; inset: 0; background: linear-gradient(160deg, #FF3D8B 0%, #FF7AAE 48%, #FFD6E4 100%); }
+.blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .55; }
+.head { position: absolute; left: 70px; right: 70px; text-align: center; font-family: 'Bricolage', sans-serif; font-weight: 800; color: #fff; letter-spacing: -2px; line-height: 1.02; }
+.head mark { background: #FFD84D; color: #22172F; padding: 0 12px; border-radius: 12px; }
+.phone { position: absolute; width: 589.5px; height: 1217px; border-radius: 120px; padding: 12px;
+  background: linear-gradient(135deg, #f2efe9 0%, #b9b4ac 18%, #e9e5de 40%, #8f8a83 62%, #d9d4cc 82%, #7d7871 100%);
+  box-shadow: 0 60px 120px rgba(80, 10, 40, .35); }
+.phone .bezel { width: 100%; height: 100%; border-radius: 108px; background: #050505; padding: 14px; }
+.phone .screen { position: relative; width: 537.5px; height: 1165px; border-radius: 94px; overflow: hidden; background: #fbf9fc; }
+.phone .canvas { position: absolute; left: 0; top: 0; width: 430px; height: 932px; transform: scale(1.25); transform-origin: 0 0; }
+.island { position: absolute; left: 50%; top: 11px; width: 124px; height: 36px; margin-left: -62px; border-radius: 20px; background: #000; z-index: 9; }
+.ui { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.status { height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 14px 34px 0 40px; font: 600 17px Inter, sans-serif; flex: none; }
+.chathead { display: flex; align-items: center; gap: 10px; padding: 6px 16px 12px; border-bottom: 1px solid #eee; flex: none; background: #fff; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #ffb3c9, #c7b3ff); display: grid; place-items: center; font: 700 15px Inter, sans-serif; color: #fff; }
+.chathead b { font: 700 16px Inter, sans-serif; } .chathead small { display: block; font: 500 12px Inter, sans-serif; color: #8a8a8f; }
+.thread { flex: 1; padding: 14px; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+.bubble { max-width: 78%; padding: 10px 14px; border-radius: 20px; font: 400 17px/1.3 Inter, sans-serif; }
+.in { align-self: flex-start; background: #ececf1; color: #111; border-bottom-left-radius: 6px; }
+.out { align-self: flex-end; background: #FF3D8B; color: #fff; border-bottom-right-radius: 6px; }
+.composer { display: flex; align-items: center; gap: 8px; padding: 8px 12px 10px; flex: none; }
+.field { position: relative; flex: 1; height: 40px; border-radius: 20px; border: 1px solid #ddd; background: #fff; padding: 0 14px; font: 400 18px/38px Inter, sans-serif; color: #111; white-space: nowrap; overflow: hidden; }
+.seg { position: absolute; left: 14px; top: 0; }
+.send { width: 34px; height: 34px; border-radius: 50%; background: #FF3D8B; display: grid; place-items: center; color: #fff; font: 700 18px Inter, sans-serif; }
+.kbwrap { flex: none; background: #d4d6dc; padding: 6px 4px 0; }
+.kb { position: relative; height: 266px; border-radius: 22px; overflow: hidden; padding: 6px 3px 4px; --keybg: rgba(255,255,255,.82); --keyfg: #22172F; }
+.kbbg { position: absolute; inset: 0; background: center / cover no-repeat; }
+.bar { position: relative; display: flex; gap: 4px; align-items: center; height: 40px; padding: 0 2px; overflow: hidden; }
+.chip { flex: none; height: 32px; padding: 0 9px; border-radius: 16px; display: grid; place-items: center; font: 500 14px Inter, sans-serif; white-space: nowrap; background: var(--keybg); color: var(--keyfg); }
+.rows { position: relative; }
+.row { position: relative; display: flex; height: 54px; }
+.cell { position: relative; height: 54px; }
+.key { position: absolute; inset: 5px 3px; border-radius: 9px; background: var(--keybg); color: var(--keyfg); box-shadow: 0 1px 0 rgba(0,0,0,.2); }
+.key.fn { background: rgba(255,255,255,.6); }
+.key.acc { background: #FF3D8B; color: #fff; }
+.lab { position: absolute; inset: 0; display: grid; place-items: center; font: 400 23px Inter, sans-serif; }
+.pop { position: absolute; width: 56px; height: 66px; border-radius: 12px; background: #fff; color: #22172F; display: grid; place-items: center; font: 400 32px Inter, sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,.3); z-index: 5; }
+.sysbar { height: 46px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; color: #3a3a3c; font: 400 22px Inter, sans-serif; }
+.tap { position: absolute; width: 70px; height: 70px; margin: -35px 0 0 -35px; border-radius: 50%; background: rgba(255,255,255,.55); border: 3px solid rgba(255,255,255,.95); z-index: 8; }
+</style>
+<div id="root" data-composition-id="trans" data-width="1920" data-height="1080" data-start="0" data-duration="4" data-layout-allow-overflow>
+<div class="ground"></div><div class="blob" style="left:-120px;top:-80px;width:520px;height:520px;background:#FFD84D"></div><div class="blob" style="right:-160px;top:620px;width:600px;height:600px;background:#C7B3FF"></div>
+  <div id="trans-head" class="head" style="left:120px;right:830px;text-align:left;top:360px;font-size:104px">Translate<br><mark>as you type.</mark></div>
+  <div id="trans-phone" class="phone" style="left:1150px;top:-150px"><div class="bezel"><div class="screen"><div class="island"></div><div class="canvas"><div class="ui">
+  <div class="status"><span>9:41</span><span>●●●</span></div>
+  <div class="chathead"><span style="font-size:26px;color:#FF3D8B;font-weight:300">‹</span><div class="avatar">M</div><div><b>Maya</b><small>online</small></div></div>
+  <div id="trans-thread" class="thread"><div class="bubble out">who's coming tonight?</div><div class="bubble in">me, Leo and my friend Lucía</div><div class="bubble in">she's from Madrid</div><div class="bubble in">¡Hola! Soy Lucía, la amiga de Maya</div><div class="bubble in">¿Vienes a la fiesta esta noche?</div><div id="trans-sent" class="bubble out" style="opacity:0">𝒪𝒷𝓋𝒾ℴ, 𝓃ℴ𝓈 𝓋ℯ𝓂ℴ𝓈 𝒶 𝓁𝒶𝓈 9</div></div>
+  <div class="composer"><div class="field"><span id="trans-f1" class="seg">ℴ𝒷𝓋𝒾ℴ𝓊𝓈𝓁𝓎, 𝓈ℯℯ 𝓎ℴ𝓊 𝒶𝓉 9</span><span id="trans-f2" class="seg" style="opacity:0">𝒪𝒷𝓋𝒾ℴ, 𝓃ℴ𝓈 𝓋ℯ𝓂ℴ𝓈 𝒶 𝓁𝒶𝓈 9</span></div><div class="send">↑</div></div>
+  <div class="kbwrap"><div id="trans-kb" class="kb">
+    <div id="trans-bg" class="kbbg" style="background-image:url(assets/img/sakura.jpg)"></div>
+    <div class="bar"><div id="trans-c-fonts" class="chip">Fonts ▾</div><div id="trans-c-script" class="chip">𝒮𝒸𝓇𝒾𝓅𝓉</div><div id="trans-c-fraktur" class="chip">𝔉𝔯𝔞𝔨𝔱𝔲𝔯</div><div id="trans-c-circled" class="chip">Ⓑⓤⓑⓑⓛⓔⓢ</div><div style="margin-left:auto;display:flex;gap:5px"><div id="trans-c-tr" class="chip">文A</div><div id="trans-c-th" class="chip">🎨</div></div></div><div id="trans-panel" style="position:absolute;left:3px;right:3px;top:46px;height:162px;padding:2px 4px;opacity:0;z-index:4">
+    <div style="display:flex;gap:5px"><div id="trans-lang-Spanish" class="chip">Spanish</div><div id="trans-lang-French" class="chip">French</div><div id="trans-lang-Korean" class="chip">Korean</div><div id="trans-lang-Japanese" class="chip">Japanese</div></div>
+    <div style="margin-top:8px;border-radius:10px;padding:10px 12px;min-height:64px;background:rgba(255,255,255,.88);font:400 17px/1.3 Inter, sans-serif;color:#22172F"><span id="trans-r-0" style="opacity:0">O</span><span id="trans-r-1" style="opacity:0">b</span><span id="trans-r-2" style="opacity:0">v</span><span id="trans-r-3" style="opacity:0">i</span><span id="trans-r-4" style="opacity:0">o</span><span id="trans-r-5" style="opacity:0">,</span><span id="trans-r-6" style="opacity:0">&nbsp;</span><span id="trans-r-7" style="opacity:0">n</span><span id="trans-r-8" style="opacity:0">o</span><span id="trans-r-9" style="opacity:0">s</span><span id="trans-r-10" style="opacity:0">&nbsp;</span><span id="trans-r-11" style="opacity:0">v</span><span id="trans-r-12" style="opacity:0">e</span><span id="trans-r-13" style="opacity:0">m</span><span id="trans-r-14" style="opacity:0">o</span><span id="trans-r-15" style="opacity:0">s</span><span id="trans-r-16" style="opacity:0">&nbsp;</span><span id="trans-r-17" style="opacity:0">a</span><span id="trans-r-18" style="opacity:0">&nbsp;</span><span id="trans-r-19" style="opacity:0">l</span><span id="trans-r-20" style="opacity:0">a</span><span id="trans-r-21" style="opacity:0">s</span><span id="trans-r-22" style="opacity:0">&nbsp;</span><span id="trans-r-23" style="opacity:0">9</span></div>
+    <div style="display:flex;gap:8px;margin-top:8px"><div id="trans-replace" class="chip" style="flex:1;background:#FF3D8B;color:#fff">Replace my text</div><div class="chip" style="flex:1">Add it</div></div></div><div id="trans-rows" class="rows"><div class="row"><div class="cell" style="width:10%"><div id="trans-k-q" class="key "><span class="lab f-script" style="opacity:1">𝓆</span><span class="lab f-fraktur" style="opacity:0">𝔮</span><span class="lab f-circled" style="opacity:0">ⓠ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-w" class="key "><span class="lab f-script" style="opacity:1">𝓌</span><span class="lab f-fraktur" style="opacity:0">𝔴</span><span class="lab f-circled" style="opacity:0">ⓦ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-e" class="key "><span class="lab f-script" style="opacity:1">ℯ</span><span class="lab f-fraktur" style="opacity:0">𝔢</span><span class="lab f-circled" style="opacity:0">ⓔ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-r" class="key "><span class="lab f-script" style="opacity:1">𝓇</span><span class="lab f-fraktur" style="opacity:0">𝔯</span><span class="lab f-circled" style="opacity:0">ⓡ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-t" class="key "><span class="lab f-script" style="opacity:1">𝓉</span><span class="lab f-fraktur" style="opacity:0">𝔱</span><span class="lab f-circled" style="opacity:0">ⓣ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-y" class="key "><span class="lab f-script" style="opacity:1">𝓎</span><span class="lab f-fraktur" style="opacity:0">𝔶</span><span class="lab f-circled" style="opacity:0">ⓨ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-u" class="key "><span class="lab f-script" style="opacity:1">𝓊</span><span class="lab f-fraktur" style="opacity:0">𝔲</span><span class="lab f-circled" style="opacity:0">ⓤ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-i" class="key "><span class="lab f-script" style="opacity:1">𝒾</span><span class="lab f-fraktur" style="opacity:0">𝔦</span><span class="lab f-circled" style="opacity:0">ⓘ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-o" class="key "><span class="lab f-script" style="opacity:1">ℴ</span><span class="lab f-fraktur" style="opacity:0">𝔬</span><span class="lab f-circled" style="opacity:0">ⓞ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-p" class="key "><span class="lab f-script" style="opacity:1">𝓅</span><span class="lab f-fraktur" style="opacity:0">𝔭</span><span class="lab f-circled" style="opacity:0">ⓟ</span></div></div></div><div class="row"><div style="width:5%"></div><div class="cell" style="width:10%"><div id="trans-k-a" class="key "><span class="lab f-script" style="opacity:1">𝒶</span><span class="lab f-fraktur" style="opacity:0">𝔞</span><span class="lab f-circled" style="opacity:0">ⓐ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-s" class="key "><span class="lab f-script" style="opacity:1">𝓈</span><span class="lab f-fraktur" style="opacity:0">𝔰</span><span class="lab f-circled" style="opacity:0">ⓢ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-d" class="key "><span class="lab f-script" style="opacity:1">𝒹</span><span class="lab f-fraktur" style="opacity:0">𝔡</span><span class="lab f-circled" style="opacity:0">ⓓ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-f" class="key "><span class="lab f-script" style="opacity:1">𝒻</span><span class="lab f-fraktur" style="opacity:0">𝔣</span><span class="lab f-circled" style="opacity:0">ⓕ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-g" class="key "><span class="lab f-script" style="opacity:1">ℊ</span><span class="lab f-fraktur" style="opacity:0">𝔤</span><span class="lab f-circled" style="opacity:0">ⓖ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-h" class="key "><span class="lab f-script" style="opacity:1">𝒽</span><span class="lab f-fraktur" style="opacity:0">𝔥</span><span class="lab f-circled" style="opacity:0">ⓗ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-j" class="key "><span class="lab f-script" style="opacity:1">𝒿</span><span class="lab f-fraktur" style="opacity:0">𝔧</span><span class="lab f-circled" style="opacity:0">ⓙ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-k" class="key "><span class="lab f-script" style="opacity:1">𝓀</span><span class="lab f-fraktur" style="opacity:0">𝔨</span><span class="lab f-circled" style="opacity:0">ⓚ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-l" class="key "><span class="lab f-script" style="opacity:1">𝓁</span><span class="lab f-fraktur" style="opacity:0">𝔩</span><span class="lab f-circled" style="opacity:0">ⓛ</span></div></div><div style="width:5%"></div></div><div class="row"><div class="cell" style="width:14%"><div id="trans-k-shift" class="key fn"><span class="lab">⇧</span></div></div><div style="width:1%"></div><div class="cell" style="width:10%"><div id="trans-k-z" class="key "><span class="lab f-script" style="opacity:1">𝓏</span><span class="lab f-fraktur" style="opacity:0">𝔷</span><span class="lab f-circled" style="opacity:0">ⓩ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-x" class="key "><span class="lab f-script" style="opacity:1">𝓍</span><span class="lab f-fraktur" style="opacity:0">𝔵</span><span class="lab f-circled" style="opacity:0">ⓧ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-c" class="key "><span class="lab f-script" style="opacity:1">𝒸</span><span class="lab f-fraktur" style="opacity:0">𝔠</span><span class="lab f-circled" style="opacity:0">ⓒ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-v" class="key "><span class="lab f-script" style="opacity:1">𝓋</span><span class="lab f-fraktur" style="opacity:0">𝔳</span><span class="lab f-circled" style="opacity:0">ⓥ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-b" class="key "><span class="lab f-script" style="opacity:1">𝒷</span><span class="lab f-fraktur" style="opacity:0">𝔟</span><span class="lab f-circled" style="opacity:0">ⓑ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-n" class="key "><span class="lab f-script" style="opacity:1">𝓃</span><span class="lab f-fraktur" style="opacity:0">𝔫</span><span class="lab f-circled" style="opacity:0">ⓝ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-m" class="key "><span class="lab f-script" style="opacity:1">𝓂</span><span class="lab f-fraktur" style="opacity:0">𝔪</span><span class="lab f-circled" style="opacity:0">ⓜ</span></div></div><div style="width:1%"></div><div class="cell" style="width:14%"><div id="trans-k-del" class="key fn"><span class="lab" style="font-size:20px">⌫</span></div></div></div></div><div class="row"><div class="cell" style="width:13%"><div id="trans-k-123" class="key fn"><span class="lab" style="font-size:17px">123</span></div></div><div class="cell" style="width:11%"><div id="trans-k-mic" class="key fn"><span class="lab" style="font-size:18px">🎙</span></div></div><div class="cell" style="width:47%"><div id="trans-k-space" class="key "><span class="lab f-script" style="font-size:16px;opacity:0.8">𝓁𝓎𝒻𝓈𝓉𝓎𝓁ℯ</span><span class="lab f-fraktur" style="font-size:16px;opacity:0">𝔩𝔶𝔣𝔰𝔱𝔶𝔩𝔢</span><span class="lab f-circled" style="font-size:16px;opacity:0">ⓛⓨⓕⓢⓣⓨⓛⓔ</span></div></div><div class="cell" style="width:10%"><div id="trans-k-dot" class="key "><span class="lab">.</span></div></div><div class="cell" style="width:19%"><div id="trans-k-ret" class="key acc"><span class="lab">↵</span></div></div></div>
+  </div><div class="sysbar"><span>🌐︎</span><span>🎙︎</span></div></div>
+</div></div></div></div></div>
+  <div id="trans-tap1" class="tap" style="left:1609.75px;top:676px;opacity:0"></div><div id="trans-tap2" class="tap" style="left:1234.75px;top:723.5px;opacity:0"></div><div id="trans-tap3" class="tap" style="left:1309.75px;top:851px;opacity:0"></div><div id="trans-tap4" class="tap" style="left:1684.75px;top:608.5px;opacity:0"></div>
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#trans-head", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.05);
+tl.set("#trans-c-script", { backgroundColor: "#FF3D8B", color: "#ffffff" }, 0);
+tl.fromTo("#trans-tap1", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, 0.55);
+tl.to("#trans-tap1", { opacity: 0, scale: 1.25, duration: 0.25, ease: "power1.in" }, 0.69);
+tl.to("#trans-c-tr", { backgroundColor: "#FF3D8B", color: "#ffffff", duration: 0.12 }, 0.6);
+tl.to("#trans-rows", { opacity: 0, duration: 0.2 }, 0.65);
+tl.fromTo("#trans-panel", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.25, ease: "power2.out" }, 0.7);
+tl.fromTo("#trans-tap2", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, 0.95);
+tl.to("#trans-tap2", { opacity: 0, scale: 1.25, duration: 0.25, ease: "power1.in" }, 1.09);
+tl.to("#trans-lang-Spanish", { backgroundColor: "#FF3D8B", color: "#ffffff", duration: 0.12 }, 1.0);
+tl.fromTo("#trans-r-0", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.20);
+tl.fromTo("#trans-r-1", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.24);
+tl.fromTo("#trans-r-2", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.29);
+tl.fromTo("#trans-r-3", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.33);
+tl.fromTo("#trans-r-4", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.38);
+tl.fromTo("#trans-r-5", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.42);
+tl.fromTo("#trans-r-6", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.47);
+tl.fromTo("#trans-r-7", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.51);
+tl.fromTo("#trans-r-8", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.56);
+tl.fromTo("#trans-r-9", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.60);
+tl.fromTo("#trans-r-10", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.65);
+tl.fromTo("#trans-r-11", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.69);
+tl.fromTo("#trans-r-12", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.74);
+tl.fromTo("#trans-r-13", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.78);
+tl.fromTo("#trans-r-14", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.83);
+tl.fromTo("#trans-r-15", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.88);
+tl.fromTo("#trans-r-16", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.92);
+tl.fromTo("#trans-r-17", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.96);
+tl.fromTo("#trans-r-18", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 2.01);
+tl.fromTo("#trans-r-19", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 2.05);
+tl.fromTo("#trans-r-20", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 2.10);
+tl.fromTo("#trans-r-21", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 2.15);
+tl.fromTo("#trans-r-22", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 2.19);
+tl.fromTo("#trans-r-23", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 2.23);
+tl.fromTo("#trans-tap3", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, 2.5);
+tl.to("#trans-tap3", { opacity: 0, scale: 1.25, duration: 0.25, ease: "power1.in" }, 2.64);
+tl.to("#trans-f1", { opacity: 0, duration: 0.15 }, 2.55);
+tl.to("#trans-f2", { opacity: 1, duration: 0.15 }, 2.6);
+tl.to("#trans-panel", { opacity: 0, duration: 0.2 }, 2.8);
+tl.to("#trans-rows", { opacity: 1, duration: 0.2 }, 2.85);
+tl.to("#trans-c-tr", { backgroundColor: "rgba(255,255,255,.82)", color: "#22172F", duration: 0.12 }, 2.85);
+tl.fromTo("#trans-tap4", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, 3.2);
+tl.to("#trans-tap4", { opacity: 0, scale: 1.25, duration: 0.25, ease: "power1.in" }, 3.34);
+tl.to("#trans-f2", { opacity: 0, duration: 0.05 }, 3.25);
+tl.fromTo("#trans-sent", { opacity: 0, scale: 0.6, transformOrigin: "100% 100%" }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" }, 3.25);
+
+window.__timelines["trans"] = tl;
+</script>
+</template>

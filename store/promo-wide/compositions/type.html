@@ -1,0 +1,171 @@
+<template>
+<style>
+@font-face { font-family: 'Bricolage'; src: url('assets/fonts/BricolageGrotesque_800ExtraBold.ttf'); font-weight: 800; }
+#root { position: absolute; inset: 0; overflow: hidden; font-family: Inter, sans-serif; }
+.ground { position: absolute; inset: 0; background: linear-gradient(160deg, #FF3D8B 0%, #FF7AAE 48%, #FFD6E4 100%); }
+.blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .55; }
+.head { position: absolute; left: 70px; right: 70px; text-align: center; font-family: 'Bricolage', sans-serif; font-weight: 800; color: #fff; letter-spacing: -2px; line-height: 1.02; }
+.head mark { background: #FFD84D; color: #22172F; padding: 0 12px; border-radius: 12px; }
+.phone { position: absolute; width: 589.5px; height: 1217px; border-radius: 120px; padding: 12px;
+  background: linear-gradient(135deg, #f2efe9 0%, #b9b4ac 18%, #e9e5de 40%, #8f8a83 62%, #d9d4cc 82%, #7d7871 100%);
+  box-shadow: 0 60px 120px rgba(80, 10, 40, .35); }
+.phone .bezel { width: 100%; height: 100%; border-radius: 108px; background: #050505; padding: 14px; }
+.phone .screen { position: relative; width: 537.5px; height: 1165px; border-radius: 94px; overflow: hidden; background: #fbf9fc; }
+.phone .canvas { position: absolute; left: 0; top: 0; width: 430px; height: 932px; transform: scale(1.25); transform-origin: 0 0; }
+.island { position: absolute; left: 50%; top: 11px; width: 124px; height: 36px; margin-left: -62px; border-radius: 20px; background: #000; z-index: 9; }
+.ui { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.status { height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 14px 34px 0 40px; font: 600 17px Inter, sans-serif; flex: none; }
+.chathead { display: flex; align-items: center; gap: 10px; padding: 6px 16px 12px; border-bottom: 1px solid #eee; flex: none; background: #fff; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #ffb3c9, #c7b3ff); display: grid; place-items: center; font: 700 15px Inter, sans-serif; color: #fff; }
+.chathead b { font: 700 16px Inter, sans-serif; } .chathead small { display: block; font: 500 12px Inter, sans-serif; color: #8a8a8f; }
+.thread { flex: 1; padding: 14px; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+.bubble { max-width: 78%; padding: 10px 14px; border-radius: 20px; font: 400 17px/1.3 Inter, sans-serif; }
+.in { align-self: flex-start; background: #ececf1; color: #111; border-bottom-left-radius: 6px; }
+.out { align-self: flex-end; background: #FF3D8B; color: #fff; border-bottom-right-radius: 6px; }
+.composer { display: flex; align-items: center; gap: 8px; padding: 8px 12px 10px; flex: none; }
+.field { position: relative; flex: 1; height: 40px; border-radius: 20px; border: 1px solid #ddd; background: #fff; padding: 0 14px; font: 400 18px/38px Inter, sans-serif; color: #111; white-space: nowrap; overflow: hidden; }
+.seg { position: absolute; left: 14px; top: 0; }
+.send { width: 34px; height: 34px; border-radius: 50%; background: #FF3D8B; display: grid; place-items: center; color: #fff; font: 700 18px Inter, sans-serif; }
+.kbwrap { flex: none; background: #d4d6dc; padding: 6px 4px 0; }
+.kb { position: relative; height: 266px; border-radius: 22px; overflow: hidden; padding: 6px 3px 4px; --keybg: rgba(255,255,255,.82); --keyfg: #22172F; }
+.kbbg { position: absolute; inset: 0; background: center / cover no-repeat; }
+.bar { position: relative; display: flex; gap: 4px; align-items: center; height: 40px; padding: 0 2px; overflow: hidden; }
+.chip { flex: none; height: 32px; padding: 0 9px; border-radius: 16px; display: grid; place-items: center; font: 500 14px Inter, sans-serif; white-space: nowrap; background: var(--keybg); color: var(--keyfg); }
+.rows { position: relative; }
+.row { position: relative; display: flex; height: 54px; }
+.cell { position: relative; height: 54px; }
+.key { position: absolute; inset: 5px 3px; border-radius: 9px; background: var(--keybg); color: var(--keyfg); box-shadow: 0 1px 0 rgba(0,0,0,.2); }
+.key.fn { background: rgba(255,255,255,.6); }
+.key.acc { background: #FF3D8B; color: #fff; }
+.lab { position: absolute; inset: 0; display: grid; place-items: center; font: 400 23px Inter, sans-serif; }
+.pop { position: absolute; width: 56px; height: 66px; border-radius: 12px; background: #fff; color: #22172F; display: grid; place-items: center; font: 400 32px Inter, sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,.3); z-index: 5; }
+.sysbar { height: 46px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; color: #3a3a3c; font: 400 22px Inter, sans-serif; }
+.tap { position: absolute; width: 70px; height: 70px; margin: -35px 0 0 -35px; border-radius: 50%; background: rgba(255,255,255,.55); border: 3px solid rgba(255,255,255,.95); z-index: 8; }
+</style>
+<div id="root" data-composition-id="type" data-width="1920" data-height="1080" data-start="0" data-duration="6" data-layout-allow-overflow>
+<div class="ground"></div><div class="blob" style="left:-120px;top:-80px;width:520px;height:520px;background:#FFD84D"></div><div class="blob" style="right:-160px;top:620px;width:600px;height:600px;background:#C7B3FF"></div>
+  <div id="type-head" class="head" style="left:120px;right:830px;text-align:left;top:360px;font-size:99px">Pick a font.<br><mark>Every key shows it.</mark></div>
+  <div id="type-phone" class="phone" style="left:1150px;top:-150px"><div class="bezel"><div class="screen"><div class="island"></div><div class="canvas"><div class="ui">
+  <div class="status"><span>9:41</span><span>●●●</span></div>
+  <div class="chathead"><span style="font-size:26px;color:#FF3D8B;font-weight:300">‹</span><div class="avatar">M</div><div><b>Maya</b><small>online</small></div></div>
+  <div id="type-thread" class="thread"><div class="bubble out">did u see the new menu at Nori</div><div class="bubble in">YES we're going</div><div class="bubble in">8 or 9?</div><div class="bubble out">8!! i'll book</div><div class="bubble in">are we still on for tonight</div><div class="bubble in">what are we wearing??</div><div id="type-sent" class="bubble out" style="opacity:0">𝓈ℯℯ 𝓊 𝓁𝒶𝓉ℯ𝓇</div></div>
+  <div class="composer"><div class="field"><span id="type-segA" class="seg"><span id="type-t-script-0" style="opacity:0">𝓈</span><span id="type-t-script-1" style="opacity:0">ℯ</span><span id="type-t-script-2" style="opacity:0">ℯ</span><span id="type-t-script-3" style="opacity:0">&nbsp;</span><span id="type-t-script-4" style="opacity:0">𝓊</span><span id="type-t-script-5" style="opacity:0">&nbsp;</span><span id="type-t-script-6" style="opacity:0">𝓁</span><span id="type-t-script-7" style="opacity:0">𝒶</span><span id="type-t-script-8" style="opacity:0">𝓉</span><span id="type-t-script-9" style="opacity:0">ℯ</span><span id="type-t-script-10" style="opacity:0">𝓇</span></span><span id="type-segB" class="seg"><span id="type-t-fraktur-0" style="opacity:0">𝔬</span><span id="type-t-fraktur-1" style="opacity:0">𝔟</span><span id="type-t-fraktur-2" style="opacity:0">𝔰</span><span id="type-t-fraktur-3" style="opacity:0">𝔢</span><span id="type-t-fraktur-4" style="opacity:0">𝔰</span><span id="type-t-fraktur-5" style="opacity:0">𝔰</span><span id="type-t-fraktur-6" style="opacity:0">𝔢</span><span id="type-t-fraktur-7" style="opacity:0">𝔡</span><span>&nbsp;</span><span id="type-t-circled-0" style="opacity:0">ⓞ</span><span id="type-t-circled-1" style="opacity:0">ⓜ</span><span id="type-t-circled-2" style="opacity:0">ⓖ</span></span></div><div class="send">↑</div></div>
+  <div class="kbwrap"><div id="type-kb" class="kb">
+    <div id="type-bg" class="kbbg" style="background-image:url(assets/img/sakura.jpg)"></div>
+    <div class="bar"><div id="type-c-fonts" class="chip">Fonts ▾</div><div id="type-c-script" class="chip">𝒮𝒸𝓇𝒾𝓅𝓉</div><div id="type-c-fraktur" class="chip">𝔉𝔯𝔞𝔨𝔱𝔲𝔯</div><div id="type-c-circled" class="chip">Ⓑⓤⓑⓑⓛⓔⓢ</div><div style="margin-left:auto;display:flex;gap:5px"><div id="type-c-tr" class="chip">文A</div><div id="type-c-th" class="chip">🎨</div></div></div><div id="type-p-script-0" class="pop" style="left:58.2px;top:28px;opacity:0">𝓈</div><div id="type-p-script-1" class="pop" style="left:79px;top:-26px;opacity:0">ℯ</div><div id="type-p-script-2" class="pop" style="left:79px;top:-26px;opacity:0">ℯ</div><div id="type-p-script-4" class="pop" style="left:245.40000000000003px;top:-26px;opacity:0">𝓊</div><div id="type-p-script-6" class="pop" style="left:349.40000000000003px;top:28px;opacity:0">𝓁</div><div id="type-p-script-7" class="pop" style="left:16.6px;top:28px;opacity:0">𝒶</div><div id="type-p-script-8" class="pop" style="left:162.20000000000002px;top:-26px;opacity:0">𝓉</div><div id="type-p-script-9" class="pop" style="left:79px;top:-26px;opacity:0">ℯ</div><div id="type-p-script-10" class="pop" style="left:120.6px;top:-26px;opacity:0">𝓇</div><div id="type-p-fraktur-0" class="pop" style="left:328.6px;top:-26px;opacity:0">𝔬</div><div id="type-p-fraktur-1" class="pop" style="left:224.60000000000002px;top:82px;opacity:0">𝔟</div><div id="type-p-fraktur-2" class="pop" style="left:58.2px;top:28px;opacity:0">𝔰</div><div id="type-p-fraktur-3" class="pop" style="left:79px;top:-26px;opacity:0">𝔢</div><div id="type-p-fraktur-4" class="pop" style="left:58.2px;top:28px;opacity:0">𝔰</div><div id="type-p-fraktur-5" class="pop" style="left:58.2px;top:28px;opacity:0">𝔰</div><div id="type-p-fraktur-6" class="pop" style="left:79px;top:-26px;opacity:0">𝔢</div><div id="type-p-fraktur-7" class="pop" style="left:99.80000000000001px;top:28px;opacity:0">𝔡</div><div id="type-p-circled-0" class="pop" style="left:328.6px;top:-26px;opacity:0">ⓞ</div><div id="type-p-circled-1" class="pop" style="left:307.8px;top:82px;opacity:0">ⓜ</div><div id="type-p-circled-2" class="pop" style="left:183px;top:28px;opacity:0">ⓖ</div><div id="type-rows" class="rows"><div class="row"><div class="cell" style="width:10%"><div id="type-k-q" class="key "><span class="lab f-script" style="opacity:1">𝓆</span><span class="lab f-fraktur" style="opacity:0">𝔮</span><span class="lab f-circled" style="opacity:0">ⓠ</span></div></div><div class="cell" style="width:10%"><div id="type-k-w" class="key "><span class="lab f-script" style="opacity:1">𝓌</span><span class="lab f-fraktur" style="opacity:0">𝔴</span><span class="lab f-circled" style="opacity:0">ⓦ</span></div></div><div class="cell" style="width:10%"><div id="type-k-e" class="key "><span class="lab f-script" style="opacity:1">ℯ</span><span class="lab f-fraktur" style="opacity:0">𝔢</span><span class="lab f-circled" style="opacity:0">ⓔ</span></div></div><div class="cell" style="width:10%"><div id="type-k-r" class="key "><span class="lab f-script" style="opacity:1">𝓇</span><span class="lab f-fraktur" style="opacity:0">𝔯</span><span class="lab f-circled" style="opacity:0">ⓡ</span></div></div><div class="cell" style="width:10%"><div id="type-k-t" class="key "><span class="lab f-script" style="opacity:1">𝓉</span><span class="lab f-fraktur" style="opacity:0">𝔱</span><span class="lab f-circled" style="opacity:0">ⓣ</span></div></div><div class="cell" style="width:10%"><div id="type-k-y" class="key "><span class="lab f-script" style="opacity:1">𝓎</span><span class="lab f-fraktur" style="opacity:0">𝔶</span><span class="lab f-circled" style="opacity:0">ⓨ</span></div></div><div class="cell" style="width:10%"><div id="type-k-u" class="key "><span class="lab f-script" style="opacity:1">𝓊</span><span class="lab f-fraktur" style="opacity:0">𝔲</span><span class="lab f-circled" style="opacity:0">ⓤ</span></div></div><div class="cell" style="width:10%"><div id="type-k-i" class="key "><span class="lab f-script" style="opacity:1">𝒾</span><span class="lab f-fraktur" style="opacity:0">𝔦</span><span class="lab f-circled" style="opacity:0">ⓘ</span></div></div><div class="cell" style="width:10%"><div id="type-k-o" class="key "><span class="lab f-script" style="opacity:1">ℴ</span><span class="lab f-fraktur" style="opacity:0">𝔬</span><span class="lab f-circled" style="opacity:0">ⓞ</span></div></div><div class="cell" style="width:10%"><div id="type-k-p" class="key "><span class="lab f-script" style="opacity:1">𝓅</span><span class="lab f-fraktur" style="opacity:0">𝔭</span><span class="lab f-circled" style="opacity:0">ⓟ</span></div></div></div><div class="row"><div style="width:5%"></div><div class="cell" style="width:10%"><div id="type-k-a" class="key "><span class="lab f-script" style="opacity:1">𝒶</span><span class="lab f-fraktur" style="opacity:0">𝔞</span><span class="lab f-circled" style="opacity:0">ⓐ</span></div></div><div class="cell" style="width:10%"><div id="type-k-s" class="key "><span class="lab f-script" style="opacity:1">𝓈</span><span class="lab f-fraktur" style="opacity:0">𝔰</span><span class="lab f-circled" style="opacity:0">ⓢ</span></div></div><div class="cell" style="width:10%"><div id="type-k-d" class="key "><span class="lab f-script" style="opacity:1">𝒹</span><span class="lab f-fraktur" style="opacity:0">𝔡</span><span class="lab f-circled" style="opacity:0">ⓓ</span></div></div><div class="cell" style="width:10%"><div id="type-k-f" class="key "><span class="lab f-script" style="opacity:1">𝒻</span><span class="lab f-fraktur" style="opacity:0">𝔣</span><span class="lab f-circled" style="opacity:0">ⓕ</span></div></div><div class="cell" style="width:10%"><div id="type-k-g" class="key "><span class="lab f-script" style="opacity:1">ℊ</span><span class="lab f-fraktur" style="opacity:0">𝔤</span><span class="lab f-circled" style="opacity:0">ⓖ</span></div></div><div class="cell" style="width:10%"><div id="type-k-h" class="key "><span class="lab f-script" style="opacity:1">𝒽</span><span class="lab f-fraktur" style="opacity:0">𝔥</span><span class="lab f-circled" style="opacity:0">ⓗ</span></div></div><div class="cell" style="width:10%"><div id="type-k-j" class="key "><span class="lab f-script" style="opacity:1">𝒿</span><span class="lab f-fraktur" style="opacity:0">𝔧</span><span class="lab f-circled" style="opacity:0">ⓙ</span></div></div><div class="cell" style="width:10%"><div id="type-k-k" class="key "><span class="lab f-script" style="opacity:1">𝓀</span><span class="lab f-fraktur" style="opacity:0">𝔨</span><span class="lab f-circled" style="opacity:0">ⓚ</span></div></div><div class="cell" style="width:10%"><div id="type-k-l" class="key "><span class="lab f-script" style="opacity:1">𝓁</span><span class="lab f-fraktur" style="opacity:0">𝔩</span><span class="lab f-circled" style="opacity:0">ⓛ</span></div></div><div style="width:5%"></div></div><div class="row"><div class="cell" style="width:14%"><div id="type-k-shift" class="key fn"><span class="lab">⇧</span></div></div><div style="width:1%"></div><div class="cell" style="width:10%"><div id="type-k-z" class="key "><span class="lab f-script" style="opacity:1">𝓏</span><span class="lab f-fraktur" style="opacity:0">𝔷</span><span class="lab f-circled" style="opacity:0">ⓩ</span></div></div><div class="cell" style="width:10%"><div id="type-k-x" class="key "><span class="lab f-script" style="opacity:1">𝓍</span><span class="lab f-fraktur" style="opacity:0">𝔵</span><span class="lab f-circled" style="opacity:0">ⓧ</span></div></div><div class="cell" style="width:10%"><div id="type-k-c" class="key "><span class="lab f-script" style="opacity:1">𝒸</span><span class="lab f-fraktur" style="opacity:0">𝔠</span><span class="lab f-circled" style="opacity:0">ⓒ</span></div></div><div class="cell" style="width:10%"><div id="type-k-v" class="key "><span class="lab f-script" style="opacity:1">𝓋</span><span class="lab f-fraktur" style="opacity:0">𝔳</span><span class="lab f-circled" style="opacity:0">ⓥ</span></div></div><div class="cell" style="width:10%"><div id="type-k-b" class="key "><span class="lab f-script" style="opacity:1">𝒷</span><span class="lab f-fraktur" style="opacity:0">𝔟</span><span class="lab f-circled" style="opacity:0">ⓑ</span></div></div><div class="cell" style="width:10%"><div id="type-k-n" class="key "><span class="lab f-script" style="opacity:1">𝓃</span><span class="lab f-fraktur" style="opacity:0">𝔫</span><span class="lab f-circled" style="opacity:0">ⓝ</span></div></div><div class="cell" style="width:10%"><div id="type-k-m" class="key "><span class="lab f-script" style="opacity:1">𝓂</span><span class="lab f-fraktur" style="opacity:0">𝔪</span><span class="lab f-circled" style="opacity:0">ⓜ</span></div></div><div style="width:1%"></div><div class="cell" style="width:14%"><div id="type-k-del" class="key fn"><span class="lab" style="font-size:20px">⌫</span></div></div></div></div><div class="row"><div class="cell" style="width:13%"><div id="type-k-123" class="key fn"><span class="lab" style="font-size:17px">123</span></div></div><div class="cell" style="width:11%"><div id="type-k-mic" class="key fn"><span class="lab" style="font-size:18px">🎙</span></div></div><div class="cell" style="width:47%"><div id="type-k-space" class="key "><span class="lab f-script" style="font-size:16px;opacity:0.8">𝓁𝓎𝒻𝓈𝓉𝓎𝓁ℯ</span><span class="lab f-fraktur" style="font-size:16px;opacity:0">𝔩𝔶𝔣𝔰𝔱𝔶𝔩𝔢</span><span class="lab f-circled" style="font-size:16px;opacity:0">ⓛⓨⓕⓢⓣⓨⓛⓔ</span></div></div><div class="cell" style="width:10%"><div id="type-k-dot" class="key "><span class="lab">.</span></div></div><div class="cell" style="width:19%"><div id="type-k-ret" class="key acc"><span class="lab">↵</span></div></div></div>
+  </div><div class="sysbar"><span>🌐︎</span><span>🎙︎</span></div></div>
+</div></div></div></div></div>
+  <div id="type-tap1" class="tap" style="left:1650.35px;top:937.25px;opacity:0"></div><div id="type-tap2" class="tap" style="left:1403.5px;top:676px;opacity:0"></div><div id="type-tap3" class="tap" style="left:1499.75px;top:676px;opacity:0"></div>
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#type-phone", { y: 900 }, { y: 0, duration: 0.6, ease: "power3.out" }, 0);
+tl.fromTo("#type-head", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.15);
+tl.set("#type-c-script", { backgroundColor: "#FF3D8B", color: "#ffffff" }, 0);
+tl.fromTo("#type-t-script-0", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 0.8);
+tl.to("#type-k-s", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 0.8);
+tl.fromTo("#type-p-script-0", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 0.8);
+tl.to("#type-p-script-0", { opacity: 0, duration: 0.05 }, 0.92);
+tl.fromTo("#type-t-script-1", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 0.94);
+tl.to("#type-k-e", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 0.94);
+tl.fromTo("#type-p-script-1", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 0.94);
+tl.to("#type-p-script-1", { opacity: 0, duration: 0.05 }, 1.06);
+tl.fromTo("#type-t-script-2", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.08);
+tl.to("#type-k-e", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 1.08);
+tl.fromTo("#type-p-script-2", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 1.08);
+tl.to("#type-p-script-2", { opacity: 0, duration: 0.05 }, 1.20);
+tl.fromTo("#type-t-script-3", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.22);
+tl.to("#type-k-space", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 1.22);
+tl.fromTo("#type-t-script-4", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.36);
+tl.to("#type-k-u", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 1.36);
+tl.fromTo("#type-p-script-4", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 1.36);
+tl.to("#type-p-script-4", { opacity: 0, duration: 0.05 }, 1.48);
+tl.fromTo("#type-t-script-5", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.5);
+tl.to("#type-k-space", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 1.5);
+tl.fromTo("#type-t-script-6", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.64);
+tl.to("#type-k-l", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 1.64);
+tl.fromTo("#type-p-script-6", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 1.64);
+tl.to("#type-p-script-6", { opacity: 0, duration: 0.05 }, 1.76);
+tl.fromTo("#type-t-script-7", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.78);
+tl.to("#type-k-a", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 1.78);
+tl.fromTo("#type-p-script-7", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 1.78);
+tl.to("#type-p-script-7", { opacity: 0, duration: 0.05 }, 1.90);
+tl.fromTo("#type-t-script-8", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.92);
+tl.to("#type-k-t", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 1.92);
+tl.fromTo("#type-p-script-8", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 1.92);
+tl.to("#type-p-script-8", { opacity: 0, duration: 0.05 }, 2.04);
+tl.fromTo("#type-t-script-9", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 2.06);
+tl.to("#type-k-e", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 2.06);
+tl.fromTo("#type-p-script-9", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 2.06);
+tl.to("#type-p-script-9", { opacity: 0, duration: 0.05 }, 2.18);
+tl.fromTo("#type-t-script-10", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 2.2);
+tl.to("#type-k-r", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 2.2);
+tl.fromTo("#type-p-script-10", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 2.2);
+tl.to("#type-p-script-10", { opacity: 0, duration: 0.05 }, 2.32);
+tl.fromTo("#type-tap1", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, 2.35);
+tl.to("#type-tap1", { opacity: 0, scale: 1.25, duration: 0.25, ease: "power1.in" }, 2.49);
+tl.fromTo("#type-k-ret", { scale: 1 }, { scale: 0.9, duration: 0.05, yoyo: true, repeat: 1 }, 2.35);
+tl.to("#type-segA", { opacity: 0, duration: 0.01 }, 2.4);
+tl.fromTo("#type-sent", { opacity: 0, scale: 0.6, transformOrigin: "100% 100%" }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" }, 2.4);
+tl.fromTo("#type-tap2", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, 2.6);
+tl.to("#type-tap2", { opacity: 0, scale: 1.25, duration: 0.25, ease: "power1.in" }, 2.74);
+tl.to("#type-kb .f-script", { opacity: 0, duration: 0.2 }, 2.65);
+tl.to("#type-kb .lab.f-fraktur", { opacity: 1, duration: 0.2 }, 2.65);
+tl.to("#type-k-space .f-fraktur", { opacity: 0.8, duration: 0.2 }, 2.65);
+tl.to("#type-c-script", { backgroundColor: "rgba(255,255,255,.82)", color: "#22172F", duration: 0.15 }, 2.65);
+tl.to("#type-c-fraktur", { backgroundColor: "#FF3D8B", color: "#ffffff", duration: 0.15 }, 2.65);
+tl.fromTo("#type-t-fraktur-0", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 3);
+tl.to("#type-k-o", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 3);
+tl.fromTo("#type-p-fraktur-0", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 3);
+tl.to("#type-p-fraktur-0", { opacity: 0, duration: 0.05 }, 3.12);
+tl.fromTo("#type-t-fraktur-1", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 3.14);
+tl.to("#type-k-b", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 3.14);
+tl.fromTo("#type-p-fraktur-1", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 3.14);
+tl.to("#type-p-fraktur-1", { opacity: 0, duration: 0.05 }, 3.26);
+tl.fromTo("#type-t-fraktur-2", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 3.28);
+tl.to("#type-k-s", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 3.28);
+tl.fromTo("#type-p-fraktur-2", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 3.28);
+tl.to("#type-p-fraktur-2", { opacity: 0, duration: 0.05 }, 3.40);
+tl.fromTo("#type-t-fraktur-3", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 3.42);
+tl.to("#type-k-e", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 3.42);
+tl.fromTo("#type-p-fraktur-3", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 3.42);
+tl.to("#type-p-fraktur-3", { opacity: 0, duration: 0.05 }, 3.54);
+tl.fromTo("#type-t-fraktur-4", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 3.56);
+tl.to("#type-k-s", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 3.56);
+tl.fromTo("#type-p-fraktur-4", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 3.56);
+tl.to("#type-p-fraktur-4", { opacity: 0, duration: 0.05 }, 3.68);
+tl.fromTo("#type-t-fraktur-5", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 3.7);
+tl.to("#type-k-s", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 3.7);
+tl.fromTo("#type-p-fraktur-5", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 3.7);
+tl.to("#type-p-fraktur-5", { opacity: 0, duration: 0.05 }, 3.82);
+tl.fromTo("#type-t-fraktur-6", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 3.84);
+tl.to("#type-k-e", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 3.84);
+tl.fromTo("#type-p-fraktur-6", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 3.84);
+tl.to("#type-p-fraktur-6", { opacity: 0, duration: 0.05 }, 3.96);
+tl.fromTo("#type-t-fraktur-7", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 3.98);
+tl.to("#type-k-d", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 3.98);
+tl.fromTo("#type-p-fraktur-7", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 3.98);
+tl.to("#type-p-fraktur-7", { opacity: 0, duration: 0.05 }, 4.10);
+tl.fromTo("#type-tap3", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, 4.3);
+tl.to("#type-tap3", { opacity: 0, scale: 1.25, duration: 0.25, ease: "power1.in" }, 4.44);
+tl.to("#type-kb .f-fraktur", { opacity: 0, duration: 0.2 }, 4.35);
+tl.to("#type-kb .lab.f-circled", { opacity: 1, duration: 0.2 }, 4.35);
+tl.to("#type-k-space .f-circled", { opacity: 0.8, duration: 0.2 }, 4.35);
+tl.to("#type-c-fraktur", { backgroundColor: "rgba(255,255,255,.82)", color: "#22172F", duration: 0.15 }, 4.35);
+tl.to("#type-c-circled", { backgroundColor: "#FF3D8B", color: "#ffffff", duration: 0.15 }, 4.35);
+tl.fromTo("#type-t-circled-0", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 4.7);
+tl.to("#type-k-o", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 4.7);
+tl.fromTo("#type-p-circled-0", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 4.7);
+tl.to("#type-p-circled-0", { opacity: 0, duration: 0.05 }, 4.82);
+tl.fromTo("#type-t-circled-1", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 4.84);
+tl.to("#type-k-m", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 4.84);
+tl.fromTo("#type-p-circled-1", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 4.84);
+tl.to("#type-p-circled-1", { opacity: 0, duration: 0.05 }, 4.96);
+tl.fromTo("#type-t-circled-2", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 4.98);
+tl.to("#type-k-g", { scale: 0.9, filter: "brightness(0.85)", duration: 0.05, yoyo: true, repeat: 1, ease: "power1.out" }, 4.98);
+tl.fromTo("#type-p-circled-2", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.04 }, 4.98);
+tl.to("#type-p-circled-2", { opacity: 0, duration: 0.05 }, 5.10);
+
+window.__timelines["type"] = tl;
+</script>
+</template>

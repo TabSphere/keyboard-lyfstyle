@@ -23,14 +23,14 @@ await send('Page.enable'); await send('Runtime.enable');
 const jobs = [];
 for (const platform of which === 'all' ? ['ios', 'android'] : [which]) for (const i of only) jobs.push([platform, i]);
 for (const [platform, i] of jobs) {
-  const [w, h] = platform === 'android' ? [360, 640] : [430, 932];
-  await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 3, mobile: false });
+  const [w, h] = platform === 'ipad' ? [1032, 1376] : platform === 'android' ? [360, 640] : [430, 932];
+  await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: platform === 'ipad' ? 2 : 3, mobile: false });
   await send('Page.navigate', { url: `${studio}?p=${platform}&i=${i}` });
   await sleep(1500);
   await send('Runtime.evaluate', { expression: 'document.fonts.ready.then(() => Promise.all([...document.images].map((im) => im.complete ? 1 : new Promise((r) => { im.onload = im.onerror = r; }))))', awaitPromise: true });
   await sleep(800);
   const { result } = await send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: w, height: h, scale: 1 } });
-  const name = `${platform === 'android' ? 'play' : 'appstore'}-${String(i + 1).padStart(2, '0')}.png`;
+  const name = `${platform === 'android' ? 'play' : platform === 'ipad' ? 'appstore-ipad' : 'appstore'}-${String(i + 1).padStart(2, '0')}.png`;
   fs.writeFileSync(path.join(OUT, name), Buffer.from(result.data, 'base64'));
   console.log('saved', name);
 }
