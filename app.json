@@ -14,11 +14,14 @@
       "backgroundColor": "#1B1916"
     },
     "ios": {
+      "appleTeamId": "GZRWULYGLN",
       "supportsTablet": true,
       "bundleIdentifier": "com.tabsphere.keyboardlyfstyle",
       "buildNumber": "1",
       "entitlements": {
-        "com.apple.security.application-groups": ["group.com.tabsphere.keyboardlyfstyle"]
+        "com.apple.security.application-groups": [
+          "group.com.tabsphere.keyboardlyfstyle"
+        ]
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -64,7 +67,29 @@
     ],
     "extra": {
       "proProductId": "com.tabsphere.keyboardlyfstyle.pro",
-      "appGroup": "group.com.tabsphere.keyboardlyfstyle"
-    }
+      "appGroup": "group.com.tabsphere.keyboardlyfstyle",
+      "router": {},
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "bundleIdentifier": "com.tabsphere.keyboardlyfstyle.keyboard",
+                  "targetName": "keyboard",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.tabsphere.keyboardlyfstyle"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "3e45211f-5ac6-4dc1-a69c-0d7691d82aba"
+      }
+    },
+    "owner": "tabsphere"
   }
 }
