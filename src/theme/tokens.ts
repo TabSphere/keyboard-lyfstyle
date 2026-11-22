@@ -1,17 +1,19 @@
-// Lyfstyle v2 palette: "Ink + Highlighter".
-// The UI stays neutral; the highlighter is used for fills (selected states, primary
-// actions, marker highlights), never as text on light backgrounds (contrast is too low).
+// Lyfstyle Type Studio: warm paper, editorial ink and a restrained coral accent.
 export const colors = {
-  canvas: '#F7F7F5', // page background; also light text on ink surfaces
-  surface: '#FFFFFF', // cards and raised areas
-  ink: '#111114', // primary text, dark surfaces
-  muted: '#64646B', // secondary text
-  accent: '#D9FF3F', // highlighter fill
-  onAccent: '#111114', // text and icons drawn on the highlighter
-  line: '#E2E2DE',
+  canvas: '#FAFAFA',
+  surface: '#FFFFFF',
+  ink: '#1B1916',
+  muted: '#6B6359',
+  tertiary: '#9C9388',
+  accent: '#E5604A',
+  accentDeep: '#C8472F',
+  accentTint: '#FBE7E0',
+  onAccent: '#FFFFFF',
+  line: '#E6DFD3',
+  lineSoft: '#EFEAE0',
   success: '#216B4B',
   white: '#FFFFFF',
 } as const;
 
-export const radii = { small: 10, medium: 18, large: 28, pill: 999 } as const;
+export const radii = { small: 10, medium: 16, large: 24, pill: 999 } as const;
 export const spacing = (value: number) => value * 4;

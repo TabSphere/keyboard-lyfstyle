@@ -2,10 +2,10 @@ import { useCallback, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
-import { Check, ChevronRight, Copy, ExternalLink, RefreshCw, ShieldCheck } from 'lucide-react-native';
+import { Check, ChevronDown, ChevronRight, ChevronUp, Copy, ExternalLink, RefreshCw, ShieldCheck } from 'lucide-react-native';
 import NativeKeyboard, { type AndroidKeyboardStatus } from '@/nativeKeyboard';
 import { useComposer } from '../../state/ComposerContext';
-import { colors } from '../../theme/tokens';
+import { colors, radii } from '../../theme/tokens';
 import { ActionButton, Eyebrow, PageTitle, Screen, Wordmark, type } from '../../components/ui';
 
 export default function SetupScreen() {
@@ -13,6 +13,7 @@ export default function SetupScreen() {
   const [status, setStatus] = useState<AndroidKeyboardStatus>({ enabled: false, selected: false });
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
+  const [fullAccessOpen, setFullAccessOpen] = useState(false);
 
   const refresh = useCallback(async () => {
     if (Platform.OS !== 'android') return;
@@ -47,16 +48,18 @@ export default function SetupScreen() {
 
   return (
     <Screen>
-      <View style={styles.header}><Wordmark /><Eyebrow>DEVICE SETUP</Eyebrow></View>
-      <PageTitle title="Your keyboard," italic="re-composed.">
-        Style as you type, or keep using the composer. The keyboard never shows purchases, ads or rating prompts.
+      <View style={styles.header}><Wordmark height={27} /><Eyebrow>DEVICE SETUP</Eyebrow></View>
+      <PageTitle title="Meet your" italic="keyboard." compact>
+        Style as you type. No ads, purchases or rating prompts inside the keyboard.
       </PageTitle>
 
       {Platform.OS === 'web' ? (
         <View style={styles.webNotice}>
-          <Eyebrow light>WEB PREVIEW</Eyebrow>
-          <Text style={styles.webTitle}>Native setup happens on your phone.</Text>
-          <Text style={styles.webCopy}>This browser preview includes the working composer and catalogue. Keyboard installation and purchases require an iPhone or Android development/store build.</Text>
+          <View style={styles.webHeading}>
+            <Eyebrow light>WEB PREVIEW</Eyebrow>
+            <Text style={styles.webTitle}>Setup continues on your phone.</Text>
+          </View>
+          <Text style={styles.webCopy}>The composer works here. Keyboard installation and purchases require a native iPhone or Android build.</Text>
         </View>
       ) : null}
 
@@ -65,7 +68,9 @@ export default function SetupScreen() {
           <View style={styles.statusRow}>
             <StatusItem label="Installed" complete={status.enabled} />
             <StatusItem label="Selected" complete={status.selected} />
-            <Pressable accessibilityLabel="Refresh keyboard status" onPress={() => void refresh()} style={styles.refresh}><RefreshCw size={17} color={colors.ink} /></Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="Refresh keyboard status" onPress={() => void refresh()} style={styles.refresh}>
+              <RefreshCw size={17} color={colors.ink} />
+            </Pressable>
           </View>
           <SetupStep
             number="01"
@@ -110,19 +115,33 @@ export default function SetupScreen() {
       {notice ? <Text accessibilityLiveRegion="polite" style={styles.notice}>{notice}</Text> : null}
 
       <View style={styles.privacyBlock}>
-        <ShieldCheck size={26} color={colors.ink} strokeWidth={1.5} />
-        <Text style={styles.privacyTitle}>Your typing stays yours.</Text>
+        <View style={styles.privacyHeading}>
+          <ShieldCheck size={23} color={colors.accentDeep} strokeWidth={1.6} />
+          <Text style={styles.privacyTitle}>Your typing stays yours.</Text>
+        </View>
         <Text style={styles.privacyCopy}>No account, analytics, ads, prediction engine or keystroke-upload code. Password, email, URL, phone, numeric and OTP fields automatically use Normal mode.</Text>
-        <Pressable onPress={() => router.push('/privacy')} style={styles.privacyLink}>
+        <Pressable accessibilityRole="button" onPress={() => router.push('/privacy')} style={({ pressed }) => [styles.privacyLink, pressed && styles.pressed]}>
           <Text style={styles.privacyLinkText}>Read the plain-English privacy note</Text>
-          <ChevronRight size={16} color={colors.ink} />
+          <ChevronRight size={16} color={colors.accentDeep} />
         </Pressable>
       </View>
 
       <View style={styles.fullAccess}>
-        <Eyebrow>ABOUT FULL ACCESS ON IPHONE</Eyebrow>
-        <Text style={styles.fullAccessTitle}>Optional, not the price of admission.</Text>
-        <Text style={styles.fullAccessCopy}>Core typing works without it. Lyfstyle tests direct StoreKit entitlement reading first; optional Full Access is only a fallback for sharing Pro status through the private App Group when that direct path is unavailable.</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: fullAccessOpen }}
+          onPress={() => setFullAccessOpen((open) => !open)}
+          style={styles.fullAccessToggle}
+        >
+          <View style={styles.fullAccessToggleCopy}>
+            <Eyebrow>FULL ACCESS ON IPHONE</Eyebrow>
+            <Text style={styles.fullAccessTitle}>Optional, not required.</Text>
+          </View>
+          {fullAccessOpen ? <ChevronUp size={19} color={colors.muted} /> : <ChevronDown size={19} color={colors.muted} />}
+        </Pressable>
+        {fullAccessOpen ? (
+          <Text style={styles.fullAccessCopy}>Core typing works without it. Lyfstyle reads StoreKit entitlements directly first. Full Access is only an optional fallback for sharing Pro status through the private App Group when that direct path is unavailable.</Text>
+        ) : null}
       </View>
 
       <ActionButton onPress={() => router.push('/')} variant="outline" icon={<Copy size={17} color={colors.ink} />}>Try the composer</ActionButton>
@@ -149,8 +168,10 @@ function SetupStep({ number, title, copy, action, onPress, busy }: {
 }) {
   return (
     <View style={styles.step}>
-      <Text style={styles.stepNumber}>{number}</Text>
-      <Text style={styles.stepTitle}>{title}</Text>
+      <View style={styles.stepHeading}>
+        <Text style={styles.stepNumber}>{number}</Text>
+        <Text style={styles.stepTitle}>{title}</Text>
+      </View>
       <Text style={styles.stepCopy}>{copy}</Text>
       <ActionButton onPress={onPress} variant="dark" busy={busy} icon={<ExternalLink size={16} color={colors.white} />}>{action}</ActionButton>
     </View>
@@ -158,28 +179,34 @@ function SetupStep({ number, title, copy, action, onPress, busy }: {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10 },
-  webNotice: { backgroundColor: colors.ink, padding: 20, marginBottom: 22 },
-  webTitle: { fontFamily: type.display, color: colors.canvas, fontSize: 27, marginTop: 7 },
-  webCopy: { fontFamily: type.sans, color: '#B9B9BE', fontSize: 13, lineHeight: 20, marginTop: 8 },
-  setupBlock: { borderTopWidth: 1, borderTopColor: colors.ink },
-  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 18, paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: colors.line },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8 },
+  webNotice: { backgroundColor: colors.ink, borderRadius: radii.medium, padding: 18, marginBottom: 20 },
+  webHeading: { gap: 6 },
+  webTitle: { fontFamily: type.display, color: colors.canvas, fontSize: 24, lineHeight: 30 },
+  webCopy: { fontFamily: type.sans, color: '#CEC7BC', fontSize: 12, lineHeight: 19, marginTop: 9 },
+  setupBlock: { borderTopWidth: 1, borderTopColor: colors.line },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 18, paddingVertical: 13, borderBottomWidth: 1, borderBottomColor: colors.lineSoft },
   statusItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  statusDot: { width: 17, height: 17, borderRadius: 17, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  statusDot: { width: 18, height: 18, borderRadius: 18, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   statusDotComplete: { backgroundColor: colors.success, borderColor: colors.success },
   statusText: { fontFamily: type.medium, fontSize: 12, color: colors.ink },
-  refresh: { marginLeft: 'auto', width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
-  step: { paddingVertical: 23, borderBottomWidth: 1, borderBottomColor: colors.line, alignItems: 'flex-start' },
-  stepNumber: { fontFamily: type.bold, fontSize: 10, letterSpacing: 1, color: colors.ink },
-  stepTitle: { fontFamily: type.display, fontSize: 31, color: colors.ink, marginTop: 4 },
-  stepCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 21, color: colors.muted, marginTop: 7, marginBottom: 17 },
+  refresh: { marginLeft: 'auto', width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  step: { paddingVertical: 21, borderBottomWidth: 1, borderBottomColor: colors.line, alignItems: 'flex-start' },
+  stepHeading: { flexDirection: 'row', alignItems: 'baseline', gap: 12 },
+  stepNumber: { fontFamily: type.mono, fontSize: 11, letterSpacing: 0.6, color: colors.accentDeep },
+  stepTitle: { fontFamily: type.display, fontSize: 27, lineHeight: 33, color: colors.ink },
+  stepCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 21, color: colors.muted, marginTop: 8, marginBottom: 16 },
   notice: { fontFamily: type.medium, color: colors.success, fontSize: 13, lineHeight: 20, marginTop: 16 },
-  privacyBlock: { backgroundColor: colors.surface, padding: 20, marginTop: 28, borderLeftWidth: 3, borderLeftColor: colors.ink },
-  privacyTitle: { fontFamily: type.display, fontSize: 29, color: colors.ink, marginTop: 12 },
-  privacyCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 21, color: colors.muted, marginTop: 8 },
-  privacyLink: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 16 },
+  privacyBlock: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, borderRadius: radii.medium, padding: 19, marginTop: 24 },
+  privacyHeading: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  privacyTitle: { fontFamily: type.display, fontSize: 24, lineHeight: 30, color: colors.ink },
+  privacyCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 21, color: colors.muted, marginTop: 10 },
+  privacyLink: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10 },
   privacyLinkText: { fontFamily: type.semibold, fontSize: 12, color: colors.ink },
-  fullAccess: { paddingVertical: 27 },
-  fullAccessTitle: { fontFamily: type.display, fontSize: 26, color: colors.ink, marginTop: 7 },
-  fullAccessCopy: { fontFamily: type.sans, fontSize: 12, lineHeight: 20, color: colors.muted, marginTop: 8, marginBottom: 18 },
+  fullAccess: { paddingVertical: 20 },
+  fullAccessToggle: { minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  fullAccessToggleCopy: { flex: 1 },
+  fullAccessTitle: { fontFamily: type.display, fontSize: 23, lineHeight: 29, color: colors.ink, marginTop: 4 },
+  fullAccessCopy: { fontFamily: type.sans, fontSize: 12, lineHeight: 20, color: colors.muted, marginTop: 5, marginBottom: 15 },
+  pressed: { opacity: 0.65 },
 });

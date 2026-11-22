@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { Check, LockKeyhole, RotateCcw, X } from 'lucide-react-native';
 import { useComposer } from '../state/ComposerContext';
 import { transformText } from '../styleEngine';
-import { colors } from '../theme/tokens';
+import { colors, radii } from '../theme/tokens';
 import { ActionButton, Eyebrow, Screen, Wordmark, type } from '../components/ui';
 
 export default function ProScreen() {
@@ -11,15 +11,40 @@ export default function ProScreen() {
   const close = () => router.canGoBack() ? router.back() : router.replace('/');
 
   return (
-    <Screen contentStyle={styles.screenContent}>
+    <Screen contentStyle={styles.screenContent} footer={
+      <View>
+        {pro.message ? <Text accessibilityLiveRegion="polite" style={styles.message}>{pro.message}</Text> : null}
+        <View style={styles.purchaseBar}>
+          <View style={styles.priceBlock}>
+            <Text style={styles.priceLabel}>{pro.isPro ? 'LIFETIME PRO' : 'PAY ONCE'}</Text>
+            <Text numberOfLines={2} style={styles.price}>{pro.isPro ? 'Unlocked' : pro.price || 'Store price'}</Text>
+          </View>
+          {pro.isPro ? (
+            <ActionButton onPress={close} variant="dark" icon={<Check size={17} color={colors.white} />}>Continue</ActionButton>
+          ) : (
+            <ActionButton
+              onPress={pro.purchase}
+              busy={pro.busy}
+              variant="primary"
+              accessibilityLabel={pro.price ? `Unlock Lifetime Pro for ${pro.price}` : 'Unlock Lifetime Pro'}
+              icon={<LockKeyhole size={17} color={colors.white} />}
+            >
+              Unlock lifetime
+            </ActionButton>
+          )}
+        </View>
+      </View>
+    }>
       <View style={styles.topbar}>
-        <Wordmark />
-        <Pressable accessibilityRole="button" accessibilityLabel="Close Lifetime Pro" onPress={close} style={styles.close}><X size={22} color={colors.ink} /></Pressable>
+        <Wordmark height={27} />
+        <Pressable accessibilityRole="button" accessibilityLabel="Close Lifetime Pro" onPress={close} style={({ pressed }) => [styles.close, pressed && styles.pressed]}>
+          <X size={22} color={colors.ink} />
+        </Pressable>
       </View>
 
       <View style={styles.hero}>
-        <Eyebrow light>ONE PURCHASE / YOURS FOR GOOD</Eyebrow>
-        <Text style={styles.title}>More ways to{`\n`}<Text style={styles.titleItalic}>make it yours.</Text></Text>
+        <Eyebrow light>LYFSTYLE PRO / LIFETIME</Eyebrow>
+        <Text style={styles.title}>The collection,{`\n`}<Text style={styles.titleItalic}>fully yours.</Text></Text>
         <View style={styles.specimen} accessibilityLabel="Examples of Pro styles">
           <Text style={styles.specimenText}>{transformText('Make it yours.', 'bold-script')}</Text>
           <Text style={styles.specimenText}>{transformText('MAKE IT YOURS.', 'negative-circled')}</Text>
@@ -28,42 +53,36 @@ export default function ProScreen() {
       </View>
 
       <View style={styles.body}>
-        <Text style={styles.intro}>The free collection is not going anywhere. Pro simply opens the other half—without a subscription or an account.</Text>
+        <Text style={styles.intro}>Twelve more distinctive looks and three finishing touches. No subscription, account or ads.</Text>
         <View style={styles.benefits}>
           <Benefit>12 additional hand-audited Unicode styles</Benefit>
-          <Benefit>Ornate Frame, Sparkle Frame and Botanical Divider</Benefit>
+          <Benefit>Ornate, Sparkle and Botanical decorations</Benefit>
           <Benefit>Lifetime access with store restore support</Benefit>
-          <Benefit>Same private, on-device typing experience</Benefit>
         </View>
 
-        <View style={styles.priceBlock}>
-          <Text style={styles.priceLabel}>LIFETIME PRO</Text>
-          <Text style={styles.price}>{pro.isPro ? 'Unlocked' : pro.price || 'Store-localised price'}</Text>
-          <Text style={styles.priceNote}>{pro.isPro ? 'Thank you for supporting Lyfstyle.' : 'One time. No auto-renewal. Final price and currency are confirmed by your app store.'}</Text>
+        <View style={styles.trustRow}>
+          <Check size={17} color={colors.success} strokeWidth={1.8} />
+          <Text style={styles.trustText}>The same private, on-device typing experience.</Text>
         </View>
 
-        {pro.isPro ? (
-          <ActionButton onPress={close} variant="dark" icon={<Check size={17} color={colors.white} />}>Continue writing</ActionButton>
-        ) : (
-          <ActionButton
-            onPress={pro.purchase}
-            busy={pro.busy}
-            variant="primary"
-            icon={<LockKeyhole size={17} color={colors.onAccent} />}
-          >
-            {pro.price ? `Unlock lifetime · ${pro.price}` : 'Unlock Lifetime Pro'}
-          </ActionButton>
-        )}
+        {!pro.connected && Platform.OS !== 'web' && !pro.isPro ? (
+          <Text style={styles.storeStatus}>Connecting to the store… You can still use Restore Purchases.</Text>
+        ) : null}
 
-        {!pro.connected && Platform.OS !== 'web' && !pro.isPro ? <Text style={styles.storeStatus}>Connecting to the store… You can still use Restore Purchases.</Text> : null}
-        {pro.message ? <Text accessibilityLiveRegion="polite" style={styles.message}>{pro.message}</Text> : null}
-
-        <Pressable accessibilityRole="button" onPress={pro.restore} disabled={pro.busy} style={styles.restore}>
-          <RotateCcw size={14} color={colors.ink} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ disabled: pro.busy, busy: pro.busy }}
+          onPress={pro.restore}
+          disabled={pro.busy}
+          style={({ pressed }) => [styles.restore, pressed && styles.pressed]}
+        >
+          <RotateCcw size={15} color={colors.ink} />
           <Text style={styles.restoreText}>Restore purchases</Text>
         </Pressable>
 
-        <Text style={styles.legal}>Purchase is processed by Apple or Google. Lyfstyle does not collect payment details. Pro availability in the keyboard is synchronised locally; the iPhone TestFlight spike must confirm whether optional Full Access is needed on your device.</Text>
+        <Text style={styles.legal}>
+          Your app store confirms the final local price and processes payment. Lyfstyle never receives your payment details. Pro access is restored through your store account.
+        </Text>
       </View>
     </Screen>
   );
@@ -72,33 +91,37 @@ export default function ProScreen() {
 function Benefit({ children }: { children: string }) {
   return (
     <View style={styles.benefit}>
-      <Check size={16} color={colors.ink} strokeWidth={1.8} />
+      <View style={styles.benefitIcon}><Check size={14} color={colors.accentDeep} strokeWidth={2} /></View>
       <Text style={styles.benefitText}>{children}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screenContent: { paddingHorizontal: 0, maxWidth: 640 },
-  topbar: { paddingHorizontal: 22, paddingTop: 8, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  screenContent: { paddingHorizontal: 20, maxWidth: 680 },
+  topbar: { paddingTop: 6, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   close: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  hero: { backgroundColor: colors.ink, paddingHorizontal: 24, paddingTop: 29, paddingBottom: 26 },
-  title: { fontFamily: type.display, fontSize: 51, lineHeight: 51, letterSpacing: -1.2, color: colors.canvas, marginTop: 17 },
-  titleItalic: { fontFamily: type.display, color: colors.accent },
-  specimen: { marginTop: 29, paddingTop: 19, borderTopWidth: 1, borderTopColor: '#2E2E33', gap: 10 },
-  specimenText: { color: colors.canvas, fontSize: 19, lineHeight: 28 },
-  body: { paddingHorizontal: 24, paddingTop: 25, paddingBottom: 38 },
+  hero: { backgroundColor: colors.ink, borderRadius: radii.large, paddingHorizontal: 23, paddingTop: 24, paddingBottom: 23, overflow: 'hidden' },
+  title: { fontFamily: type.display, fontSize: 39, lineHeight: 44, letterSpacing: -1, color: colors.canvas, marginTop: 13 },
+  titleItalic: { fontFamily: type.displayItalic, color: colors.accent },
+  specimen: { marginTop: 22, paddingTop: 17, borderTopWidth: 1, borderTopColor: '#413B35', gap: 8 },
+  specimenText: { color: colors.canvas, fontSize: 18, lineHeight: 27 },
+  body: { paddingTop: 22, paddingBottom: 24 },
   intro: { fontFamily: type.sans, color: colors.muted, fontSize: 14, lineHeight: 22 },
-  benefits: { marginTop: 22, gap: 13 },
-  benefit: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  benefits: { marginTop: 20, gap: 13 },
+  benefit: { flexDirection: 'row', alignItems: 'center', gap: 11 },
+  benefitIcon: { width: 25, height: 25, borderRadius: 25, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
   benefitText: { flex: 1, fontFamily: type.medium, color: colors.ink, fontSize: 13, lineHeight: 20 },
-  priceBlock: { marginVertical: 25, paddingVertical: 19, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line },
-  priceLabel: { fontFamily: type.bold, color: colors.muted, fontSize: 9, letterSpacing: 1.2 },
-  price: { fontFamily: type.display, color: colors.ink, fontSize: 38, marginTop: 4 },
-  priceNote: { fontFamily: type.sans, color: colors.muted, fontSize: 11, lineHeight: 17, marginTop: 5 },
-  storeStatus: { fontFamily: type.sans, color: colors.muted, fontSize: 11, lineHeight: 17, marginTop: 12 },
-  message: { fontFamily: type.medium, color: colors.success, fontSize: 12, lineHeight: 19, marginTop: 12 },
-  restore: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7 },
+  trustRow: { flexDirection: 'row', alignItems: 'center', gap: 9, marginTop: 23, paddingTop: 18, borderTopWidth: 1, borderTopColor: colors.lineSoft },
+  trustText: { flex: 1, fontFamily: type.sans, color: colors.muted, fontSize: 12, lineHeight: 19 },
+  priceBlock: { flex: 1, paddingRight: 12, justifyContent: 'center' },
+  priceLabel: { fontFamily: type.mono, color: colors.muted, fontSize: 10, letterSpacing: 0.9 },
+  price: { fontFamily: type.display, color: colors.ink, fontSize: 23, lineHeight: 28, marginTop: 2 },
+  purchaseBar: { flexDirection: 'row', alignItems: 'center' },
+  storeStatus: { fontFamily: type.sans, color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: 16 },
+  message: { fontFamily: type.medium, color: colors.success, fontSize: 12, lineHeight: 18, marginBottom: 9, textAlign: 'center' },
+  restore: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, marginTop: 10 },
   restoreText: { fontFamily: type.semibold, color: colors.ink, fontSize: 13 },
-  legal: { fontFamily: type.sans, color: colors.muted, fontSize: 10, lineHeight: 17, marginTop: 14 },
+  legal: { fontFamily: type.sans, color: colors.muted, fontSize: 11, lineHeight: 18, marginTop: 8, textAlign: 'center' },
+  pressed: { opacity: 0.65 },
 });

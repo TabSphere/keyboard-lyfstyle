@@ -8,20 +8,20 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.ink,
-        tabBarInactiveTintColor: colors.muted,
+        tabBarActiveTintColor: colors.accentDeep,
+        tabBarInactiveTintColor: colors.tertiary,
         tabBarStyle: {
           backgroundColor: colors.surface,
-          borderTopColor: colors.line,
+          borderTopColor: colors.lineSoft,
           borderTopWidth: 1,
-          height: 68,
+          height: 70,
           paddingTop: 8,
-          paddingBottom: 8,
+          paddingBottom: 9,
         },
         tabBarLabelStyle: {
           fontFamily: type.semibold,
-          fontSize: 10,
-          letterSpacing: 0.2,
+          fontSize: 11,
+          letterSpacing: 0,
         },
       }}
     >

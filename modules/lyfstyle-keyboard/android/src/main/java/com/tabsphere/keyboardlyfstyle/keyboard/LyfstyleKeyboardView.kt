@@ -3,6 +3,7 @@ package com.tabsphere.keyboardlyfstyle.keyboard
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
 import android.icu.text.BreakIterator
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
@@ -113,11 +114,11 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         val bar = LinearLayout(context).apply { orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         val effectiveStyle = effectiveStyleId()
         val activeName = if (effectiveStyle == "normal") "Normal Text" else catalogue.style(effectiveStyle).name
-        bar.addView(key(activeName, 2.4f, accent = drawer != null) {
+        bar.addView(key(activeName, 2.7f, accent = drawer != null) {
             drawer = if (drawer == null) LinearLayout(context) else null
             rebuild()
         }.apply { contentDescription = "Choose typing style. Current style $activeName" })
-        bar.addView(key(if (normalMode) "Normal ✓" else "Aa", 1.1f, accent = normalMode || safeNormal) {
+        bar.addView(key(if (normalMode || safeNormal) "Aa ✓" else "Aa", 1.0f, accent = normalMode || safeNormal) {
             if (!safeNormal) {
                 normalMode = !normalMode
                 preferences.edit().putBoolean("normalMode", normalMode).apply()
@@ -128,13 +129,13 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
             isEnabled = !safeNormal
         })
         val isFavourite = favouriteIds().contains(selectedStyle)
-        bar.addView(key(if (isFavourite) "★" else "☆", 0.8f) {
+        bar.addView(key(if (isFavourite) "★" else "☆", 0.72f) {
             val favourites = favouriteIds().toMutableSet()
             if (!favourites.add(selectedStyle)) favourites.remove(selectedStyle)
             preferences.edit().putStringSet("favourites", favourites).apply()
             rebuild()
         }.apply { contentDescription = if (isFavourite) "Remove current style from favourites" else "Favourite current style" })
-        bar.addView(key(theme.name, 1.2f) {
+        bar.addView(key("◐", 0.78f) {
             val themes = catalogue.themes
             theme = themes[(themes.indexOfFirst { it.id == theme.id } + 1) % themes.size]
             preferences.edit().putString("theme", theme.id).apply()
@@ -158,14 +159,15 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
             })
         }
         visible.forEach { style ->
-            list.addView(key(style.name, 0f, accent = style.id == selectedStyle && !normalMode) {
+            val sample = catalogue.transform("Aa", style.id)
+            list.addView(key("$sample\n${style.name}", 0f, accent = style.id == selectedStyle && !normalMode) {
                 selectedStyle = style.id
                 normalMode = false
                 preferences.edit().putString("style", style.id).putBoolean("normalMode", false).apply()
                 rememberRecent(style.id)
                 rebuild()
             }.apply {
-                layoutParams = LayoutParams(dp(112), dp(46)).apply { setMargins(dp(3), dp(3), dp(3), dp(3)) }
+                layoutParams = LayoutParams(dp(116), dp(56)).apply { setMargins(dp(3), dp(3), dp(3), dp(3)) }
                 contentDescription = "${style.name} style${if (favourites.contains(style.id)) ", favourite" else ""}"
             })
         }
@@ -182,7 +184,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
     private fun buildLetterRows() {
         letterRows.forEachIndexed { index, letters ->
             val row = keyRow()
-            if (index == 2) row.addView(key(if (capsLock) "CAPS" else "Shift", 1.45f, accent = shifted || capsLock) {
+            if (index == 2) row.addView(key(if (capsLock) "⇪" else "⇧", 1.35f, accent = shifted || capsLock) {
                 shifted = if (capsLock) false else !shifted
                 capsLock = false
                 rebuild()
@@ -218,12 +220,12 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         row.addView(key(if (symbols) "ABC" else "123", 1.25f) {
             symbols = !symbols; secondarySymbols = false; rebuild()
         })
-        row.addView(key("Next", 1.15f) {
+        row.addView(key("🌐", 1.05f) {
             service.switchToNextInputMethod(false)
         }.apply { contentDescription = "Switch to next keyboard" })
-        row.addView(key("space", 4.4f) { commitText(" ") })
-        row.addView(key(".", 0.85f) { commitText(".") })
-        row.addView(key("return", 1.5f, accent = true) {
+        row.addView(key("space", 4.5f) { commitText(" ") })
+        row.addView(key(".", 0.8f) { commitText(".") })
+        row.addView(key("↵", 1.35f, accent = true) {
             val info = service.currentInputEditorInfo
             val action = info?.imeOptions?.and(EditorInfo.IME_MASK_ACTION) ?: EditorInfo.IME_ACTION_NONE
             if (action != EditorInfo.IME_ACTION_NONE && action != EditorInfo.IME_ACTION_UNSPECIFIED) {
@@ -242,14 +244,18 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
     private fun key(label: String, weight: Float, accent: Boolean = false, action: () -> Unit): Button {
         return Button(context).apply {
             text = label
-            textSize = if (label.length > 6) 12f else 16f
+            textSize = if (label.length > 6) 11f else 17f
             isAllCaps = false
+            gravity = Gravity.CENTER
+            maxLines = 2
+            includeFontPadding = false
             setTextColor(Color.parseColor(if (accent && theme.id != "mono") theme.background else theme.text))
-            setPadding(dp(1), 0, dp(1), 0)
+            setPadding(dp(2), 0, dp(2), 0)
             minHeight = dp(46); minimumHeight = dp(46)
-            background = GradientDrawable().apply {
-                cornerRadius = dp(9).toFloat()
-                setColor(Color.parseColor(if (accent) theme.accent else theme.key))
+            val fill = Color.parseColor(if (accent) theme.accent else theme.key)
+            background = StateListDrawable().apply {
+                addState(intArrayOf(android.R.attr.state_pressed), roundedKey(shiftColor(fill, 0.86f)))
+                addState(intArrayOf(), roundedKey(fill))
             }
             stateListAnimator = null
             setOnClickListener { performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP); action() }
@@ -259,7 +265,18 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         }
     }
 
-    private fun deleteKey(): Button = key("delete", 1.45f) { deleteLastGrapheme() }.apply {
+    private fun roundedKey(fill: Int) = GradientDrawable().apply {
+        cornerRadius = dp(10).toFloat()
+        setColor(fill)
+    }
+
+    private fun shiftColor(color: Int, factor: Float): Int = Color.rgb(
+        (Color.red(color) * factor).toInt().coerceIn(0, 255),
+        (Color.green(color) * factor).toInt().coerceIn(0, 255),
+        (Color.blue(color) * factor).toInt().coerceIn(0, 255),
+    )
+
+    private fun deleteKey(): Button = key("⌫", 1.35f) { deleteLastGrapheme() }.apply {
         contentDescription = "Delete previous visible character. Hold to repeat."
         setOnLongClickListener {
             if (!deleteRepeating) {
