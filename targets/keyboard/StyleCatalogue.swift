@@ -11,6 +11,8 @@ struct TextStyle: Decodable {
     /// Nil or true for per-letter styles; false for app-only composites (frames, joiners).
     let keyboard: Bool?
     let mapping: [String: String]
+    /// Section in the Fonts panel ("Cursive & cute", "Bold & clean"…).
+    var group: String? = nil
 
     var worksInKeyboard: Bool { keyboard ?? true }
 }
@@ -29,6 +31,8 @@ struct KeyboardPalette: Decodable {
     let image: String?
     /// Opacity of normal keys over a picture (nil = solid keys).
     let keyAlpha: Double?
+    /// Section in the theme picker ("Colours", "K-pop", "Pride"…).
+    var group: String? = nil
 
     var requiresPro: Bool { isPro ?? false }
 }
