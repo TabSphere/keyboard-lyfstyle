@@ -26,9 +26,9 @@ test('username ideas keep plain handles valid', () => {
   assert.deepEqual(usernameIdeas('!!!'), []);
 });
 
-test('presets: 7 packs, 3 free, over 100 items, no duplicates', () => {
+test('presets: 7 packs, only Aesthetic free, over 100 items, no duplicates', () => {
   assert.equal(presetPacks.length, 7);
-  assert.equal(presetPacks.filter((pack) => !pack.isPro).length, 3);
+  assert.deepEqual(presetPacks.filter((pack) => !pack.isPro).map((pack) => pack.id), ['aesthetic']);
   assert.ok(presetCount >= 100);
   const all = presetPacks.flatMap((pack) => pack.items);
   assert.equal(new Set(all).size, all.length);

@@ -63,7 +63,15 @@
           }
         }
       ],
-      "expo-iap"
+      "expo-iap",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Lyfstyle uses a photo you choose as your keyboard background. It stays on your device.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ]
     ],
     "extra": {
       "proProductId": "com.tabsphere.keyboardlyfstyle.pro",

@@ -39,8 +39,9 @@ class StyleCatalogueTest {
         // Only per-character styles reach the keyboard; frames and joiners are app-only.
         assertEquals(48, catalogue.keyboardStyles.size)
         assertTrue(catalogue.keyboardStyles.all { it.kind == "alphabet" || it.kind == "overlay" })
-        assertEquals(24, catalogue.themes.size)
-        assertEquals(8, catalogue.themes.count { !it.isPro })
+        assertEquals(32, catalogue.themes.size)
+        assertEquals(3, catalogue.themes.count { !it.isPro })
+        assertEquals(3, styled.count { !it.isPro })
         assertTrue(catalogue.styles.all { it.mapping.values.none { output -> output.isEmpty() } })
     }
 }

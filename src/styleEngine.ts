@@ -28,6 +28,9 @@ export type KeyboardTheme = {
   accent: string;
   dark: boolean;
   isPro: boolean;
+  /** Picture themes: image file in assets/keyboard-themes and key opacity. */
+  image?: string;
+  keyAlpha?: number;
 };
 
 export const catalogue = catalogueJson as unknown as {

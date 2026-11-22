@@ -48,9 +48,9 @@ export default function ProScreen() {
 
       <View style={styles.list}>
         <Benefit tint={colors.peachSoft} big={`${proStyles}`} text="more text styles: wings, ribbons, runes, brush and every emoji frame" />
-        <Benefit tint={colors.pinkSoft} big={`${proThemes}`} text="extra keyboard themes, from Cherry to Neon Night" />
+        <Benefit tint={colors.pinkSoft} big={`${proThemes}`} text="extra keyboard themes, including picture themes and your own photo" />
         <Benefit tint={colors.mintSoft} big={`${proPacks}`} text={`preset packs (Savage, Gym, Travel, Gaming). ${presetCount} bios in total`} />
-        <Benefit tint={colors.sunSoft} big="6" text="extra story-card backgrounds" />
+        <Benefit tint={colors.sunSoft} big="10" text="extra story-card backgrounds" />
       </View>
 
       <View style={styles.promise}>

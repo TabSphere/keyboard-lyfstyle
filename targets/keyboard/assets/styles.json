@@ -18,7 +18,7 @@
       "category": "Bold",
       "description": "Serif Bold Unicode letterforms.",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "fallback": "preserve",
       "mapping": {
         "0": "𝟎",
@@ -92,7 +92,7 @@
       "category": "Classic",
       "description": "Serif Italic Unicode letterforms.",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "fallback": "preserve",
       "mapping": {
         "A": "𝐴",
@@ -348,7 +348,7 @@
       "category": "Dark",
       "description": "Fraktur Unicode letterforms.",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "fallback": "preserve",
       "mapping": {
         "A": "𝔄",
@@ -412,7 +412,7 @@
       "category": "Classic",
       "description": "Double Struck Unicode letterforms.",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "fallback": "preserve",
       "mapping": {
         "0": "𝟘",
@@ -550,7 +550,7 @@
       "category": "Classic",
       "description": "Sans Unicode letterforms.",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "fallback": "preserve",
       "mapping": {
         "0": "𝟢",
@@ -826,7 +826,7 @@
       "category": "Classic",
       "description": "Monospace Unicode letterforms.",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "fallback": "preserve",
       "mapping": {
         "0": "𝟶",
@@ -899,7 +899,7 @@
       "name": "Circled",
       "category": "Playful",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "description": "Open circles around Latin letters and digits.",
       "fallback": "preserve",
       "mapping": {
@@ -973,7 +973,7 @@
       "name": "Fullwidth",
       "category": "Bold",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "description": "Wide Latin letterforms and fullwidth digits.",
       "fallback": "preserve",
       "mapping": {
@@ -1047,7 +1047,7 @@
       "name": "Small Caps",
       "category": "Classic",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "description": "Compact capitals; unsupported letters remain unchanged.",
       "fallback": "preserve",
       "mapping": {
@@ -1111,7 +1111,7 @@
       "name": "Underline",
       "category": "Decorated",
       "kind": "overlay",
-      "isPro": false,
+      "isPro": true,
       "description": "A combining low line beneath supported letters and digits.",
       "fallback": "preserve",
       "mapping": {
@@ -1542,7 +1542,7 @@
       "name": "Night Bubble",
       "category": "Cute",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "description": "Filled bubbles for every letter (shown as capitals).",
       "fallback": "preserve",
       "mapping": {
@@ -1606,7 +1606,7 @@
       "name": "Box Letters",
       "category": "Playful",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "description": "Outlined squares for every letter (shown as capitals).",
       "fallback": "preserve",
       "mapping": {
@@ -1862,7 +1862,7 @@
       "name": "Greekish",
       "category": "Fancy",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "description": "Greekish letterforms.",
       "fallback": "preserve",
       "mapping": {
@@ -1990,7 +1990,7 @@
       "name": "Wizard",
       "category": "Fancy",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "description": "Wizard letterforms.",
       "fallback": "preserve",
       "mapping": {
@@ -2118,7 +2118,7 @@
       "name": "Kawaii",
       "category": "Cute",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "description": "Kawaii letterforms.",
       "fallback": "preserve",
       "mapping": {
@@ -2374,7 +2374,7 @@
       "name": "Tiny Wide",
       "category": "Cute",
       "kind": "alphabet",
-      "isPro": false,
+      "isPro": true,
       "description": "Tiny Wide letterforms.",
       "fallback": "preserve",
       "mapping": {
@@ -2438,7 +2438,7 @@
       "name": "Glitch",
       "category": "Effects",
       "kind": "overlay",
-      "isPro": false,
+      "isPro": true,
       "description": "Glitch effect on letters and digits.",
       "fallback": "preserve",
       "mapping": {
@@ -2512,7 +2512,7 @@
       "name": "Slashed",
       "category": "Effects",
       "kind": "overlay",
-      "isPro": false,
+      "isPro": true,
       "description": "Slashed effect on letters and digits.",
       "fallback": "preserve",
       "mapping": {
@@ -2586,7 +2586,7 @@
       "name": "Double Underline",
       "category": "Effects",
       "kind": "overlay",
-      "isPro": false,
+      "isPro": true,
       "description": "Double Underline effect on letters and digits.",
       "fallback": "preserve",
       "mapping": {
@@ -3245,7 +3245,7 @@
       "name": "Blossom",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Blossom: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -3312,7 +3312,7 @@
       "name": "Love Hearts",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Love Hearts: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -3389,7 +3389,7 @@
       "name": "Star Wave",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Star Wave: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -3466,7 +3466,7 @@
       "name": "Moonlight",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Moonlight: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -3533,7 +3533,7 @@
       "name": "Butterfly",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Butterfly: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -3600,7 +3600,7 @@
       "name": "Coquette Bow",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Coquette Bow: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -3614,7 +3614,7 @@
       "name": "Cloud Nine",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Cloud Nine: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -3628,7 +3628,7 @@
       "name": "On Fire",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "On Fire: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -3705,7 +3705,7 @@
       "name": "Royal",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Royal: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -3839,7 +3839,7 @@
       "name": "Soft Kawaii",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Soft Kawaii: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -3853,7 +3853,7 @@
       "name": "Corners",
       "category": "Emoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Corners: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -4650,7 +4650,7 @@
       "name": "Heart Beats",
       "category": "Cute",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Heart Beats: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -4664,7 +4664,7 @@
       "name": "Starry",
       "category": "Cute",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Starry: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -4678,7 +4678,7 @@
       "name": "S p a c e d",
       "category": "Cute",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "S p a c e d: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -4790,7 +4790,7 @@
       "name": "Love Struck",
       "category": "Kaomoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Love Struck: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -4804,7 +4804,7 @@
       "name": "Little Bear",
       "category": "Kaomoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Little Bear: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -4818,7 +4818,7 @@
       "name": "Big Hug",
       "category": "Kaomoji",
       "kind": "composite",
-      "isPro": false,
+      "isPro": true,
       "description": "Big Hug: a finished look for bios, captions and chats.",
       "fallback": "preserve",
       "keyboard": false,
@@ -4959,7 +4959,7 @@
       "secondary": "#6E5A10",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": false
+      "isPro": true
     },
     {
       "id": "mint",
@@ -4970,7 +4970,7 @@
       "secondary": "#3D6B58",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": false
+      "isPro": true
     },
     {
       "id": "peach",
@@ -4981,7 +4981,7 @@
       "secondary": "#7E5446",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": false
+      "isPro": true
     },
     {
       "id": "lemon",
@@ -4992,7 +4992,7 @@
       "secondary": "#6E6630",
       "accent": "#FF3D8B",
       "dark": false,
-      "isPro": false
+      "isPro": true
     },
     {
       "id": "tangerine",
@@ -5003,7 +5003,7 @@
       "secondary": "#FFE6D1",
       "accent": "#22172F",
       "dark": true,
-      "isPro": false
+      "isPro": true
     },
     {
       "id": "midnight",
@@ -5191,6 +5191,110 @@
       "accent": "#38F2C0",
       "dark": true,
       "isPro": true
+    },
+    {
+      "id": "sunset",
+      "name": "Sunset",
+      "background": "#FF6A5C",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#5A2A3A",
+      "accent": "#22172F",
+      "dark": false,
+      "isPro": true,
+      "image": "sunset.jpg",
+      "keyAlpha": 0.78
+    },
+    {
+      "id": "starry-night",
+      "name": "Starry Night",
+      "background": "#0F1A3D",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#C9C6E8",
+      "accent": "#FFD84D",
+      "dark": true,
+      "isPro": true,
+      "image": "starry-night.jpg",
+      "keyAlpha": 0.16
+    },
+    {
+      "id": "candy-hearts",
+      "name": "Candy Hearts",
+      "background": "#FFD6E7",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#7A3A58",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "candy-hearts.jpg",
+      "keyAlpha": 0.86
+    },
+    {
+      "id": "daisy-days",
+      "name": "Daisy Days",
+      "background": "#FFE88A",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#6E5A10",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "daisy-days.jpg",
+      "keyAlpha": 0.86
+    },
+    {
+      "id": "aurora",
+      "name": "Aurora",
+      "background": "#0E2A33",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#BFE9E0",
+      "accent": "#38F2C0",
+      "dark": true,
+      "isPro": true,
+      "image": "aurora.jpg",
+      "keyAlpha": 0.16
+    },
+    {
+      "id": "dreamy",
+      "name": "Dreamy",
+      "background": "#FFD9CF",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#7E5446",
+      "accent": "#FF3D8B",
+      "dark": false,
+      "isPro": true,
+      "image": "dreamy.jpg",
+      "keyAlpha": 0.68
+    },
+    {
+      "id": "gingham",
+      "name": "Picnic",
+      "background": "#FFE1EC",
+      "key": "#FFFFFF",
+      "text": "#22172F",
+      "secondary": "#7A3A58",
+      "accent": "#E8304A",
+      "dark": false,
+      "isPro": true,
+      "image": "gingham.jpg",
+      "keyAlpha": 0.9
+    },
+    {
+      "id": "ocean-waves",
+      "name": "Ocean Waves",
+      "background": "#1D4ED8",
+      "key": "#FFFFFF",
+      "text": "#FFFFFF",
+      "secondary": "#D6E4FF",
+      "accent": "#FFD84D",
+      "dark": true,
+      "isPro": true,
+      "image": "ocean-waves.jpg",
+      "keyAlpha": 0.2
     }
   ]
 }

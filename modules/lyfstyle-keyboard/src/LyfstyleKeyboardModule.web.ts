@@ -11,4 +11,6 @@ export default {
   setProUnlocked: unavailable,
   isProSyncAvailable: async (): Promise<boolean> => false,
   setKeyboardTheme: async (): Promise<void> => undefined,
+  setKeyboardPhoto: unavailable,
+  clearKeyboardPhoto: async (): Promise<void> => undefined,
 };

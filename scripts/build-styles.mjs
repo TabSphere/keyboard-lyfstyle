@@ -301,12 +301,39 @@ function theme(id, name, background, key, text, secondary, accent, dark, isPro) 
   return { id, name, background, key, text, secondary, accent, dark, isPro };
 }
 
+// Picture themes: a designed image behind see-through keys (keyAlpha = key opacity).
+// Images live in assets/keyboard-themes/ and are copied into both keyboards below.
+// `background` is the image's dominant colour, used while it loads or if it fails.
+function pictureTheme(id, name, background, text, secondary, accent, dark, keyAlpha) {
+  return {
+    id, name, background, key: dark ? '#FFFFFF' : '#FFFFFF', text, secondary, accent, dark, isPro: true,
+    image: `${id}.jpg`, keyAlpha,
+  };
+}
+catalogue.themes.push(
+  pictureTheme('sunset', 'Sunset', '#FF6A5C', '#22172F', '#5A2A3A', '#22172F', false, 0.78),
+  pictureTheme('starry-night', 'Starry Night', '#0F1A3D', '#FFFFFF', '#C9C6E8', '#FFD84D', true, 0.16),
+  pictureTheme('candy-hearts', 'Candy Hearts', '#FFD6E7', '#22172F', '#7A3A58', '#FF3D8B', false, 0.86),
+  pictureTheme('daisy-days', 'Daisy Days', '#FFE88A', '#22172F', '#6E5A10', '#FF3D8B', false, 0.86),
+  pictureTheme('aurora', 'Aurora', '#0E2A33', '#FFFFFF', '#BFE9E0', '#38F2C0', true, 0.16),
+  pictureTheme('dreamy', 'Dreamy', '#FFD9CF', '#22172F', '#7E5446', '#FF3D8B', false, 0.68),
+  pictureTheme('gingham', 'Picnic', '#FFE1EC', '#22172F', '#7A3A58', '#E8304A', false, 0.9),
+  pictureTheme('ocean-waves', 'Ocean Waves', '#1D4ED8', '#FFFFFF', '#D6E4FF', '#FFD84D', true, 0.2),
+);
+
+// Free tier (decided 2026-11-22): Script, Sans Bold and Sparkles are free, plus the Hot Pink,
+// Blush and Midnight themes. Everything else (incl. picture themes and photo upload) is Pro.
+const FREE_STYLES = new Set(['normal', 'script', 'sans-bold', 'frame-sparkles']);
+const FREE_THEMES = new Set(['pop-pink', 'blush', 'midnight']);
+for (const style of catalogue.styles) style.isPro = !FREE_STYLES.has(style.id);
+for (const item of catalogue.themes) item.isPro = !FREE_THEMES.has(item.id);
+
 const keyboardStyles = catalogue.styles.filter((style) => style.keyboard !== false && style.id !== 'normal');
 const styled = catalogue.styles.filter((style) => style.id !== 'normal');
 if (styled.length < 100) throw new Error(`Expected at least 100 styles, found ${styled.length}`);
 if (keyboardStyles.length !== 48) throw new Error(`Expected 48 keyboard styles, found ${keyboardStyles.length}`);
 if (new Set(catalogue.styles.map((style) => style.id)).size !== catalogue.styles.length) throw new Error('Duplicate style ids');
-if (catalogue.themes.length !== 24) throw new Error('Expected 24 themes');
+if (catalogue.themes.length !== 32) throw new Error('Expected 32 themes (24 colour + 8 picture)');
 for (const style of catalogue.styles) {
   if (style.fallback !== 'preserve') throw new Error(`${style.id}: unsafe fallback`);
   for (const [input, output] of Object.entries(style.mapping)) {
@@ -334,3 +361,15 @@ fs.copyFileSync(
   path.join(androidTestResources, 'golden-tests.json'),
 );
 console.log(`Generated ${styled.length} styles (${keyboardStyles.length} keyboard, ${styled.filter((s) => !s.isPro).length} free) and ${catalogue.themes.length} themes.`);
+
+// Picture-theme images: copy into both keyboards. iOS bundles assets/ flat, so the
+// files sit next to styles.json; Android reads them from assets/themes/.
+const pictureDir = path.join(root, 'assets', 'keyboard-themes');
+const androidThemes = path.join(root, 'modules/lyfstyle-keyboard/android/src/main/assets/themes');
+fs.mkdirSync(androidThemes, { recursive: true });
+for (const item of catalogue.themes.filter((theme) => theme.image)) {
+  const source = path.join(pictureDir, item.image);
+  if (!fs.existsSync(source)) throw new Error(`Missing picture for ${item.id}: run scripts/make-keyboard-pictures.cjs`);
+  fs.copyFileSync(source, path.join(root, 'targets/keyboard/assets', item.image));
+  fs.copyFileSync(source, path.join(androidThemes, item.image));
+}

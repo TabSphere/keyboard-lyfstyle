@@ -31,7 +31,7 @@ export const presetPacks: PresetPack[] = [
     ],
   },
   {
-    id: 'love', name: 'Love', emoji: '💖', isPro: false, items: [
+    id: 'love', name: 'Love', emoji: '💖', isPro: true, items: [
       '𝓨𝓸𝓾 + 𝓜𝓮 = ♡',
       '💞 my favourite notification is you',
       '♡ taken by the best person ever ♡',
@@ -51,7 +51,7 @@ export const presetPacks: PresetPack[] = [
     ],
   },
   {
-    id: 'birthday', name: 'Birthday', emoji: '🎂', isPro: false, items: [
+    id: 'birthday', name: 'Birthday', emoji: '🎂', isPro: true, items: [
       '🎂 𝓗𝓪𝓹𝓹𝔂 𝓑𝓲𝓻𝓽𝓱𝓭𝓪𝔂 🎂',
       '🎉 another lap around the sun ☀️',
       '🎈 level up! new year, new me',

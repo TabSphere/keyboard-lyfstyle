@@ -1,15 +1,26 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Platform, Pressable, StyleSheet, Text, View, type ImageSourcePropType } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
-import { Check, ChevronDown, ChevronRight, ChevronUp, ExternalLink, Lock, RefreshCw, ShieldCheck } from 'lucide-react-native';
+import { Camera, Check, ChevronDown, ChevronRight, ChevronUp, ExternalLink, Lock, RefreshCw, ShieldCheck, Trash2 } from 'lucide-react-native';
 import NativeKeyboard, { type AndroidKeyboardStatus } from '@/nativeKeyboard';
 import { useComposer } from '../../state/ComposerContext';
 import { themes, type KeyboardTheme } from '../../styleEngine';
 import { colors, radii } from '../../theme/tokens';
+import { keyboardPictures } from '../../theme/keyboardPictures';
+import { pickKeyboardPhoto, removeKeyboardPhoto } from '../../tools/keyboardPhoto';
 import { ActionButton, Eyebrow, PageTitle, Screen, TopBar, type } from '../../components/ui';
 
 const THEME_KEY = 'lyfstyle.keyboardTheme';
+const PHOTO_KEY = 'lyfstyle.keyboardPhoto';
+
+/** The person's own photo, shown with white glass keys (matches the native keyboards). */
+const PHOTO_THEME: KeyboardTheme = {
+  id: 'custom-photo', name: 'Your photo', background: '#22172F', key: '#FFFFFF', text: '#FFFFFF',
+  secondary: '#EDE6F0', accent: '#FF3D8B', dark: true, isPro: true, image: '@photo', keyAlpha: 0.22,
+};
+const colourThemes = themes.filter((item) => !item.image);
+const pictureThemes = themes.filter((item) => item.image);
 
 export default function KeyboardScreen() {
   const { pro } = useComposer();
@@ -18,13 +29,44 @@ export default function KeyboardScreen() {
   const [notice, setNotice] = useState('');
   const [themeId, setThemeId] = useState(themes[0].id);
   const [fullAccessOpen, setFullAccessOpen] = useState(false);
-  const current = themes.find((item) => item.id === themeId) ?? themes[0];
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const current = themeId === PHOTO_THEME.id && photoUri ? PHOTO_THEME : themes.find((item) => item.id === themeId) ?? themes[0];
 
   useEffect(() => {
-    AsyncStorage.getItem(THEME_KEY).then((value) => {
-      if (value && themes.some((item) => item.id === value)) setThemeId(value);
+    AsyncStorage.multiGet([THEME_KEY, PHOTO_KEY]).then(([[, theme], [, photo]]) => {
+      if (photo) setPhotoUri(photo);
+      if (theme && (themes.some((item) => item.id === theme) || (theme === PHOTO_THEME.id && photo))) setThemeId(theme);
     }).catch(() => undefined);
   }, []);
+
+  const choosePhoto = async () => {
+    if (!pro.isPro) {
+      router.push('/pro');
+      return;
+    }
+    setNotice('');
+    try {
+      const uri = await pickKeyboardPhoto();
+      if (!uri) return;
+      setPhotoUri(uri);
+      setThemeId(PHOTO_THEME.id);
+      await AsyncStorage.multiSet([[PHOTO_KEY, uri], [THEME_KEY, PHOTO_THEME.id]]).catch(() => undefined);
+      setNotice(Platform.OS === 'ios'
+        ? 'Photo saved. On iPhone, turn on Full Access for Lyfstyle (Settings → Keyboards) so the keyboard can show it.'
+        : 'Your photo is now your keyboard background.');
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Could not use that photo.');
+    }
+  };
+
+  const removePhoto = async () => {
+    await removeKeyboardPhoto().catch(() => undefined);
+    setPhotoUri(null);
+    if (themeId === PHOTO_THEME.id) setThemeId(themes[0].id);
+    await AsyncStorage.multiRemove([PHOTO_KEY]).catch(() => undefined);
+    await AsyncStorage.setItem(THEME_KEY, themes[0].id).catch(() => undefined);
+    setNotice('Photo removed.');
+  };
 
   const refresh = useCallback(async () => {
     if (Platform.OS !== 'android') return;
@@ -75,34 +117,46 @@ export default function KeyboardScreen() {
       <TopBar isPro={pro.isPro} />
       <PageTitle title="Your" mark="keyboard">Style as you type in any app. Pick a theme, then switch it on.</PageTitle>
 
-      <KeyboardPreview theme={current} />
+      <KeyboardPreview theme={current} photoUri={photoUri} />
+
+      <View style={styles.photoCard}>
+        <View style={styles.photoHead}>
+          <Camera size={20} color={colors.ink} strokeWidth={2.2} />
+          <Text style={styles.photoTitle}>Your photo as the background</Text>
+          {!pro.isPro ? <Lock size={14} color={colors.ink} strokeWidth={2.4} /> : null}
+        </View>
+        <Text style={styles.photoCopy}>Pick any picture from your phone. It stays on your device.</Text>
+        <View style={styles.photoActions}>
+          <ActionButton onPress={choosePhoto} variant={pro.isPro ? 'dark' : 'sun'} style={styles.photoButton}>
+            {pro.isPro ? (photoUri ? 'Change photo' : 'Choose a photo') : 'Unlock with Pro'}
+          </ActionButton>
+          {photoUri && pro.isPro ? (
+            <Pressable accessibilityRole="button" accessibilityLabel="Remove keyboard photo" onPress={() => void removePhoto()} style={styles.photoRemove}>
+              <Trash2 size={18} color={colors.ink} />
+            </Pressable>
+          ) : null}
+        </View>
+      </View>
 
       <View style={styles.sectionHead}>
-        <Eyebrow>THEMES · {themes.length}</Eyebrow>
-        <Text style={styles.sectionNote}>{themes.filter((item) => !item.isPro).length} free</Text>
+        <Eyebrow>PICTURE THEMES · {pictureThemes.length}</Eyebrow>
+        <Text style={styles.sectionNote}>Pro</Text>
       </View>
       <View style={styles.themeGrid}>
-        {themes.map((theme) => {
-          const locked = theme.isPro && !pro.isPro;
-          const active = theme.id === themeId;
-          return (
-            <Pressable
-              key={theme.id}
-              accessibilityRole="button"
-              accessibilityLabel={`${theme.name} keyboard theme${locked ? ', Pro' : ''}${active ? ', selected' : ''}`}
-              onPress={() => void chooseTheme(theme)}
-              style={({ pressed }) => [styles.theme, { backgroundColor: theme.background }, active && styles.themeActive, pressed && styles.pressed]}
-            >
-              <View style={styles.themeKeys}>
-                {[0, 1, 2, 3].map((index) => <View key={index} style={[styles.themeKey, { backgroundColor: index === 3 ? theme.accent : theme.key }]} />)}
-              </View>
-              <View style={styles.themeFoot}>
-                <Text numberOfLines={1} style={[styles.themeName, { color: theme.text }]}>{theme.name}</Text>
-                {locked ? <Lock size={11} color={theme.text} strokeWidth={2.6} /> : active ? <Check size={13} color={theme.text} strokeWidth={3} /> : null}
-              </View>
-            </Pressable>
-          );
-        })}
+        {photoUri ? <ThemeTile theme={PHOTO_THEME} photoUri={photoUri} active={themeId === PHOTO_THEME.id} locked={!pro.isPro} onPress={() => void chooseTheme(PHOTO_THEME)} /> : null}
+        {pictureThemes.map((theme) => (
+          <ThemeTile key={theme.id} theme={theme} active={theme.id === themeId} locked={theme.isPro && !pro.isPro} onPress={() => void chooseTheme(theme)} />
+        ))}
+      </View>
+
+      <View style={styles.sectionHead}>
+        <Eyebrow>COLOUR THEMES · {colourThemes.length}</Eyebrow>
+        <Text style={styles.sectionNote}>{colourThemes.filter((item) => !item.isPro).length} free</Text>
+      </View>
+      <View style={styles.themeGrid}>
+        {colourThemes.map((theme) => (
+          <ThemeTile key={theme.id} theme={theme} active={theme.id === themeId} locked={theme.isPro && !pro.isPro} onPress={() => void chooseTheme(theme)} />
+        ))}
       </View>
 
       {notice ? <Text accessibilityLiveRegion="polite" style={styles.notice}>{notice}</Text> : null}
@@ -156,13 +210,52 @@ export default function KeyboardScreen() {
   );
 }
 
-function KeyboardPreview({ theme }: { theme: KeyboardTheme }) {
-  const rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+function pictureSource(theme: KeyboardTheme, photoUri?: string | null): ImageSourcePropType | null {
+  if (!theme.image) return null;
+  if (theme.image === '@photo') return photoUri ? { uri: photoUri } : null;
+  return keyboardPictures[theme.image] ?? null;
+}
+
+/** Key colour with the theme's opacity, so picture themes show through. */
+function keyColor(theme: KeyboardTheme) {
+  const value = parseInt(theme.key.slice(1), 16);
+  return `rgba(${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255}, ${theme.keyAlpha ?? 1})`;
+}
+
+function ThemeTile({ theme, active, locked, onPress, photoUri }: { theme: KeyboardTheme; active: boolean; locked: boolean; onPress: () => void; photoUri?: string | null }) {
+  const source = pictureSource(theme, photoUri);
+  const body = (
+    <>
+      <View style={styles.themeKeys}>
+        {[0, 1, 2, 3].map((index) => <View key={index} style={[styles.themeKey, { backgroundColor: index === 3 ? theme.accent : keyColor(theme) }]} />)}
+      </View>
+      <View style={styles.themeFoot}>
+        <Text numberOfLines={1} style={[styles.themeName, { color: theme.text }, source ? styles.themeNameOnPicture : null]}>{theme.name}</Text>
+        {locked ? <Lock size={11} color={theme.text} strokeWidth={2.6} /> : active ? <Check size={13} color={theme.text} strokeWidth={3} /> : null}
+      </View>
+    </>
+  );
   return (
-    <View style={[styles.preview, { backgroundColor: theme.background }]} accessibilityLabel={`Preview of the ${theme.name} keyboard`}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${theme.name} keyboard theme${locked ? ', Pro' : ''}${active ? ', selected' : ''}`}
+      onPress={onPress}
+      style={({ pressed }) => [styles.theme, { backgroundColor: theme.background }, active && styles.themeActive, pressed && styles.pressed]}
+    >
+      {source ? <ImageBackground source={source} resizeMode="cover" style={styles.themeImage} imageStyle={styles.themeImageInner}>{body}</ImageBackground> : <View style={styles.themeInner}>{body}</View>}
+    </Pressable>
+  );
+}
+
+function KeyboardPreview({ theme, photoUri }: { theme: KeyboardTheme; photoUri?: string | null }) {
+  const rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+  const source = pictureSource(theme, photoUri);
+  const keyBg = keyColor(theme);
+  const content = (
+    <>
       <View style={styles.previewBar}>
         {['𝓢𝓬𝓻𝓲𝓹𝓽', '✨ ✨', '𝗕𝗼𝗹𝗱', 'ⓑⓤⓑ', '(◕‿◕)'].map((label, index) => (
-          <View key={label} style={[styles.previewChip, { backgroundColor: index === 0 ? theme.accent : theme.key }]}>
+          <View key={label} style={[styles.previewChip, { backgroundColor: index === 0 ? theme.accent : keyBg }]}>
             <Text style={[styles.previewChipText, { color: index === 0 ? accentText(theme.accent) : theme.text }]}>{label}</Text>
           </View>
         ))}
@@ -170,19 +263,29 @@ function KeyboardPreview({ theme }: { theme: KeyboardTheme }) {
       {rows.map((row) => (
         <View key={row} style={styles.previewRow}>
           {Array.from(row).map((letter) => (
-            <View key={letter} style={[styles.previewKey, { backgroundColor: theme.key }]}>
+            <View key={letter} style={[styles.previewKey, { backgroundColor: keyBg }]}>
               <Text style={[styles.previewKeyText, { color: theme.text }]}>{letter}</Text>
             </View>
           ))}
         </View>
       ))}
       <View style={styles.previewRow}>
-        <View style={[styles.previewKey, styles.previewWide, { backgroundColor: theme.key }]}><Text style={[styles.previewKeyText, { color: theme.text }]}>123</Text></View>
-        <View style={[styles.previewKey, styles.previewSpace, { backgroundColor: theme.key }]}><Text style={[styles.previewKeyText, { color: theme.secondary }]}>lyfstyle</Text></View>
+        <View style={[styles.previewKey, styles.previewWide, { backgroundColor: keyBg }]}><Text style={[styles.previewKeyText, { color: theme.text }]}>123</Text></View>
+        <View style={[styles.previewKey, styles.previewSpace, { backgroundColor: keyBg }]}><Text style={[styles.previewKeyText, { color: theme.secondary }]}>lyfstyle</Text></View>
         <View style={[styles.previewKey, styles.previewWide, { backgroundColor: theme.accent }]}><Text style={[styles.previewKeyText, { color: accentText(theme.accent) }]}>↵</Text></View>
       </View>
-    </View>
+    </>
   );
+  const label = `Preview of the ${theme.name} keyboard`;
+  if (source) {
+    return (
+      <ImageBackground source={source} resizeMode="cover" accessibilityLabel={label} style={[styles.preview, { backgroundColor: theme.background }]} imageStyle={styles.previewImage}>
+        {theme.image === '@photo' ? <View style={styles.photoDim} /> : null}
+        {content}
+      </ImageBackground>
+    );
+  }
+  return <View style={[styles.preview, { backgroundColor: theme.background }]} accessibilityLabel={label}>{content}</View>;
 }
 
 function accentText(hex: string) {
@@ -229,10 +332,23 @@ const styles = StyleSheet.create({
   previewKeyText: { fontFamily: type.semibold, fontSize: 15 },
   previewWide: { maxWidth: 56, flex: 1.6 },
   previewSpace: { maxWidth: 220, flex: 6 },
-  sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, marginTop: 8 },
   sectionNote: { fontFamily: type.bold, fontSize: 12, color: colors.muted },
-  themeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  theme: { width: '31%', borderRadius: radii.medium, padding: 9, borderWidth: 3, borderColor: 'transparent' },
+  themeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
+  theme: { width: '31%', borderRadius: radii.medium, borderWidth: 3, borderColor: 'transparent', overflow: 'hidden' },
+  themeInner: { padding: 9 },
+  themeImage: { width: '100%', padding: 9, minHeight: 64, justifyContent: 'space-between' },
+  themeImageInner: { borderRadius: radii.medium - 3 },
+  themeNameOnPicture: { textShadowColor: 'rgba(0,0,0,0.45)', textShadowRadius: 3, textShadowOffset: { width: 0, height: 1 } },
+  previewImage: { borderRadius: radii.large },
+  photoDim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: radii.large },
+  photoCard: { backgroundColor: colors.surface, borderRadius: radii.large, padding: 16, marginBottom: 18 },
+  photoHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  photoTitle: { flex: 1, fontFamily: type.displayBold, fontSize: 17, color: colors.ink },
+  photoCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 19, color: colors.muted, marginTop: 4, marginBottom: 12 },
+  photoActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  photoButton: { flex: 1 },
+  photoRemove: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.lineSoft, alignItems: 'center', justifyContent: 'center' },
   themeActive: { borderColor: colors.ink },
   themeKeys: { flexDirection: 'row', gap: 3 },
   themeKey: { flex: 1, height: 16, borderRadius: 4 },

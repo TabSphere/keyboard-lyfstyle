@@ -1,7 +1,13 @@
 package com.tabsphere.keyboardlyfstyle.keyboard
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Rect
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
 import android.icu.text.BreakIterator
@@ -19,6 +25,7 @@ import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import java.io.File
 
 /**
  * Lyfstyle keyboard (Pop Sugar). A style bar sits above the keys; the ☺ and 🎨
@@ -33,7 +40,11 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
     private val rows = LinearLayout(service).apply { orientation = VERTICAL }
     private var selectedStyle = preferences.getString("style", "script") ?: "script"
     private var normalMode = preferences.getBoolean("normalMode", false)
-    private var theme = catalogue.theme(preferences.getString("theme", "pop-pink") ?: "pop-pink")
+    private val photoFile = File(service.filesDir, "keyboard_photo.jpg")
+    private var theme = resolveTheme(preferences.getString("theme", "pop-pink") ?: "pop-pink")
+    private var backgroundKey: String? = null
+    private var backgroundBitmap: Bitmap? = null
+    private val thumbnails = mutableMapOf<String, Bitmap?>()
     private var panel = Panel.NONE
     private var shifted = true
     private var capsLock = false
@@ -92,8 +103,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
             preferences.edit().putString("style", selectedStyle).apply()
         }
         normalMode = preferences.getBoolean("normalMode", normalMode)
-        theme = catalogue.theme(preferences.getString("theme", theme.id) ?: theme.id)
-        if (theme.isPro && !isPro()) theme = catalogue.theme("pop-pink")
+        theme = resolveTheme(preferences.getString("theme", theme.id) ?: theme.id)
         panel = Panel.NONE
         rebuild()
     }
@@ -116,7 +126,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
 
     private fun rebuild() {
         removeAllViews()
-        setBackgroundColor(Color.parseColor(theme.background))
+        applyBackground()
         setPadding(dp(5), dp(6), dp(5), dp(8))
         addView(createStyleBar())
         rows.removeAllViews()
@@ -127,6 +137,80 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
             Panel.NONE -> if (symbols) buildSymbolRows() else buildLetterRows()
         }
         addView(bottomRow(), LayoutParams(LayoutParams.MATCH_PARENT, dp(50)))
+    }
+
+    // ---- Themes and backgrounds ---------------------------------------------
+
+
+    private fun resolveTheme(id: String): KeyboardPalette {
+        val candidate = if (id == PHOTO_THEME.id) {
+            if (photoFile.exists()) PHOTO_THEME else catalogue.theme("pop-pink")
+        } else catalogue.theme(id)
+        return if (candidate.isPro && !isPro()) catalogue.theme("pop-pink") else candidate
+    }
+
+    private fun themeOptions(): List<KeyboardPalette> =
+        if (photoFile.exists()) listOf(PHOTO_THEME) + catalogue.themes else catalogue.themes
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        applyBackground()
+    }
+
+    private fun applyBackground() {
+        val image = theme.image
+        if (image == null || width == 0 || height == 0) {
+            background = ColorDrawable(Color.parseColor(theme.background))
+            return
+        }
+        val stamp = if (image == "@photo") photoFile.lastModified() else 0L
+        val key = "${theme.id}:${width}x${height}:$stamp"
+        if (key != backgroundKey) {
+            backgroundBitmap?.recycle()
+            backgroundBitmap = runCatching { loadCropped(image, width, height) }.getOrNull()
+            backgroundKey = key
+        }
+        background = backgroundBitmap?.let { BitmapDrawable(resources, it) }
+            ?: ColorDrawable(Color.parseColor(theme.background))
+    }
+
+    private fun openImage(image: String) =
+        if (image == "@photo") photoFile.inputStream() else service.assets.open("themes/$image")
+
+    /** Decodes just enough pixels, then centre-crops to the keyboard's size. */
+    private fun loadCropped(image: String, targetWidth: Int, targetHeight: Int): Bitmap? {
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        openImage(image).use { BitmapFactory.decodeStream(it, null, bounds) }
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+        var sample = 1
+        while (bounds.outWidth / (sample * 2) >= targetWidth && bounds.outHeight / (sample * 2) >= targetHeight) sample *= 2
+        val decoded = openImage(image).use {
+            BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
+        } ?: return null
+        val scale = maxOf(targetWidth.toFloat() / decoded.width, targetHeight.toFloat() / decoded.height)
+        val cropWidth = (targetWidth / scale).toInt().coerceAtMost(decoded.width)
+        val cropHeight = (targetHeight / scale).toInt().coerceAtMost(decoded.height)
+        val left = (decoded.width - cropWidth) / 2
+        val top = (decoded.height - cropHeight) / 2
+        val result = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(result)
+        canvas.drawBitmap(decoded, Rect(left, top, left + cropWidth, top + cropHeight), Rect(0, 0, targetWidth, targetHeight), null)
+        // Dim people's own photos a little so the keys stay readable.
+        if (image == "@photo") canvas.drawColor(Color.argb(80, 0, 0, 0))
+        decoded.recycle()
+        return result
+    }
+
+    private fun thumbnail(image: String): Bitmap? = thumbnails.getOrPut(image) {
+        runCatching {
+            openImage(image).use { BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = 8 }) }
+        }.getOrNull()
+    }
+
+    /** Normal keys are see-through on picture themes. */
+    private fun keyFill(): Int {
+        val base = Color.parseColor(theme.key)
+        return Color.argb((theme.keyAlpha * 255).toInt().coerceIn(0, 255), Color.red(base), Color.green(base), Color.blue(base))
     }
 
     // ---- Style bar ---------------------------------------------------------
@@ -184,7 +268,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         setPadding(dp(12), 0, dp(12), 0)
         minWidth = dp(44); minimumWidth = dp(44)
         minHeight = dp(34); minimumHeight = dp(34)
-        val fill = Color.parseColor(if (active) theme.accent else theme.key)
+        val fill = if (active) Color.parseColor(theme.accent) else keyFill()
         setTextColor(if (active) readableOn(theme.accent) else Color.parseColor(theme.text))
         background = StateListDrawable().apply {
             addState(intArrayOf(android.R.attr.state_pressed), pill(shiftColor(fill, 0.86f)))
@@ -216,7 +300,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         val scroll = ScrollView(context).apply { isVerticalScrollBarEnabled = false }
         val column = LinearLayout(context).apply { orientation = VERTICAL; setPadding(0, dp(2), 0, dp(2)) }
         column.addView(sectionLabel(if (isPro()) "Pick a theme" else "Pick a theme · 🔒 unlock more with Lifetime Pro in the app"))
-        catalogue.themes.chunked(3).forEach { chunk ->
+        themeOptions().chunked(3).forEach { chunk ->
             val row = keyRow()
             chunk.forEach { option -> row.addView(themeSwatch(option)) }
             column.addView(row, LayoutParams(LayoutParams.MATCH_PARENT, dp(52)))
@@ -235,11 +319,15 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
             maxLines = 1
             stateListAnimator = null
             setTextColor(Color.parseColor(option.text))
-            background = GradientDrawable().apply {
+            val picture = option.image?.let { thumbnail(it) }
+            background = if (picture != null) {
+                BitmapDrawable(resources, picture)
+            } else GradientDrawable().apply {
                 cornerRadius = dp(12).toFloat()
                 setColor(Color.parseColor(option.background))
                 setStroke(dp(if (active) 3 else 1), if (active) Color.parseColor(option.accent) else Color.parseColor(option.key))
             }
+            if (picture != null) setShadowLayer(4f, 0f, 1f, Color.argb(160, 0, 0, 0))
             alpha = if (locked) 0.6f else 1f
             contentDescription = "${option.name} theme${if (locked) ", Pro" else ""}${if (active) ", selected" else ""}"
             setOnClickListener {
@@ -355,7 +443,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
             )
             setPadding(dp(2), 0, dp(2), 0)
             minHeight = dp(42); minimumHeight = dp(42)
-            val fill = Color.parseColor(if (accent) theme.accent else theme.key)
+            val fill = if (accent) Color.parseColor(theme.accent) else keyFill()
             background = StateListDrawable().apply {
                 addState(intArrayOf(android.R.attr.state_pressed), roundedKey(shiftColor(fill, 0.86f)))
                 addState(intArrayOf(), roundedKey(fill))
@@ -378,7 +466,8 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
         setColor(fill)
     }
 
-    private fun shiftColor(color: Int, factor: Float): Int = Color.rgb(
+    private fun shiftColor(color: Int, factor: Float): Int = Color.argb(
+        Color.alpha(color),
         (Color.red(color) * factor).toInt().coerceIn(0, 255),
         (Color.green(color) * factor).toInt().coerceIn(0, 255),
         (Color.blue(color) * factor).toInt().coerceIn(0, 255),
@@ -457,6 +546,15 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : LinearLayo
     fun stopKeyRepeat() {
         deleteRepeating = false
         handler.removeCallbacks(repeatDelete)
+    }
+
+    private companion object {
+        /** The person's own photo as a theme: white glass keys over a slightly dimmed picture. */
+        val PHOTO_THEME = KeyboardPalette(
+            id = "custom-photo", name = "Your photo", background = "#22172F", key = "#FFFFFF",
+            text = "#FFFFFF", secondary = "#EDE6F0", accent = "#FF3D8B", dark = true, isPro = true,
+            image = "@photo", keyAlpha = 0.22f,
+        )
     }
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()

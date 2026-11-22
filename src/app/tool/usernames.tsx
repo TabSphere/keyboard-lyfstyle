@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { router } from 'expo-router';
+import { useComposer } from '../../state/ComposerContext';
+import { getStyle } from '../../styleEngine';
 import { useCopy } from '../../hooks/useCopy';
 import { usernameIdeas } from '../../tools/textTools';
 import { colors, pastels, radii } from '../../theme/tokens';
@@ -7,6 +10,7 @@ import { BackBar, PageTitle, Screen, type } from '../../components/ui';
 
 export default function UsernamesScreen() {
   const { copiedKey, copy } = useCopy();
+  const { pro } = useComposer();
   const [name, setName] = useState('');
   const ideas = usernameIdeas(name);
 
@@ -35,8 +39,8 @@ export default function UsernamesScreen() {
               <Text style={styles.label}>{copiedKey === `p-${idea.plain}` ? 'COPIED ✓' : 'HANDLE'}</Text>
               <Text style={styles.plain} numberOfLines={1}>@{idea.plain}</Text>
             </Pressable>
-            <Pressable accessibilityRole="button" accessibilityLabel={`Copy display name ${idea.styled}`} onPress={() => copy(`s-${idea.plain}`, idea.styled)} style={[styles.half, styles.right]}>
-              <Text style={styles.label}>{copiedKey === `s-${idea.plain}` ? 'COPIED ✓' : 'DISPLAY NAME'}</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel={`Copy display name ${idea.styled}`} onPress={() => (getStyle(idea.styleId).isPro && !pro.isPro ? router.push('/pro') : copy(`s-${idea.plain}`, idea.styled))} style={[styles.half, styles.right]}>
+              <Text style={styles.label}>{copiedKey === `s-${idea.plain}` ? 'COPIED ✓' : getStyle(idea.styleId).isPro && !pro.isPro ? 'DISPLAY NAME · PRO 🔒' : 'DISPLAY NAME'}</Text>
               <Text style={styles.styled} numberOfLines={1}>{idea.styled}</Text>
             </Pressable>
           </View>

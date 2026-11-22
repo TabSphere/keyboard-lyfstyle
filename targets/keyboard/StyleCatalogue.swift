@@ -25,6 +25,10 @@ struct KeyboardPalette: Decodable {
     let accent: String
     let dark: Bool
     let isPro: Bool?
+    /// Picture themes: image file bundled next to styles.json ("@photo" = the person's own photo).
+    let image: String?
+    /// Opacity of normal keys over a picture (nil = solid keys).
+    let keyAlpha: Double?
 
     var requiresPro: Bool { isPro ?? false }
 }

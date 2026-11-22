@@ -1,5 +1,6 @@
 import UIKit
 import StoreKit
+import ImageIO
 
 /// Lyfstyle keyboard (Pop Sugar). A style bar sits above the keys; the ☺ and 🎨
 /// buttons swap the letter rows for the symbols panel or the theme picker.
@@ -11,6 +12,9 @@ final class KeyboardViewController: UIInputViewController {
     private let appGroup = "group.com.tabsphere.keyboardlyfstyle"
     private let productId = "com.tabsphere.keyboardlyfstyle.pro"
     private let root = UIStackView()
+    private let backgroundView = UIImageView()
+    private var backgroundKey = ""
+    private var thumbnails: [String: UIImage] = [:]
     private var heightConstraint: NSLayoutConstraint?
     private var selectedStyle = UserDefaults.standard.string(forKey: "style") ?? "script"
     private var normalMode = UserDefaults.standard.bool(forKey: "normalMode")
@@ -53,6 +57,16 @@ final class KeyboardViewController: UIInputViewController {
         root.axis = .vertical
         root.spacing = 5
         root.translatesAutoresizingMaskIntoConstraints = false
+        backgroundView.contentMode = .scaleAspectFill
+        backgroundView.clipsToBounds = true
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(backgroundView)
+        NSLayoutConstraint.activate([
+            backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
         view.addSubview(root)
         NSLayoutConstraint.activate([
             root.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5),
@@ -69,6 +83,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        palette = resolveTheme(id: defaults.string(forKey: "theme") ?? palette.id)
         applySharedTheme()
         updateInputSafety()
         Task { await refreshEntitlement() }
@@ -105,7 +120,7 @@ final class KeyboardViewController: UIInputViewController {
         let updated = shared.double(forKey: "themeUpdatedAt")
         guard updated > defaults.double(forKey: "themeAppliedAt") else { return }
         defaults.set(updated, forKey: "themeAppliedAt")
-        let candidate = catalogue.theme(id: id)
+        let candidate = resolveTheme(id: id)
         guard !candidate.requiresPro || isPro || shared.bool(forKey: "proUnlocked") else { return }
         palette = candidate
         defaults.set(candidate.id, forKey: "theme")
@@ -146,6 +161,7 @@ final class KeyboardViewController: UIInputViewController {
     private func rebuild() {
         root.arrangedSubviews.forEach { root.removeArrangedSubview($0); $0.removeFromSuperview() }
         view.backgroundColor = UIColor(hex: palette.background)
+        applyBackground()
         root.addArrangedSubview(styleBar())
         let content = UIStackView()
         content.axis = .vertical
@@ -282,7 +298,7 @@ final class KeyboardViewController: UIInputViewController {
     private func themesPanel() -> UIView {
         let (scroll, column) = verticalScroll()
         column.addArrangedSubview(sectionLabel(isPro ? "Pick a theme" : "Pick a theme · 🔒 unlock more with Lifetime Pro in the app"))
-        let options = catalogue.data.themes
+        let options = themeOptions()
         var index = 0
         while index < options.count {
             let row = rowStack(height: 48)
@@ -311,6 +327,14 @@ final class KeyboardViewController: UIInputViewController {
         button.titleLabel?.font = .systemFont(ofSize: 12, weight: .semibold)
         button.titleLabel?.lineBreakMode = .byTruncatingTail
         button.backgroundColor = UIColor(hex: option.background)
+        if let image = option.image, let picture = thumbnail(image) {
+            button.setBackgroundImage(picture, for: .normal)
+            button.titleLabel?.layer.shadowColor = UIColor.black.cgColor
+            button.titleLabel?.layer.shadowOpacity = 0.6
+            button.titleLabel?.layer.shadowRadius = 2
+            button.titleLabel?.layer.shadowOffset = CGSize(width: 0, height: 1)
+        }
+        button.clipsToBounds = true
         button.layer.cornerRadius = 12
         button.layer.borderWidth = active ? 3 : 1
         button.layer.borderColor = UIColor(hex: active ? option.accent : option.key).cgColor
@@ -395,7 +419,7 @@ final class KeyboardViewController: UIInputViewController {
         button.titleLabel?.lineBreakMode = .byTruncatingTail
         let foreground = active ? readableColor(on: palette.accent) : UIColor(hex: palette.text)
         button.setTitleColor(foreground, for: .normal)
-        let fill = UIColor(hex: active ? palette.accent : palette.key)
+        let fill = active ? UIColor(hex: palette.accent) : keyFill()
         button.setBackgroundImage(colorImage(fill), for: .normal)
         button.setBackgroundImage(colorImage(highlighted(fill)), for: .highlighted)
         button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
@@ -422,7 +446,7 @@ final class KeyboardViewController: UIInputViewController {
         }
         button.titleLabel?.font = .systemFont(ofSize: title.count > 6 ? 13 : 18, weight: .medium)
         button.titleLabel?.lineBreakMode = .byTruncatingTail
-        let fill = UIColor(hex: accent ? palette.accent : palette.key)
+        let fill = accent ? UIColor(hex: palette.accent) : keyFill()
         button.setBackgroundImage(colorImage(fill), for: .normal)
         button.setBackgroundImage(colorImage(highlighted(fill)), for: .highlighted)
         button.setTitleColor(foreground, for: .normal)
@@ -533,4 +557,90 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func recentIds() -> [String] { defaults.stringArray(forKey: "recents") ?? [] }
+
+    // MARK: - Picture themes and the person's photo
+
+    /// White glass keys over the person's own photo (slightly dimmed).
+    private static let photoTheme = KeyboardPalette(
+        id: "custom-photo", name: "Your photo", background: "#22172F", key: "#FFFFFF",
+        text: "#FFFFFF", secondary: "#EDE6F0", accent: "#FF3D8B", dark: true,
+        isPro: true, image: "@photo", keyAlpha: 0.22
+    )
+
+    /// iOS only lets the keyboard read the shared photo when Full Access is on.
+    private var photoURL: URL? {
+        guard hasFullAccess,
+              let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) else { return nil }
+        let url = container.appendingPathComponent("keyboard_photo.jpg")
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
+    }
+
+    private func resolveTheme(id: String) -> KeyboardPalette {
+        if id == Self.photoTheme.id { return photoURL != nil ? Self.photoTheme : catalogue.theme(id: "pop-pink") }
+        return catalogue.theme(id: id)
+    }
+
+    private func themeOptions() -> [KeyboardPalette] {
+        photoURL != nil ? [Self.photoTheme] + catalogue.data.themes : catalogue.data.themes
+    }
+
+    private func imageURL(_ image: String) -> URL? {
+        if image == "@photo" { return photoURL }
+        let name = (image as NSString).deletingPathExtension
+        let ext = (image as NSString).pathExtension
+        return Bundle.main.url(forResource: name, withExtension: ext)
+            ?? Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "assets")
+    }
+
+    /// Keyboards have a small memory budget, so images are decoded at a reduced size.
+    private func loadImage(_ image: String, maxPixels: Int) -> UIImage? {
+        guard let url = imageURL(image), let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixels,
+        ]
+        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+        return UIImage(cgImage: cgImage)
+    }
+
+    private func applyBackground() {
+        guard let image = palette.image else {
+            backgroundView.image = nil
+            backgroundKey = ""
+            return
+        }
+        let stamp: TimeInterval
+        if image == "@photo", let url = photoURL,
+           let modified = try? FileManager.default.attributesOfItem(atPath: url.path)[.modificationDate] as? Date {
+            stamp = modified.timeIntervalSince1970
+        } else {
+            stamp = 0
+        }
+        let key = "\(palette.id):\(stamp)"
+        guard key != backgroundKey else { return }
+        backgroundKey = key
+        var picture = loadImage(image, maxPixels: 1200)
+        if image == "@photo", let photo = picture {
+            // Dim people's own photos a little so the keys stay readable.
+            picture = UIGraphicsImageRenderer(size: photo.size).image { context in
+                photo.draw(at: .zero)
+                UIColor.black.withAlphaComponent(0.3).setFill()
+                context.fill(CGRect(origin: .zero, size: photo.size))
+            }
+        }
+        backgroundView.image = picture
+    }
+
+    private func thumbnail(_ image: String) -> UIImage? {
+        if let cached = thumbnails[image] { return cached }
+        let picture = loadImage(image, maxPixels: 240)
+        thumbnails[image] = picture
+        return picture
+    }
+
+    /// Normal keys are see-through on picture themes.
+    private func keyFill() -> UIColor {
+        UIColor(hex: palette.key).withAlphaComponent(CGFloat(palette.keyAlpha ?? 1))
+    }
 }

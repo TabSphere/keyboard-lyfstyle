@@ -24,6 +24,10 @@ data class KeyboardPalette(
     val accent: String,
     val dark: Boolean,
     val isPro: Boolean,
+    /** Picture themes: file in assets/themes ("@photo" = the person's own photo). */
+    val image: String? = null,
+    /** Opacity of normal keys over a picture (1 = solid). */
+    val keyAlpha: Float = 1f,
 )
 
 class StyleCatalogue private constructor(private val root: JSONObject) {
@@ -61,6 +65,8 @@ class StyleCatalogue private constructor(private val root: JSONObject) {
                 text = item.getString("text"), secondary = item.getString("secondary"),
                 accent = item.getString("accent"), dark = item.getBoolean("dark"),
                 isPro = item.optBoolean("isPro", false),
+                image = item.optString("image", "").ifEmpty { null },
+                keyAlpha = item.optDouble("keyAlpha", 1.0).toFloat(),
             )
         }
     }

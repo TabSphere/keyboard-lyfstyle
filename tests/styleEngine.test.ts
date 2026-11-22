@@ -14,11 +14,10 @@ import {
 
 const styled = catalogue.styles.filter((style) => style.id !== 'normal');
 
-test('catalogue has 100 styles with a generous free tier', () => {
+test('catalogue has 100 styles; Script, Sans Bold and Sparkles are free', () => {
   assert.equal(styled.length, 100);
   assert.equal(new Set(styled.map((style) => style.id)).size, 100);
-  const free = styled.filter((style) => !style.isPro).length;
-  assert.ok(free >= 35 && free <= 45, `free styles: ${free}`);
+  assert.deepEqual(styled.filter((style) => !style.isPro).map((style) => style.id).sort(), ['frame-sparkles', 'sans-bold', 'script']);
 });
 
 test('only per-character styles reach the keyboards', () => {
@@ -81,9 +80,10 @@ test('style selection never falls back to a Pro style', () => {
   assert.ok(availableStyles(false).every((style) => !style.isPro));
 });
 
-test('24 keyboard themes, 8 free', () => {
-  assert.equal(themes.length, 24);
-  assert.equal(themes.filter((item) => !item.isPro).length, 8);
+test('32 keyboard themes (8 picture), 3 free', () => {
+  assert.equal(themes.length, 32);
+  assert.equal(themes.filter((item) => item.image).length, 8);
+  assert.deepEqual(themes.filter((item) => !item.isPro).map((item) => item.id).sort(), ['blush', 'midnight', 'pop-pink']);
   assert.ok(themes.every((item) => /^#[0-9A-F]{6}$/i.test(item.background) && /^#[0-9A-F]{6}$/i.test(item.accent)));
 });
 

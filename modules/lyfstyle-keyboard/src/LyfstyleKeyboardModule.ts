@@ -8,6 +8,8 @@ declare class LyfstyleKeyboardModule extends NativeModule<LyfstyleKeyboardNative
   setProUnlocked(value: boolean): Promise<void>;
   isProSyncAvailable(): Promise<boolean>;
   setKeyboardTheme(themeId: string): Promise<void>;
+  setKeyboardPhoto(fileUri: string): Promise<void>;
+  clearKeyboardPhoto(): Promise<void>;
 }
 
 export default requireNativeModule<LyfstyleKeyboardModule>('LyfstyleKeyboard');
