@@ -46,7 +46,7 @@
     const text = words.value || 'main character energy';
     $('results').innerHTML = TEASER.map((id) => {
       const s = byId[id];
-      const tag = s.free ? '<span class="tag">FREE</span>' : '<span class="tag pro">🔒 IN THE APP</span>';
+      const tag = s.free ? '<span class="tag">FREE</span>' : '<span class="tag pro">IN THE APP</span>';
       return `<button type="button" class="style${s.free ? '' : ' locked'}" data-id="${id}"><span class="t"><span class="n">${s.name}${tag}</span><span class="o">${esc(tf(text, id))}</span></span><span class="c">${s.free ? 'Copy' : 'Get it'}</span></button>`;
     }).join('') + `<a class="style moreStyles" href="#get"><span class="t"><span class="o">+${TOTAL - TEASER.length} more styles</span><span class="n">Cursive, gothic, bubbles, glitch, emoji frames and kaomoji, in the app</span></span><span class="c">Get app</span></a>`;
   };
@@ -55,14 +55,14 @@
     if (!b) return;
     const s = byId[b.dataset.id];
     if (!s.free) {
-      toast(`${s.name} and ${TOTAL - 3} more styles are in the app 💕`);
+      toast(`${s.name} and ${TOTAL - 3} more styles are in the app.`);
       document.getElementById('get').scrollIntoView({ behavior: 'smooth' });
       return;
     }
     if (await copy(tf(words.value || 'main character energy', b.dataset.id))) {
       b.classList.add('copied'); b.querySelector('.c').textContent = 'Copied';
       setTimeout(() => { b.classList.remove('copied'); b.querySelector('.c').textContent = 'Copy'; }, 1300);
-      toast(`Copied ${s.name}. Paste it anywhere ✨`);
+      toast(`Copied ${s.name}. Paste it anywhere.`);
     }
   });
   words.addEventListener('input', renderResults);
@@ -144,7 +144,7 @@
     photoUrl = URL.createObjectURL(file);
     themeId = null; renderThemes();
     applyLook({ bg: '#000000', key: '#FFFFFF', alpha: 0.22, text: '#FFFFFF', accent: look.accent, img: photoUrl, dim: true });
-    toast('Your photo is on the keyboard 📷');
+    toast('Your photo is on the keyboard.');
   });
 
   // Colour wheel: mix background, keys and accent.
@@ -172,7 +172,7 @@
     if (a.dataset.href) { a.href = a.dataset.href; a.rel = 'noopener'; live += 1; return; }
     a.classList.add('soon');
     a.setAttribute('aria-disabled', 'true');
-    a.addEventListener('click', (e) => { e.preventDefault(); toast(`${a.dataset.store}: coming very soon 💕`); });
+    a.addEventListener('click', (e) => { e.preventDefault(); toast(`${a.dataset.store}: coming very soon.`); });
   });
   if (live === 2) $('storeNote').textContent = 'Free to download. Lifetime Pro is £9.99 once.';
 })();
