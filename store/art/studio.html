@@ -239,6 +239,38 @@ if (params.get('feature')) {
   </div>`;
   throw new Error('feature rendered');
 }
+if (params.get('header')) {
+  // App Store product page header, 3840 x 1646 (drawn at 1920 x 823, rendered at 2x).
+  // Apple crops it differently per device, so the words and phones sit in the middle 70%.
+  const pill = (x) => `<span style="font:700 22px Inter;background:#22172F;color:#fff;border-radius:99px;padding:12px 22px">${x}</span>`;
+  document.getElementById('root').innerHTML = `<div class="slide" style="width:1920px;height:823px;background:radial-gradient(120% 140% at 15% 20%,#FF6FA8 0%,#FF3D8B 45%,#E02C77 100%)">
+    <div style="position:absolute;right:-160px;top:-220px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(255,216,77,.55),rgba(255,216,77,0) 65%)"></div>
+    <div style="position:absolute;left:300px;top:228px;z-index:3">
+      <div style="font:800 150px/0.95 'Bricolage Grotesque';letter-spacing:-5px;color:#22172F"><span style="color:#FFD84D">lyf</span>style</div>
+      <div style="font:800 58px/1.05 'Bricolage Grotesque';color:#fff;margin-top:26px;letter-spacing:-1px">Type in <span style="background:#FFD84D;color:#22172F;padding:0 10px;border-radius:10px">any font</span>,<br>in any app</div>
+      <div style="display:flex;gap:12px;margin-top:34px">${['100+ fonts', '100+ themes', 'Pay once'].map(pill).join('')}</div>
+    </div>
+    ${device({ w: 300, x: 960, y: 150, rotate: -8, content: chat({ theme: 'galaxy', styleId: 'circled', panel: 'themes', messages: MSG.themes, typed: '' }) })}
+    ${device({ w: 320, x: 1170, y: 95, rotate: 0, content: chat({ theme: 'sakura', styleId: 'script', messages: MSG.hero, typed: tf('see u at 8', 'script') }) })}
+    ${device({ w: 300, x: 1400, y: 150, rotate: 8, content: chat({ theme: 'sakura', styleId: 'script', messages: MSG.photo, typed: tf('golden hour', 'script'), photo: 'kb/sunset-beach-golden.jpg' }) })}
+  </div>`;
+  throw new Error('header rendered');
+}
+if (params.get('thumb')) {
+  // YouTube thumbnail, 1920 x 1080 (drawn at 1280 x 720, rendered at 1.5x). Big words that still read at phone size.
+  document.getElementById('root').innerHTML = `<div class="slide" style="width:1280px;height:720px;background:radial-gradient(110% 130% at 10% 10%,#FF6FA8 0%,#FF3D8B 50%,#D9246E 100%)">
+    <div style="position:absolute;right:-120px;top:-160px;width:760px;height:760px;border-radius:50%;background:radial-gradient(circle,rgba(255,216,77,.6),rgba(255,216,77,0) 65%)"></div>
+    <div style="position:absolute;left:64px;top:70px;z-index:3">
+      <div style="font:800 58px/1 'Bricolage Grotesque';letter-spacing:-2px;color:#22172F"><span style="color:#FFD84D">lyf</span>style</div>
+      <div style="font:800 190px/0.9 'Bricolage Grotesque';letter-spacing:-8px;color:#fff;margin-top:26px;text-shadow:0 6px 0 rgba(34,23,47,.25)">100+</div>
+      <div style="font:800 88px/0.95 'Bricolage Grotesque';letter-spacing:-3px;color:#22172F;margin-top:6px"><span style="background:#FFD84D;padding:0 14px;border-radius:14px">FANCY FONTS</span></div>
+      <div style="font:800 46px/1.1 'Bricolage Grotesque';color:#fff;margin-top:22px;letter-spacing:-1px">right on your keyboard</div>
+    </div>
+    ${device({ w: 290, x: 770, y: 150, rotate: -7, content: chat({ theme: 'galaxy', styleId: 'circled', panel: 'themes', messages: MSG.themes, typed: '' }) })}
+    ${device({ w: 320, x: 950, y: 80, rotate: 6, content: chat({ theme: 'sakura', styleId: 'script', messages: MSG.hero, typed: tf('see u at 8', 'script') }) })}
+  </div>`;
+  throw new Error('thumb rendered');
+}
 const platform = params.get('p') || 'ios';
 const index = Number(params.get('i') || 0);
 const android = platform === 'android';

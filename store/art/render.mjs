@@ -21,7 +21,8 @@ const send = (method, params = {}) => new Promise((r) => { id++; p.set(id, r); w
 await send('Page.enable'); await send('Runtime.enable');
 
 const jobs = [];
-for (const platform of which === 'all' ? ['ios', 'android'] : [which]) for (const i of only) jobs.push([platform, i]);
+const slidePlatforms = which === 'all' ? ['ios', 'android'] : ['feature', 'header', 'thumb'].includes(which) ? [] : [which];
+for (const platform of slidePlatforms) for (const i of only) jobs.push([platform, i]);
 for (const [platform, i] of jobs) {
   const [w, h] = platform === 'ipad' ? [1032, 1376] : platform === 'android' ? [360, 640] : [430, 932];
   await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: platform === 'ipad' ? 2 : 3, mobile: false });
@@ -43,5 +44,27 @@ if (which === 'all' || which === 'feature') {
   const { result } = await send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: 1024, height: 500, scale: 1 } });
   fs.writeFileSync(path.join(OUT, 'play-feature-graphic.png'), Buffer.from(result.data, 'base64'));
   console.log('saved play-feature-graphic.png');
+}
+if (which === 'header') {
+  // App Store product page header, 3840 x 1646.
+  await send('Emulation.setDeviceMetricsOverride', { width: 1920, height: 823, deviceScaleFactor: 2, mobile: false });
+  await send('Page.navigate', { url: `${studio}?header=1` });
+  await sleep(1500);
+  await send('Runtime.evaluate', { expression: 'document.fonts.ready.then(() => Promise.all([...document.images].map((im) => im.complete ? 1 : new Promise((r) => { im.onload = im.onerror = r; }))))', awaitPromise: true });
+  await sleep(1200);
+  const { result } = await send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: 1920, height: 823, scale: 1 } });
+  fs.writeFileSync(path.join(OUT, 'appstore-header.png'), Buffer.from(result.data, 'base64'));
+  console.log('saved appstore-header.png');
+}
+if (which === 'thumb') {
+  // YouTube thumbnail, 1920 x 1080.
+  await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 720, deviceScaleFactor: 1.5, mobile: false });
+  await send('Page.navigate', { url: `${studio}?thumb=1` });
+  await sleep(1500);
+  await send('Runtime.evaluate', { expression: 'document.fonts.ready.then(() => Promise.all([...document.images].map((im) => im.complete ? 1 : new Promise((r) => { im.onload = im.onerror = r; }))))', awaitPromise: true });
+  await sleep(1200);
+  const { result } = await send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: 1280, height: 720, scale: 1 } });
+  fs.writeFileSync(path.join(OUT, 'youtube-thumbnail.png'), Buffer.from(result.data, 'base64'));
+  console.log('saved youtube-thumbnail.png');
 }
 ws.close(); edge.kill(); process.exit(0);
