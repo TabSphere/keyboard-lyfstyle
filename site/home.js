@@ -175,4 +175,5 @@
     a.addEventListener('click', (e) => { e.preventDefault(); toast(`${a.dataset.store}: coming very soon.`); });
   });
   if (live === 2) $('storeNote').textContent = 'Free to download. Lifetime Pro is £9.99 once.';
+  else if (live === 1) $('storeNote').textContent = `Free on the ${document.querySelector('.store:not(.soon)').dataset.store}. ${document.querySelector('.store.soon').dataset.store} is coming very soon.`;
 })();
