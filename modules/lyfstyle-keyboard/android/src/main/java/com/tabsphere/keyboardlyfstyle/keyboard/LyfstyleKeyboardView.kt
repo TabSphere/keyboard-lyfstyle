@@ -31,7 +31,9 @@ import android.view.HapticFeedbackConstants
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowInsets
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
@@ -119,6 +121,21 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
     // Sliding on the space bar moves the cursor.
     private var spaceStartX = 0f
     private var spaceSliding = false
+    // Holding space opens the keyboard picker (replaces the 🌐 key that sat next to 123).
+    private var spaceHeld = false
+    private val spaceHold = Runnable {
+        if (!spaceSliding) {
+            spaceHeld = true
+            (context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.showInputMethodPicker()
+        }
+    }
+
+    /**
+     * Height of the system navigation / gesture bar under the keyboard. On Android 15+
+     * the keyboard window reaches under it, and taps there go to the system instead of
+     * the keys, so the bottom row is lifted above it.
+     */
+    private var navigationInset = 0
 
     private val repeatDelete = object : Runnable {
         override fun run() {
@@ -180,7 +197,24 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         }
         addView(popup, LayoutParams(dp(50), dp(64)))
         addView(alternatesStrip, LayoutParams(LayoutParams.WRAP_CONTENT, dp(64)))
+        setOnApplyWindowInsetsListener { _, insets ->
+            val bottom = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                insets.getInsets(WindowInsets.Type.navigationBars()).bottom
+            } else {
+                @Suppress("DEPRECATION") insets.systemWindowInsetBottom
+            }
+            if (bottom != navigationInset) {
+                navigationInset = bottom
+                column.setPadding(dp(3), dp(6), dp(3), dp(6) + navigationInset)
+            }
+            insets
+        }
         rebuild()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        requestApplyInsets()
     }
 
     fun onInputStarted(info: EditorInfo?) {
@@ -226,7 +260,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         shiftCap = null
         column.removeAllViews()
         applyBackground()
-        column.setPadding(dp(3), dp(6), dp(3), dp(6))
+        column.setPadding(dp(3), dp(6), dp(3), dp(6) + navigationInset)
         column.addView(createStyleBar(), LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, dp(44)))
         rows.removeAllViews()
         column.addView(rows, LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, dp(ROW_HEIGHT * 3)))
@@ -520,7 +554,11 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
             alpha = if (locked) 0.6f else 1f
             contentDescription = "${option.name} theme${if (locked) ", Pro" else ""}${if (active) ", selected" else ""}"
             setOnClickListener {
-                if (locked) return@setOnClickListener
+                if (locked) {
+                    // Say why instead of silently ignoring the tap.
+                    android.widget.Toast.makeText(context, "${option.name} comes with Lifetime Pro. Unlock it in the Lyfstyle app.", android.widget.Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
                 tick(this)
                 theme = option
                 preferences.edit().putString("theme", option.id).apply()
@@ -792,24 +830,31 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
                 rebuild()
             }
         }
-        row.addView(mode, weighted(1.3f))
-        val globe = cap("🌐", CapKind.FUNCTION, textSize = 18f).apply { contentDescription = "Switch to next keyboard" }
-        globe.onUp = { _, inside -> if (inside) service.switchToNextInputMethod(false) }
-        row.addView(globe, weighted(1.1f))
+        // No 🌐 key here: Android puts a keyboard switcher in the navigation bar, and a 🌐 next
+        // to 123 caught taps meant for 123. Holding space opens the keyboard picker instead.
+        row.addView(mode, weighted(1.5f))
         val mic = cap("🎙", CapKind.FUNCTION, textSize = 18f).apply { contentDescription = "Speak to type" }
         mic.onUp = { key, inside -> if (inside) { tick(key); if (panel == Panel.VOICE) { stopVoice(); panel = Panel.NONE; rebuild() } else startVoice() } }
-        row.addView(mic, weighted(1.1f))
+        row.addView(mic, weighted(1.2f))
         val space = cap(catalogue.transform("lyfstyle", effectiveStyleId()), CapKind.LETTER, textSize = 15f).apply {
             label.setTextColor(Color.parseColor(theme.secondary))
-            contentDescription = "Space"
+            contentDescription = "Space. Hold to switch keyboard."
         }
-        space.onDown = { key -> tick(key); spaceStartX = -1f; spaceSliding = false }
-        space.onMove = { _, rawX -> slideCursor(rawX) }
+        space.onDown = { key ->
+            tick(key); spaceStartX = -1f; spaceSliding = false; spaceHeld = false
+            handler.postDelayed(spaceHold, 600)
+        }
+        space.onMove = { _, rawX ->
+            slideCursor(rawX)
+            if (spaceSliding) handler.removeCallbacks(spaceHold)
+        }
         space.onUp = { _, inside ->
-            if (!spaceSliding && inside) typeSpace()
+            handler.removeCallbacks(spaceHold)
+            if (!spaceSliding && !spaceHeld && inside) typeSpace()
             spaceSliding = false
+            spaceHeld = false
         }
-        row.addView(space, weighted(3.6f))
+        row.addView(space, weighted(4.4f))
         val period = cap(".", CapKind.LETTER)
         period.onDown = { key -> tick(key); commitText(".") }
         row.addView(period, weighted(1f))
@@ -1099,6 +1144,12 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
 
     fun deleteLastGrapheme() {
         val connection = service.currentInputConnection ?: return
+        // With text selected (e.g. after Select all), delete removes the selection.
+        val selected = connection.getSelectedText(0)
+        if (!selected.isNullOrEmpty()) {
+            connection.commitText("", 1)
+            return
+        }
         val before = connection.getTextBeforeCursor(256, 0) ?: return
         if (before.isEmpty()) return
         val text = before.toString()

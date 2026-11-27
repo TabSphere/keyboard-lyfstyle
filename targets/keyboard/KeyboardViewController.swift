@@ -27,6 +27,8 @@ final class KeyboardViewController: UIInputViewController {
     private let backgroundView = UIImageView()
     private var backgroundKey = ""
     private var thumbnails: [String: UIImage] = [:]
+    /// Shown once at the top of the themes panel, e.g. after tapping a locked theme.
+    private var themeNotice: String?
     private var heightConstraint: NSLayoutConstraint?
     private var selectedStyle = UserDefaults.standard.string(forKey: "style") ?? "script"
     private var normalMode = UserDefaults.standard.bool(forKey: "normalMode")
@@ -448,6 +450,10 @@ final class KeyboardViewController: UIInputViewController {
 
     private func themesPanel() -> UIView {
         let (scroll, column) = verticalScroll()
+        if let message = themeNotice {
+            column.addArrangedSubview(notice(message))
+            themeNotice = nil
+        }
         if !isPro { column.addArrangedSubview(sectionLabel("🔒 Unlock every theme with Lifetime Pro in the app")) }
         if !hasFullAccess {
             // iPhone only lets a keyboard read the photo and colours saved in the app when Full Access is on.
@@ -490,8 +496,16 @@ final class KeyboardViewController: UIInputViewController {
         let locked = option.requiresPro && !isPro
         let active = option.id == palette.id
         let button = UIButton(type: .system, primaryAction: UIAction(handler: { [weak self] _ in
-            guard let self, !locked else { return }
+            guard let self else { return }
             self.tick()
+            if locked {
+                // Say why instead of silently ignoring the tap.
+                self.themeNotice = self.hasFullAccess
+                    ? "\(option.name) comes with Lifetime Pro. Unlock it in the Lyfstyle app, then come back here."
+                    : "\(option.name) comes with Lifetime Pro. Already have Pro? Turn on Full Access: Settings → General → Keyboard → Keyboards → Lyfstyle."
+                self.rebuild()
+                return
+            }
             self.palette = option
             self.defaults.set(option.id, forKey: "theme")
             self.panel = .none
@@ -502,8 +516,19 @@ final class KeyboardViewController: UIInputViewController {
         button.titleLabel?.font = .systemFont(ofSize: 12, weight: .semibold)
         button.titleLabel?.lineBreakMode = .byTruncatingTail
         button.backgroundColor = UIColor(hex: option.background)
-        if let image = option.image, let picture = thumbnail(image) {
-            button.setBackgroundImage(picture, for: .normal)
+        if let image = option.image {
+            // Thumbnails load off the main thread, so the panel opens and responds at once.
+            if let cached = thumbnails[image] {
+                button.setBackgroundImage(cached, for: .normal)
+            } else if let url = imageURL(image) {
+                DispatchQueue.global(qos: .userInitiated).async { [weak self, weak button] in
+                    let picture = Self.decode(url, maxPixels: 240)
+                    DispatchQueue.main.async {
+                        self?.thumbnails[image] = picture
+                        button?.setBackgroundImage(picture, for: .normal)
+                    }
+                }
+            }
             button.titleLabel?.layer.shadowColor = UIColor.black.cgColor
             button.titleLabel?.layer.shadowOpacity = 0.7
             button.titleLabel?.layer.shadowRadius = 2
@@ -1095,6 +1120,11 @@ final class KeyboardViewController: UIInputViewController {
 
     private func deleteBackward() {
         let proxy = textDocumentProxy
+        // With text selected (e.g. after Select All), one delete removes just the selection.
+        if let selected = proxy.selectedText, !selected.isEmpty {
+            proxy.deleteBackward()
+            return
+        }
         guard let before = proxy.documentContextBeforeInput else {
             proxy.deleteBackward()
             return
@@ -1184,7 +1214,13 @@ final class KeyboardViewController: UIInputViewController {
 
     /// Keyboards have a small memory budget, so images are decoded at a reduced size.
     private func loadImage(_ image: String, maxPixels: Int) -> UIImage? {
-        guard let url = imageURL(image), let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+        guard let url = imageURL(image) else { return nil }
+        return Self.decode(url, maxPixels: maxPixels)
+    }
+
+    /// Decodes an image file at a reduced size. Safe to call off the main thread.
+    private static func decode(_ url: URL, maxPixels: Int) -> UIImage? {
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
         let options: [CFString: Any] = [
             kCGImageSourceCreateThumbnailFromImageAlways: true,
             kCGImageSourceCreateThumbnailWithTransform: true,
