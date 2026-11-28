@@ -18,6 +18,9 @@ android {
 }
 
 dependencies {
+  // On-device translation in the keyboard (free; each language downloads once, about 30 MB).
+  implementation 'com.google.mlkit:translate:17.0.3'
+  implementation 'com.google.mlkit:language-id:17.0.6'
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.json:json:20240303'
 }

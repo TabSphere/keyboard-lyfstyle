@@ -15,8 +15,8 @@ export default function AboutScreen() {
       <InfoSection number="SAFE FIELDS" title="Normal when Normal matters.">
         The keyboards automatically use Normal mode for password and secure fields, email addresses, URLs, phone numbers, numeric fields and one-time codes. You can also choose Normal manually. Styled text is intended for expression, not credentials or precise identifiers.
       </InfoSection>
-      <InfoSection number="DECORATIONS" title="Explicit, never automatic.">
-        Frames and dividers are composer actions. The keyboard does not wrap everything you type in decorative characters, so ordinary messages remain predictable.
+      <InfoSection number="EMOJI STYLES" title="Frames live in the app.">
+        Emoji frames, hearts between letters and kaomoji wrap a whole message, so they are made in the Write tab and copied. The keyboard styles each letter as you type and never wraps your messages on its own, so everyday typing stays predictable.
       </InfoSection>
       <InfoSection number="DELETION" title="Backspace respects visible characters.">
         Android uses Unicode grapheme boundaries and iOS uses the system text proxy’s backward deletion. Real-device verification still covers supplementary letters, combining marks, family emoji, flags, skin tones and keycaps across target apps.

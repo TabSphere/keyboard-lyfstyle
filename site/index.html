@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lyfstyle: Fonts Keyboard – 100+ fancy fonts in any app</title>
+<meta name="description" content="Type in 100+ fancy fonts in any app, with 100+ keyboard themes, your own photo and colours. Try every font right here. Pay once, no ads, no tracking.">
+<meta property="og:title" content="Lyfstyle: Fonts Keyboard">
+<meta property="og:description" content="100+ fancy fonts right on your keyboard. Try them here, then type in style in any app.">
+<meta property="og:image" content="https://lyfstyle.tabsphere.co.uk/assets/og.jpg">
+<meta property="og:url" content="https://lyfstyle.tabsphere.co.uk/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FF3D8B">
+<link rel="icon" href="/assets/icon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/home.css">
+</head>
+<body class="home">
+<header class="top"><div class="wrap"><a class="mark" href="/"><span>lyf</span>style</a><nav><a href="#try">Try it</a><a href="#keyboard">Keyboard</a><a href="#pro">Pro</a><a href="/support/">Support</a></nav></div></header>
+
+<main>
+  <!-- Hero: a live playground with the app's real 100+ styles. -->
+  <section class="hero" id="try">
+    <div class="wrap">
+      <p class="eyebrow">Fonts keyboard for iPhone &amp; Android</p>
+      <h1>Type in <mark>any font</mark>,<br>in any app.</h1>
+      <p class="lede">Write something below and watch it change. Copy the free styles here, and get 100+ more in the app.</p>
+      <label class="typebox">
+        <span class="sr">Your words</span>
+        <input id="words" type="text" value="main character energy" maxlength="60" autocomplete="off" spellcheck="false">
+        <button type="button" id="clear" aria-label="Clear">×</button>
+      </label>
+      <div class="grid" id="results" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- Interactive keyboard: the font on the keys, themes, your photo and colours. -->
+  <section class="kbsec" id="keyboard">
+    <div class="wrap two">
+      <div class="copy">
+        <p class="eyebrow">The keyboard</p>
+        <h2>Your font, <mark>right on the keys</mark>.</h2>
+        <p>Pick a style and every key shows it, so what you see is what you send. Tap the keys to try it, then dress it up with 100+ themes, your own photo or colours you mix yourself.</p>
+      </div>
+      <div class="controls">
+        <div class="themepick">
+          <div class="chips small" id="themeGroups" role="tablist" aria-label="Theme groups"></div>
+          <div class="thumbs" id="themes"></div>
+        </div>
+        <div class="tools">
+          <label class="tool"><input type="file" id="photo" accept="image/*" hidden><span>Try your photo</span></label>
+          <label class="tool"><input type="color" id="mixBg" value="#22172F"><span>Background</span></label>
+          <label class="tool"><input type="color" id="mixKey" value="#3A2A4A"><span>Keys</span></label>
+          <label class="tool"><input type="color" id="mixAccent" value="#FF3D8B"><span>Accent</span></label>
+        </div>
+        <p class="fine">Your photo stays in this browser. Nothing is uploaded.</p>
+      </div>
+      <div class="phone" aria-label="Keyboard preview">
+        <div class="screen">
+          <div class="chat">
+            <div class="bubble in">wait what keyboard is that</div>
+            <div class="bubble out" id="sent">lyfstyle</div>
+            <div class="field"><span id="typed"></span><i class="caret"></i></div>
+          </div>
+          <div class="kb" id="kb">
+            <div class="kbdim" id="kbdim"></div>
+            <div class="bar" id="kbStyles"></div>
+            <div class="rows" id="rows"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature grid. -->
+  <section class="features">
+    <div class="wrap">
+      <h2>Everything for <mark>bios &amp; captions</mark>.</h2>
+      <div class="cards">
+        <article><b>100+</b><h3>Text styles</h3><p>Cursive, bold, bubble, gothic, glitch, emoji frames and kaomoji, in easy groups.</p></article>
+        <article><b>100+</b><h3>Keyboard themes</h3><p>K-pop, pride, movies, music, art, nature, textures and 24 colours.</p></article>
+        <article><b><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.6"/></svg></b><h3>Your photo</h3><p>Any picture as your keyboard background, dimmed so the keys stay readable.</p></article>
+        <article><b><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.3 0 1.9-.9 1.9-1.8 0-1.4-1.2-1.6-1.2-2.9 0-1 .8-1.8 1.8-1.8H17a3.5 3.5 0 0 0 3.5-3.5C20.5 6.6 16.7 3.5 12 3.5z"/><circle cx="7.6" cy="11.2" r="1.1"/><circle cx="10.4" cy="7.4" r="1.1"/><circle cx="15" cy="7.6" r="1.1"/></svg></b><h3>Colour wheel</h3><p>Mix your own background, keys, letters and accent.</p></article>
+        <article><b>文A</b><h3>Translate</h3><p>Translate your message right in the keyboard, on your phone.</p></article>
+        <article><b><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></b><h3>Voice typing</h3><p>Speak instead of typing whenever your thumbs need a break.</p></article>
+        <article><b>100+</b><h3>Bios &amp; captions</h3><p>Ready-made packs: Aesthetic, Love, Birthday, Savage, Gym, Travel and Gaming.</p></article>
+        <article><b>0</b><h3>Ads or trackers</h3><p>No account, no ads, no analytics. What you type stays on your phone.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Promo video: loads from YouTube only when tapped. -->
+  <section class="video">
+    <div class="wrap">
+      <h2>See it in <mark>24 seconds</mark>.</h2>
+      <button type="button" class="player" id="player" aria-label="Play the Lyfstyle video">
+        <img src="/assets/og.jpg" alt="Lyfstyle: 100+ fancy fonts right on your keyboard" loading="lazy">
+        <span class="play" aria-hidden="true">▶</span>
+      </button>
+      <p class="fine">Plays from YouTube when you tap it.</p>
+    </div>
+  </section>
+
+  <!-- Pricing. -->
+  <section class="pro" id="pro">
+    <div class="wrap">
+      <h2>Pay once. <mark>Keep it forever.</mark></h2>
+      <div class="plans">
+        <div class="plan"><h3>Free</h3><p class="price">£0</p><ul><li>3 text styles</li><li>3 keyboard themes</li><li>The Aesthetic bio pack</li><li>Every tool</li></ul></div>
+        <div class="plan best"><h3>Lifetime Pro</h3><p class="price">£9.99 <small>once</small></p><ul><li>All 100+ text styles</li><li>All 100+ themes + your photo</li><li>Colour wheel</li><li>All 100+ bios &amp; captions</li><li>No subscription, ever</li></ul></div>
+      </div>
+      <p class="fine">Price shown in your local currency in the App Store and Google Play.</p>
+    </div>
+  </section>
+
+  <!-- Store buttons. Paste the live store links into data-href when each app is approved. -->
+  <section class="get" id="get">
+    <div class="wrap">
+      <h2>Get <span class="brand"><span>lyf</span>style</span></h2>
+      <div class="stores">
+        <a class="store" data-store="App Store" data-href="https://apps.apple.com/app/id6837861653" href="https://apps.apple.com/app/id6837861653"><small>Download on the</small>App Store</a>
+        <a class="store" data-store="Google Play" data-href="https://play.google.com/store/apps/details?id=com.tabsphere.keyboardlyfstyle" href="https://play.google.com/store/apps/details?id=com.tabsphere.keyboardlyfstyle"><small>Get it on</small>Google Play</a>
+      </div>
+      <p class="fine" id="storeNote">Free to download. Lifetime Pro is £9.99 once.</p>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<footer><div class="wrap">© 2026 TabSphere Ltd · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="mailto:info@tabsphere.co.uk">info@tabsphere.co.uk</a></div></footer>
+<script src="/assets/data.js"></script>
+<script src="/home.js"></script>
+</body>
+</html>

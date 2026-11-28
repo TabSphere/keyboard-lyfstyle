@@ -1,23 +1,24 @@
 import catalogueJson from '../shared/styles.json';
 
-export type StyleKind = 'normal' | 'alphabet' | 'overlay';
+// normal: unchanged text. alphabet/overlay: per-character mapping (works in the keyboards).
+// composite: a mapping plus a frame (prefix/suffix) and/or a joiner between letters.
+// Composites wrap a whole message, so they are app-only (keyboard: false).
+export type StyleKind = 'normal' | 'alphabet' | 'overlay' | 'composite';
 export type Lyfstyle = {
   id: string;
   name: string;
   category: string;
+  /** Section the style is listed under (e.g. "Cursive & cute"). */
+  group: string;
   description: string;
   kind: StyleKind;
   isPro: boolean;
   fallback: 'preserve';
+  keyboard: boolean;
   mapping: Record<string, string>;
-};
-export type Decoration = {
-  id: string;
-  name: string;
-  type: 'wrapper' | 'divider';
-  prefix: string;
-  suffix: string;
-  isPro: boolean;
+  prefix?: string;
+  suffix?: string;
+  joiner?: string;
 };
 export type KeyboardTheme = {
   id: string;
@@ -28,34 +29,69 @@ export type KeyboardTheme = {
   secondary: string;
   accent: string;
   dark: boolean;
+  isPro: boolean;
+  /** Picture themes: image file in assets/keyboard-themes and key opacity. */
+  image?: string;
+  /** Section in the theme pickers ("Colours", "K-pop", "Pride"…). */
+  group: string;
+  keyAlpha?: number;
 };
 
 export const catalogue = catalogueJson as unknown as {
   schemaVersion: number;
   productId: string;
   styles: Lyfstyle[];
-  decorations: Decoration[];
   themes: KeyboardTheme[];
 };
 
 export const styles = catalogue.styles;
 export const themes = catalogue.themes;
-export const decorations = catalogue.decorations;
 export const PRODUCT_ID = catalogue.productId;
 
-export function getStyle(styleId: string): Lyfstyle {
-  return styles.find((style) => style.id === styleId) ?? styles[0];
+/** Categories in the order the app shows them. */
+export const CATEGORIES = ['Emoji', 'Cute', 'Bold', 'Fancy', 'Soft', 'Dark', 'Playful', 'Effects', 'Kaomoji', 'Classic', 'Decorated'] as const;
+
+// Styles people make themselves ("My styles"). Kept outside the catalogue so the
+// shipped list stays fixed; registered by the app once they load from storage.
+let customRegistry: Lyfstyle[] = [];
+
+export function registerCustomStyles(list: Lyfstyle[]): void {
+  customRegistry = list;
 }
+
+export function customStyles(): Lyfstyle[] {
+  return customRegistry;
+}
+
+export function getStyle(styleId: string): Lyfstyle {
+  return customRegistry.find((style) => style.id === styleId)
+    ?? styles.find((style) => style.id === styleId)
+    ?? styles[0];
+}
+
+const joinable = /^[A-Za-z0-9]$/;
 
 export function transformText(input: string, styleId: string): string {
   const style = getStyle(styleId);
   if (style.kind === 'normal') return input;
-  return Array.from(input, (character) => style.mapping[character] ?? character).join('');
+  const characters = Array.from(input);
+  let output = '';
+  characters.forEach((character, index) => {
+    output += style.mapping[character] ?? character;
+    const next = characters[index + 1];
+    if (style.joiner && next !== undefined && joinable.test(character) && joinable.test(next)) {
+      output += style.joiner;
+    }
+  });
+  if (style.kind === 'composite' && input.trim()) {
+    return `${style.prefix ?? ''}${output}${style.suffix ?? ''}`;
+  }
+  return output;
 }
 
 export function unsupportedCharacters(input: string, styleId: string): string[] {
   const style = getStyle(styleId);
-  if (style.kind === 'normal') return [];
+  if (style.kind === 'normal' || Object.keys(style.mapping).length === 0) return [];
   const missing = new Set<string>();
   for (const character of input) {
     if (/^[\p{L}\p{N}]$/u.test(character) && !style.mapping[character]) missing.add(character);
@@ -67,16 +103,13 @@ export function availableStyles(isPro: boolean): Lyfstyle[] {
   return styles.filter((style) => style.id !== 'normal' && (isPro || !style.isPro));
 }
 
-export function applyDecoration(input: string, decorationId: string): string {
-  const decoration = decorations.find((item) => item.id === decorationId);
-  if (!decoration) return input;
-  if (decoration.type === 'divider') return `${input}${input.trim() ? '\n' : ''}${decoration.suffix}`;
-  return `${decoration.prefix}${input}${decoration.suffix}`;
+export function keyboardStyles(): Lyfstyle[] {
+  return styles.filter((style) => style.id !== 'normal' && style.keyboard);
 }
 
 export function compatibilityMessage(input: string, styleId: string): string {
   const missing = unsupportedCharacters(input, styleId);
-  if (!missing.length) return 'Every letter and number in this preview has a styled form.';
+  if (!missing.length) return 'Every letter and number has a styled form.';
   const list = missing.slice(0, 6).join(', ');
   const more = missing.length > 6 ? ` and ${missing.length - 6} more` : '';
   return `${missing.length} character${missing.length === 1 ? '' : 's'} kept normal: ${list}${more}.`;

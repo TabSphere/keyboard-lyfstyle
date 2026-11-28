@@ -19,7 +19,17 @@ class LyfstyleImeService : InputMethodService() {
 
     override fun onFinishInputView(finishingInput: Boolean) {
         keyboardView?.stopKeyRepeat()
+        keyboardView?.stopVoice()
+        keyboardView?.saveLearning()
         super.onFinishInputView(finishingInput)
+    }
+
+    override fun onUpdateSelection(
+        oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int,
+        candidatesStart: Int, candidatesEnd: Int,
+    ) {
+        super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+        keyboardView?.onSelectionChanged()
     }
 
     override fun onEvaluateFullscreenMode(): Boolean = false

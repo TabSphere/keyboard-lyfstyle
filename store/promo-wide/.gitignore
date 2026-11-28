@@ -1,0 +1,8 @@
+# Rendered videos and HyperFrames caches
+renders/
+.hyperframes/
+.media/
+# Licensed music: kept out of this public repo; add your track to assets/music/plucky-pop.mp3 to render
+assets/music/
+.thumbnails/
+.waveform-cache/
