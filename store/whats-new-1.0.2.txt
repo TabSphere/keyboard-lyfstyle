@@ -2,7 +2,7 @@ What's new in 1.0.2 (plain text: App Store "What's New" and Google Play "Release
 
 Word suggestions: finish words and guess the next one, in your font. Learns your words on your phone only.
 Emoji: a full emoji panel with your recents.
-Glow lights (Pro): a soft light that travels around your keyboard.
-Make your own style (Pro): mix a font, an effect and a frame, and use it on the keyboard.
-Keys feel better: no dead spots at the edges, a crisp tap click and buzz, and quicker taps on iPhone.
-Fixes: photo backgrounds on iPhone, bottom tabs on phones with navigation buttons, and delete with text selected.
+Glow lights (Pro): a soft light around your keyboard.
+Make your own style (Pro): mix a font, an effect and a frame.
+Keys feel better: no dead spots at the edges, a crisp click and buzz, quicker taps on iPhone.
+Fixes: photo backgrounds on iPhone, bottom tabs on phones with navigation buttons, delete with text selected.
