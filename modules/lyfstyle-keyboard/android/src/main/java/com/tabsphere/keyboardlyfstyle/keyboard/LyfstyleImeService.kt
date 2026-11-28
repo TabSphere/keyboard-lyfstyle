@@ -20,6 +20,7 @@ class LyfstyleImeService : InputMethodService() {
     override fun onFinishInputView(finishingInput: Boolean) {
         keyboardView?.stopKeyRepeat()
         keyboardView?.stopVoice()
+        keyboardView?.saveLearning()
         super.onFinishInputView(finishingInput)
     }
 

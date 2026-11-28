@@ -100,6 +100,17 @@ class LyfstyleKeyboardModule : Module() {
         .apply()
     }
 
+    // Keyboard switches set in the app: glow lights, word suggestions, "forget my words".
+    AsyncFunction("setKeyboardOptions") { json: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      val options = org.json.JSONObject(json)
+      val edit = context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE).edit()
+      if (options.has("glow")) edit.putBoolean("glow", options.getBoolean("glow"))
+      if (options.has("suggestions")) edit.putBoolean("suggestions", options.getBoolean("suggestions"))
+      if (options.optBoolean("forgetWords", false)) edit.putLong("forgetWordsAt", System.currentTimeMillis())
+      edit.apply()
+    }
+
     // How much to darken the person's photo behind the keys (0 = not at all, 0.8 = very dark).
     AsyncFunction("setPhotoDim") { value: Double ->
       val context = appContext.reactContext ?: throw IllegalStateException("No application context")

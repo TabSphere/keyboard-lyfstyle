@@ -6,8 +6,9 @@ import NaturalLanguage
 import Translation
 #endif
 
-/// Lyfstyle keyboard (Pop Sugar). A style bar sits above the keys; the ☺ and 🎨
-/// buttons swap the letter rows for the symbols panel or the theme picker.
+/// Lyfstyle keyboard (Pop Sugar). A style bar sits above the keys; the 😊 and 🎨
+/// buttons swap the letter rows for the emoji & symbols panel or the theme picker.
+/// While typing, the bar shows word suggestions in the chosen font instead of font chips.
 ///
 /// Typing feel: letters go in the moment a finger lands, with a pop-up preview.
 /// Holding a letter shows accents (and the number on the top row). Key labels are
@@ -40,6 +41,28 @@ final class KeyboardViewController: UIInputViewController {
     private var secondarySymbols = false
     private var safeNormal = false
     private var isPro = false
+
+    // Word suggestions, emoji and glow lights.
+    private static let extrasData: Data? = {
+        let url = Bundle.main.url(forResource: "extras", withExtension: "json")
+            ?? Bundle.main.url(forResource: "extras", withExtension: "json", subdirectory: "assets")
+        return url.flatMap { try? Data(contentsOf: $0) }
+    }()
+    private let suggester = WordSuggester(json: KeyboardViewController.extrasData)
+    private let emojiGroups: [(String, [String])] = {
+        guard let data = KeyboardViewController.extrasData,
+              let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let groups = root["emoji"] as? [[Any]] else { return [] }
+        return groups.compactMap { group in
+            guard group.count == 2, let title = group[0] as? String, let items = group[1] as? [String] else { return nil }
+            return (title, items)
+        }
+    }()
+    private weak var stripScroll: UIView?
+    private weak var suggestStack: UIStackView?
+    private var suggestion = WordSuggester.Result.empty
+    private var unsavedLearning = 0
+    private let glowView = GlowView()
 
     // Live key references, so shift and style changes relabel keys without a rebuild.
     private var letterCaps: [(KeyCap, String)] = []
@@ -141,6 +164,15 @@ final class KeyboardViewController: UIInputViewController {
             root.topAnchor.constraint(equalTo: view.topAnchor, constant: 6),
             root.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -4),
         ])
+        glowView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(glowView)
+        NSLayoutConstraint.activate([
+            glowView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            glowView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            glowView.topAnchor.constraint(equalTo: view.topAnchor),
+            glowView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        suggester.importLearned(defaults.dictionary(forKey: "learnedWords"))
         heightConstraint = view.heightAnchor.constraint(equalToConstant: 270)
         heightConstraint?.priority = .defaultHigh
         heightConstraint?.isActive = true
@@ -155,10 +187,21 @@ final class KeyboardViewController: UIInputViewController {
         catalogue.loadCustom(sharedDefaults?.string(forKey: "customStyles"))
         palette = resolveTheme(id: defaults.string(forKey: "theme") ?? palette.id)
         applySharedTheme()
+        applySharedOptions()
         updateInputSafety()
         rebuild()
         updateAutoShift()
         Task { await refreshEntitlement() }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        saveLearning()
+    }
+
+    override func selectionDidChange(_ textInput: UITextInput?) {
+        super.selectionDidChange(textInput)
+        refreshSuggestions()
     }
 
     override func viewWillLayoutSubviews() {
@@ -170,6 +213,23 @@ final class KeyboardViewController: UIInputViewController {
         super.textDidChange(textInput)
         updateInputSafety()
         updateAutoShift()
+        refreshSuggestions()
+    }
+
+    /// Glow, suggestions and "forget my words" set in the app (needs Full Access to arrive).
+    private func applySharedOptions() {
+        guard let shared = sharedDefaults else { return }
+        let updated = shared.double(forKey: "optionsUpdatedAt")
+        guard updated > defaults.double(forKey: "optionsAppliedAt") else { return }
+        defaults.set(updated, forKey: "optionsAppliedAt")
+        if shared.object(forKey: "glow") != nil { defaults.set(shared.bool(forKey: "glow"), forKey: "glow") }
+        if shared.object(forKey: "suggestions") != nil { defaults.set(shared.bool(forKey: "suggestions"), forKey: "suggestions") }
+        let forgetAt = shared.double(forKey: "forgetWordsAt")
+        if forgetAt > defaults.double(forKey: "forgotWordsAt") {
+            suggester.forgetLearned()
+            defaults.removeObject(forKey: "learnedWords")
+            defaults.set(forgetAt, forKey: "forgotWordsAt")
+        }
     }
 
     private func updateInputSafety() {
@@ -258,6 +318,9 @@ final class KeyboardViewController: UIInputViewController {
         }
         root.addArrangedSubview(content)
         root.addArrangedSubview(bottomRow())
+        glowView.setAccent(UIColor(hex: palette.accent))
+        glowView.isHidden = !glowOn()
+        view.bringSubviewToFront(glowView)
         view.bringSubviewToFront(popup)
     }
 
@@ -349,6 +412,18 @@ final class KeyboardViewController: UIInputViewController {
         fonts.accessibilityLabel = "All fonts"
         bar.insertArrangedSubview(fonts, at: 0)
         bar.addArrangedSubview(scroll)
+        // Word suggestions take the chips' place while a word is being typed.
+        let suggestions = UIStackView()
+        suggestions.axis = .horizontal
+        suggestions.distribution = .fillEqually
+        suggestions.alignment = .center
+        suggestions.spacing = 2
+        suggestions.isHidden = true
+        suggestions.setContentHuggingPriority(UILayoutPriority(1), for: .horizontal)
+        suggestions.setContentCompressionResistancePriority(UILayoutPriority(1), for: .horizontal)
+        bar.addArrangedSubview(suggestions)
+        stripScroll = scroll
+        suggestStack = suggestions
 
         let normal = chip(normalMode || safeNormal ? "Aa ✓" : "Aa", active: normalMode || safeNormal) { [weak self] in
             guard let self, !self.safeNormal else { return }
@@ -362,14 +437,110 @@ final class KeyboardViewController: UIInputViewController {
         let translateButton = chip("文A", active: panel == .translate) { [weak self] in self?.openTranslator() }
         translateButton.accessibilityLabel = "Translate your message"
         bar.addArrangedSubview(translateButton)
-        let symbolsButton = chip("☺", active: panel == .symbols) { [weak self] in self?.toggle(.symbols) }
-        symbolsButton.accessibilityLabel = "Symbols and kaomoji"
+        let symbolsButton = chip("😊", active: panel == .symbols) { [weak self] in self?.toggle(.symbols) }
+        symbolsButton.accessibilityLabel = "Emoji, symbols and kaomoji"
         bar.addArrangedSubview(symbolsButton)
         let themesButton = chip("🎨", active: panel == .themes) { [weak self] in self?.toggle(.themes) }
         themesButton.accessibilityLabel = "Keyboard themes. Current theme \(palette.name)"
         bar.addArrangedSubview(themesButton)
+        DispatchQueue.main.async { [weak self] in self?.refreshSuggestions() }
         return bar
     }
+
+    // MARK: - Word suggestions
+
+    private var suggestionsOn: Bool { defaults.object(forKey: "suggestions") as? Bool ?? true }
+
+    private func currentSuggestions() -> WordSuggester.Result {
+        guard panel == .none, !safeNormal, !symbols, suggestionsOn,
+              (textDocumentProxy.selectedText ?? "").isEmpty else { return .empty }
+        let before = String((textDocumentProxy.documentContextBeforeInput ?? "").suffix(80))
+        return suggester.suggest(catalogue.plain(before))
+    }
+
+    /// Shows suggestions in place of the font chips while a word is being typed.
+    private func refreshSuggestions() {
+        guard let stack = suggestStack, let scroll = stripScroll else { return }
+        suggestion = currentSuggestions()
+        stack.arrangedSubviews.forEach { stack.removeArrangedSubview($0); $0.removeFromSuperview() }
+        let showing = !suggestion.words.isEmpty
+        stack.isHidden = !showing
+        scroll.isHidden = showing
+        guard showing else { return }
+        let style = effectiveStyleId()
+        for (index, word) in suggestion.words.enumerated() {
+            let button = UIButton(type: .custom, primaryAction: UIAction(handler: { [weak self] _ in
+                self?.tick()
+                self?.pickSuggestion(word)
+            }))
+            button.setTitle(catalogue.transform(word, styleId: style), for: .normal)
+            button.titleLabel?.font = .systemFont(ofSize: 16, weight: index == 0 ? .semibold : .regular)
+            button.titleLabel?.lineBreakMode = .byTruncatingTail
+            button.setTitleColor(UIColor(hex: palette.text), for: .normal)
+            button.setBackgroundImage(colorImage(keyFill()), for: .highlighted)
+            button.layer.cornerRadius = 16
+            button.clipsToBounds = true
+            button.heightAnchor.constraint(equalToConstant: 34).isActive = true
+            button.accessibilityLabel = "Suggestion: \(word)"
+            stack.addArrangedSubview(button)
+        }
+    }
+
+    /// Swaps the half-typed word (in whatever font it was typed) for the chosen one, plus a space.
+    private func pickSuggestion(_ word: String) {
+        let proxy = textDocumentProxy
+        let before = String((proxy.documentContextBeforeInput ?? "").suffix(80))
+        let plain = catalogue.plain(before)
+        let previous = previousWord(String(plain.dropLast(WordSuggester.trailingWord(plain).count)))
+        if !suggestion.partial.isEmpty {
+            let tail = styledTail(before)
+            let expected = (proxy.documentContextBeforeInput ?? "").utf16.count - tail.utf16.count
+            for _ in 0..<tail.utf16.count {
+                proxy.deleteBackward()
+                guard let current = proxy.documentContextBeforeInput, current.utf16.count > expected else { break }
+            }
+        }
+        proxy.insertText(catalogue.transform(word, styleId: effectiveStyleId()) + " ")
+        learnWord(word, previous: previous)
+        updateAutoShift()
+        refreshSuggestions()
+    }
+
+    /// The styled letters right before the cursor (each may be a letter plus marks).
+    private func styledTail(_ before: String) -> String {
+        var tail = ""
+        for character in before.reversed() {
+            let plain = catalogue.plain(String(character))
+            guard !plain.isEmpty, plain.allSatisfy(WordSuggester.isWordChar) else { break }
+            tail = String(character) + tail
+        }
+        return tail
+    }
+
+    /// The word before the cursor's word, if it's in the same sentence.
+    private func previousWord(_ plainBefore: String) -> String? {
+        let trimmed = plainBefore.trimmingCharacters(in: .whitespaces)
+        guard let last = trimmed.last, WordSuggester.isWordChar(last) else { return nil }
+        let word = WordSuggester.trailingWord(trimmed)
+        return word.isEmpty ? nil : word
+    }
+
+    private func learnWord(_ word: String, previous: String?) {
+        guard !safeNormal, suggestionsOn else { return }
+        suggester.learn(word, previous: previous)
+        unsavedLearning += 1
+        if unsavedLearning >= 5 { saveLearning() }
+    }
+
+    private func saveLearning() {
+        guard unsavedLearning > 0 else { return }
+        unsavedLearning = 0
+        defaults.set(suggester.exportLearned(), forKey: "learnedWords")
+    }
+
+    // MARK: - Glow lights
+
+    private func glowOn() -> Bool { isPro && defaults.bool(forKey: "glow") }
 
     /// Recent fonts first (up to 6), always including the selected one.
     private func barStyles(effective: String) -> [TextStyle] {
@@ -425,8 +596,45 @@ final class KeyboardViewController: UIInputViewController {
         rebuild()
     }
 
+    private func recentEmoji() -> [String] { defaults.stringArray(forKey: "recentEmoji") ?? [] }
+
+    private func emojiGrid(_ column: UIStackView, _ items: [String]) {
+        var index = 0
+        while index < items.count {
+            let row = UIStackView()
+            row.axis = .horizontal
+            row.distribution = .fillEqually
+            row.heightAnchor.constraint(equalToConstant: 42).isActive = true
+            let chunk = items[index..<min(index + 8, items.count)]
+            for item in chunk {
+                let button = UIButton(type: .custom, primaryAction: UIAction(handler: { [weak self] _ in
+                    guard let self else { return }
+                    self.tick()
+                    self.textDocumentProxy.insertText(item)
+                    let recent = [item] + self.recentEmoji().filter { $0 != item }
+                    self.defaults.set(Array(recent.prefix(16)), forKey: "recentEmoji")
+                }))
+                button.setTitle(item, for: .normal)
+                button.titleLabel?.font = .systemFont(ofSize: 26)
+                button.setBackgroundImage(colorImage(keyFill()), for: .highlighted)
+                button.layer.cornerRadius = 10
+                button.clipsToBounds = true
+                button.accessibilityLabel = item
+                row.addArrangedSubview(button)
+            }
+            for _ in chunk.count..<8 { row.addArrangedSubview(UIView()) }
+            column.addArrangedSubview(row)
+            index += 8
+        }
+    }
+
     private func symbolsPanel() -> UIView {
         let (scroll, column) = verticalScroll()
+        let recent = recentEmoji()
+        if !recent.isEmpty {
+            column.addArrangedSubview(sectionLabel("Recent"))
+            emojiGrid(column, recent)
+        }
         for (title, items, perRow) in symbolGroups {
             column.addArrangedSubview(sectionLabel(title))
             var index = 0
@@ -447,6 +655,10 @@ final class KeyboardViewController: UIInputViewController {
                 index += perRow
             }
         }
+        for (title, items) in emojiGroups {
+            column.addArrangedSubview(sectionLabel(title))
+            emojiGrid(column, items)
+        }
         return scroll
     }
 
@@ -457,6 +669,28 @@ final class KeyboardViewController: UIInputViewController {
             themeNotice = nil
         }
         if !isPro { column.addArrangedSubview(sectionLabel("🔒 Unlock every theme with Lifetime Pro in the app")) }
+        let switches = UIStackView()
+        switches.axis = .horizontal
+        switches.distribution = .fillEqually
+        switches.spacing = 6
+        let glowSwitch = chip("✨ Glow lights \(glowOn() ? "on" : "off")\(isPro ? "" : " 🔒")", active: glowOn()) { [weak self] in
+            guard let self else { return }
+            if self.isPro {
+                self.defaults.set(!self.glowOn(), forKey: "glow")
+            } else {
+                self.themeNotice = "Glow lights come with Lifetime Pro. Unlock it in the Lyfstyle app."
+            }
+            self.rebuild()
+        }
+        glowSwitch.accessibilityLabel = "Glow lights \(glowOn() ? "on" : "off")"
+        switches.addArrangedSubview(glowSwitch)
+        let suggestSwitch = chip("💬 Suggestions \(suggestionsOn ? "on" : "off")", active: suggestionsOn) { [weak self] in
+            guard let self else { return }
+            self.defaults.set(!self.suggestionsOn, forKey: "suggestions")
+            self.rebuild()
+        }
+        switches.addArrangedSubview(suggestSwitch)
+        column.addArrangedSubview(switches)
         if !hasFullAccess {
             // iPhone only lets a keyboard read the photo and colours saved in the app when Full Access is on.
             column.addArrangedSubview(notice("Your photo & colours need Full Access: Settings → General → Keyboard → Keyboards → Lyfstyle → Allow Full Access"))
@@ -1058,11 +1292,18 @@ final class KeyboardViewController: UIInputViewController {
     private func commit(_ raw: String) {
         textDocumentProxy.insertText(catalogue.transform(raw, styleId: effectiveStyleId()))
         updateAutoShift()
+        refreshSuggestions()
     }
 
     private func typeSpace() {
+        defer { refreshSuggestions() }
         let now = Date().timeIntervalSince1970
         let before = textDocumentProxy.documentContextBeforeInput ?? ""
+        if !safeNormal {
+            let plain = catalogue.plain(String(before.suffix(80)))
+            let word = WordSuggester.trailingWord(plain)
+            if !word.isEmpty { learnWord(word, previous: previousWord(String(plain.dropLast(word.count)))) }
+        }
         // Double-tap space: ". " like the built-in keyboard.
         if now - lastSpaceTap < 0.5, before.hasSuffix(" "), let previous = before.dropLast().last,
            previous.isLetter || previous.isNumber || previous.unicodeScalars.first.map({ $0.value > 0x2000 }) == true {
@@ -1123,6 +1364,7 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func deleteBackward() {
+        defer { refreshSuggestions() }
         let proxy = textDocumentProxy
         // With text selected (e.g. after Select All), one delete removes just the selection.
         if let selected = proxy.selectedText, !selected.isEmpty {
@@ -1159,6 +1401,7 @@ final class KeyboardViewController: UIInputViewController {
     private func tick() {
         UIDevice.current.playInputClick()
         UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: 0.6)
+        if !glowView.isHidden { glowView.pulse() }
     }
 
     // MARK: - Picture themes, the person's photo and their own colours
@@ -1252,7 +1495,12 @@ final class KeyboardViewController: UIInputViewController {
         var picture = loadImage(image, maxPixels: 1200)
         if image == "@photo", let photo = picture {
             // Dim people's own photos (amount set in the app) so the keys stay readable.
-            picture = UIGraphicsImageRenderer(size: photo.size).image { context in
+            // Render at 1x: the default (screen scale, 3x) makes a ~30 MB bitmap, which can push the
+            // keyboard past iOS's memory limit so the photo never appears.
+            let format = UIGraphicsImageRendererFormat()
+            format.scale = 1
+            format.opaque = true
+            picture = UIGraphicsImageRenderer(size: photo.size, format: format).image { context in
                 photo.draw(at: .zero)
                 UIColor.black.withAlphaComponent(CGFloat(min(max(dim, 0), 0.8))).setFill()
                 context.fill(CGRect(origin: .zero, size: photo.size))

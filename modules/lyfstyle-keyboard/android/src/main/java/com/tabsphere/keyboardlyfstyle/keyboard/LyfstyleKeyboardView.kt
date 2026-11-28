@@ -45,13 +45,15 @@ import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import kotlin.math.abs
 
 /**
- * Lyfstyle keyboard (Pop Sugar). A style bar sits above the keys; the ☺ and 🎨
- * buttons swap the letter rows for the symbols panel or the theme picker.
+ * Lyfstyle keyboard (Pop Sugar). A style bar sits above the keys; the 😊 and 🎨
+ * buttons swap the letter rows for the emoji & symbols panel or the theme picker.
+ * While typing, the bar shows word suggestions in the chosen font instead of font chips.
  *
  * Typing feel: letters go in the moment a finger lands, with a pop-up preview.
  * Holding a letter shows accents (and the number on the top row). Key labels are
@@ -70,6 +72,26 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
     private var selectedStyle = preferences.getString("style", "script") ?: "script"
     private var normalMode = preferences.getBoolean("normalMode", false)
     private val photoFile = File(service.filesDir, "keyboard_photo.jpg")
+
+    // Word suggestions, emoji and glow lights.
+    private val extras: JSONObject? = runCatching {
+        JSONObject(service.assets.open("extras.json").bufferedReader().use { it.readText() })
+    }.getOrNull()
+    private val suggester: WordSuggester = runCatching { WordSuggester.fromJson(extras.toString()) }
+        .getOrElse { WordSuggester(emptyList(), emptyMap()) }
+    private val emojiGroups: List<Pair<String, List<String>>> = runCatching {
+        val groups = extras?.getJSONArray("emoji") ?: JSONArray()
+        (0 until groups.length()).map { index ->
+            val group = groups.getJSONArray(index)
+            val items = group.getJSONArray(1)
+            group.getString(0) to (0 until items.length()).map { items.getString(it) }
+        }
+    }.getOrElse { emptyList() }
+    private var stripScroll: View? = null
+    private var suggestRow: LinearLayout? = null
+    private var suggestion = WordSuggester.Result("", emptyList())
+    private var unsavedLearning = 0
+    private val glow = GlowView(service)
     private var theme = resolveTheme(preferences.getString("theme", "pop-pink") ?: "pop-pink")
     private var backgroundKey: String? = null
     private var backgroundBitmap: Bitmap? = null
@@ -182,6 +204,8 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
     init {
         fitsSystemWindows = false
         addView(column, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
+        addView(glow, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        suggester.importLearned(preferences.getString("learnedWords", null))
         popup.apply {
             visibility = GONE
             gravity = Gravity.CENTER
@@ -227,15 +251,29 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         }
         normalMode = preferences.getBoolean("normalMode", normalMode)
         theme = resolveTheme(preferences.getString("theme", theme.id) ?: theme.id)
+        // "Forget my words" in the app.
+        val forgetAt = preferences.getLong("forgetWordsAt", 0L)
+        if (forgetAt > preferences.getLong("forgotWordsAt", 0L)) {
+            suggester.forgetLearned()
+            preferences.edit().remove("learnedWords").putLong("forgotWordsAt", forgetAt).apply()
+        }
         panel = Panel.NONE
         capsLock = false
         rebuild()
         updateAutoShift()
     }
 
-    /** Called when the cursor moves, so capitals follow the sentence. */
+    /** Called when the cursor moves (also after each letter), so capitals and suggestions follow. */
     fun onSelectionChanged() {
         updateAutoShift()
+        refreshSuggestions()
+    }
+
+    /** Saves learned words when the keyboard closes (and every few words). */
+    fun saveLearning() {
+        if (unsavedLearning == 0) return
+        unsavedLearning = 0
+        preferences.edit().putString("learnedWords", suggester.exportLearned()).apply()
     }
 
     private fun requiresNormalInput(info: EditorInfo?): Boolean {
@@ -274,6 +312,9 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
             Panel.NONE -> if (symbols) buildSymbolRows() else buildLetterRows()
         }
         column.addView(bottomRow(), LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, dp(ROW_HEIGHT)))
+        glow.setColours(Color.parseColor(theme.accent))
+        glow.visibility = if (glowOn()) VISIBLE else GONE
+        glow.bringToFront()
         popup.bringToFront()
         alternatesStrip.bringToFront()
     }
@@ -397,6 +438,10 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         }
         scroll.addView(chips)
         bar.addView(scroll, LinearLayout.LayoutParams(0, dp(44), 1f))
+        val suggestions = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; visibility = GONE }
+        bar.addView(suggestions, LinearLayout.LayoutParams(0, dp(44), 1f))
+        stripScroll = scroll
+        suggestRow = suggestions
         bar.addView(chip(if (normalMode || safeNormal) "Aa ✓" else "Aa", normalMode || safeNormal) {
             if (!safeNormal) {
                 normalMode = !normalMode
@@ -408,10 +453,109 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
             isEnabled = !safeNormal
         })
         bar.addView(chip("文A", panel == Panel.TRANSLATE) { openTranslator() }.apply { contentDescription = "Translate your message" })
-        bar.addView(chip("☺", panel == Panel.SYMBOLS) { togglePanel(Panel.SYMBOLS) }.apply { contentDescription = "Symbols and kaomoji" })
+        bar.addView(chip("😊", panel == Panel.SYMBOLS) { togglePanel(Panel.SYMBOLS) }.apply { contentDescription = "Emoji, symbols and kaomoji" })
         bar.addView(chip("🎨", panel == Panel.THEMES) { togglePanel(Panel.THEMES) }.apply { contentDescription = "Keyboard themes. Current theme ${theme.name}" })
+        post { refreshSuggestions() }
         return bar
     }
+
+    // ---- Word suggestions --------------------------------------------------
+
+    private fun suggestionsOn() = preferences.getBoolean("suggestions", true)
+
+    private fun currentSuggestions(): WordSuggester.Result {
+        val none = WordSuggester.Result("", emptyList())
+        if (panel != Panel.NONE || safeNormal || symbols || !suggestionsOn()) return none
+        val connection = service.currentInputConnection ?: return none
+        if (!connection.getSelectedText(0).isNullOrEmpty()) return none
+        val before = connection.getTextBeforeCursor(80, 0)?.toString() ?: return none
+        return suggester.suggest(catalogue.plain(before))
+    }
+
+    /** Shows suggestions in place of the font chips while a word is being typed. */
+    private fun refreshSuggestions() {
+        val row = suggestRow ?: return
+        val scroll = stripScroll ?: return
+        suggestion = currentSuggestions()
+        row.removeAllViews()
+        if (suggestion.words.isEmpty()) {
+            row.visibility = GONE
+            scroll.visibility = VISIBLE
+            return
+        }
+        scroll.visibility = GONE
+        row.visibility = VISIBLE
+        val style = effectiveStyleId()
+        suggestion.words.forEachIndexed { index, word ->
+            if (index > 0) row.addView(View(context).apply {
+                setBackgroundColor(blend(Color.parseColor(theme.secondary), Color.TRANSPARENT, 0.5f))
+            }, LinearLayout.LayoutParams(dp(1), dp(20)))
+            row.addView(TextView(context).apply {
+                text = catalogue.transform(word, style)
+                textSize = 16f
+                maxLines = 1
+                ellipsize = TextUtils.TruncateAt.END
+                gravity = Gravity.CENTER
+                setTextColor(Color.parseColor(theme.text))
+                if (index == 0) setTypeface(typeface, android.graphics.Typeface.BOLD)
+                contentDescription = "Suggestion: $word"
+                background = StateListDrawable().apply {
+                    addState(intArrayOf(android.R.attr.state_pressed), pill(keyFill()))
+                    addState(intArrayOf(), ColorDrawable(Color.TRANSPARENT))
+                }
+                isClickable = true
+                setOnClickListener { tick(this); pickSuggestion(word) }
+            }, LinearLayout.LayoutParams(0, dp(36), 1f))
+        }
+    }
+
+    /** Swaps the half-typed word (in whatever font it was typed) for the chosen one, plus a space. */
+    private fun pickSuggestion(word: String) {
+        val connection = service.currentInputConnection ?: return
+        val before = connection.getTextBeforeCursor(80, 0)?.toString() ?: ""
+        val plain = catalogue.plain(before)
+        val previous = previousWord(plain.dropLast(WordSuggester.trailingWord(plain).length))
+        connection.beginBatchEdit()
+        if (suggestion.partial.isNotEmpty()) connection.deleteSurroundingText(styledTailLength(before), 0)
+        connection.commitText(catalogue.transform(word, effectiveStyleId()) + " ", 1)
+        connection.endBatchEdit()
+        learnWord(word, previous)
+        updateAutoShift()
+    }
+
+    /** Length (in UTF-16 units) of the styled letters right before the cursor. */
+    private fun styledTailLength(before: String): Int {
+        val iterator = BreakIterator.getCharacterInstance()
+        iterator.setText(before)
+        var end = iterator.last()
+        var length = 0
+        while (end > 0) {
+            val start = iterator.previous()
+            if (start == BreakIterator.DONE) break
+            val plain = catalogue.plain(before.substring(start, end))
+            if (plain.isEmpty() || !plain.all { WordSuggester.isWordChar(it) }) break
+            length += end - start
+            end = start
+        }
+        return length
+    }
+
+    /** The word before the cursor's word, if it's in the same sentence. */
+    private fun previousWord(plainBefore: String): String? {
+        val trimmed = plainBefore.trimEnd()
+        if (trimmed.isEmpty() || !WordSuggester.isWordChar(trimmed.last())) return null
+        return WordSuggester.trailingWord(trimmed).ifEmpty { null }
+    }
+
+    private fun learnWord(word: String, previous: String?) {
+        if (safeNormal || !suggestionsOn()) return
+        suggester.learn(word, previous)
+        if (++unsavedLearning >= 5) saveLearning()
+    }
+
+    // ---- Glow lights --------------------------------------------------------
+
+    private fun glowOn() = isPro() && preferences.getBoolean("glow", false)
 
     private fun selectStyle(id: String) {
         selectedStyle = id
@@ -491,9 +635,47 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
 
     // ---- Panels ------------------------------------------------------------
 
+    private fun recentEmoji() = (preferences.getString("recentEmoji", "") ?: "").split('\u0001').filter { it.isNotEmpty() }
+
+    // Older phones lack newer emoji; hide those instead of showing empty boxes.
+    private val glyphCheck = android.graphics.Paint()
+
+    private fun emojiGrid(list: LinearLayout, items: List<String>) {
+        items.filter { glyphCheck.hasGlyph(it) }.chunked(8).forEach { chunk ->
+            val row = keyRow()
+            chunk.forEach { item ->
+                row.addView(TextView(context).apply {
+                    text = item
+                    textSize = 24f
+                    gravity = Gravity.CENTER
+                    includeFontPadding = false
+                    contentDescription = item
+                    background = StateListDrawable().apply {
+                        addState(intArrayOf(android.R.attr.state_pressed), pill(keyFill()))
+                        addState(intArrayOf(), ColorDrawable(Color.TRANSPARENT))
+                    }
+                    isClickable = true
+                    setOnClickListener {
+                        tick(this)
+                        commitRaw(item)
+                        val recent = (listOf(item) + recentEmoji().filter { it != item }).take(16)
+                        preferences.edit().putString("recentEmoji", recent.joinToString("\u0001")).apply()
+                    }
+                }, weighted(1f))
+            }
+            repeat(8 - chunk.size) { row.addView(View(context), weighted(1f)) }
+            list.addView(row, LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, dp(44)))
+        }
+    }
+
     private fun symbolsPanel(): View {
         val scroll = ScrollView(context).apply { isVerticalScrollBarEnabled = false }
         val list = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; setPadding(0, dp(2), 0, dp(2)) }
+        val recent = recentEmoji()
+        if (recent.isNotEmpty()) {
+            list.addView(sectionLabel("Recent"))
+            emojiGrid(list, recent)
+        }
         symbolGroups.forEach { (title, items, perRow) ->
             list.addView(sectionLabel(title))
             items.chunked(perRow).forEach { chunk ->
@@ -507,6 +689,10 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
                 list.addView(row, LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, dp(46)))
             }
         }
+        emojiGroups.forEach { (title, items) ->
+            list.addView(sectionLabel(title))
+            emojiGrid(list, items)
+        }
         scroll.addView(list)
         return scroll
     }
@@ -515,6 +701,21 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         val scroll = ScrollView(context).apply { isVerticalScrollBarEnabled = false }
         val list = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(3), dp(2), dp(3), dp(4)) }
         if (!isPro()) list.addView(sectionLabel("🔒 Unlock every theme with Lifetime Pro in the app"))
+        list.addView(LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            addView(chip("✨ Glow lights ${if (glowOn()) "on" else "off"}${if (isPro()) "" else " 🔒"}", glowOn()) {
+                if (!isPro()) {
+                    android.widget.Toast.makeText(context, "Glow lights come with Lifetime Pro. Unlock it in the Lyfstyle app.", android.widget.Toast.LENGTH_SHORT).show()
+                } else {
+                    preferences.edit().putBoolean("glow", !glowOn()).apply()
+                    rebuild()
+                }
+            }.apply { layoutParams = LinearLayout.LayoutParams(0, dp(36), 1f).apply { setMargins(dp(3), dp(4), dp(3), dp(2)) } })
+            addView(chip("💬 Suggestions ${if (suggestionsOn()) "on" else "off"}", suggestionsOn()) {
+                preferences.edit().putBoolean("suggestions", !suggestionsOn()).apply()
+                rebuild()
+            }.apply { layoutParams = LinearLayout.LayoutParams(0, dp(36), 1f).apply { setMargins(dp(3), dp(4), dp(3), dp(2)) } })
+        })
         val mine = listOfNotNull(if (photoFile.exists()) PHOTO_THEME else null, customTheme())
         val sections = listOf("Yours" to mine) +
             PICTURE_GROUPS.map { group -> group to catalogue.themes.filter { it.image != null && it.group == group } } +
@@ -1091,6 +1292,11 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
     private fun typeSpace() {
         val connection = service.currentInputConnection ?: return
         val now = SystemClock.uptimeMillis()
+        if (!safeNormal) {
+            val plain = catalogue.plain(connection.getTextBeforeCursor(80, 0)?.toString() ?: "")
+            val word = WordSuggester.trailingWord(plain)
+            if (word.isNotEmpty()) learnWord(word, previousWord(plain.dropLast(word.length)))
+        }
         val before = connection.getTextBeforeCursor(3, 0)?.toString() ?: ""
         // Double-tap space: ". " like the built-in keyboard.
         val previous = before.dropLast(1).lastOrNull()
@@ -1169,6 +1375,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
 
     private fun tick(view: View) {
         view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        if (glow.visibility == VISIBLE) glow.pulse()
     }
 
     private fun pill(fill: Int) = GradientDrawable().apply {

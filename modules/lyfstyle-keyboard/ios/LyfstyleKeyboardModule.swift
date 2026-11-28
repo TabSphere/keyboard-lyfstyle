@@ -91,6 +91,24 @@ public class LyfstyleKeyboardModule: Module {
       defaults.synchronize()
     }
 
+    // Keyboard switches set in the app: glow lights, word suggestions, "forget my words".
+    // Like the photo, the keyboard only sees these with Full Access on.
+    AsyncFunction("setKeyboardOptions") { (json: String) in
+      guard let defaults = UserDefaults(suiteName: self.appGroup) else {
+        throw KeyboardSetupError.appGroupUnavailable
+      }
+      guard let data = json.data(using: .utf8),
+            let options = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else {
+        throw KeyboardSetupError.invalidTheme
+      }
+      let now = Date().timeIntervalSince1970
+      if let glow = options["glow"] as? Bool { defaults.set(glow, forKey: "glow") }
+      if let suggestions = options["suggestions"] as? Bool { defaults.set(suggestions, forKey: "suggestions") }
+      if options["forgetWords"] as? Bool == true { defaults.set(now, forKey: "forgetWordsAt") }
+      defaults.set(now, forKey: "optionsUpdatedAt")
+      defaults.synchronize()
+    }
+
     // How much to darken the person's photo behind the keys (0 = not at all, 0.8 = very dark).
     AsyncFunction("setPhotoDim") { (value: Double) in
       guard let defaults = UserDefaults(suiteName: self.appGroup) else {

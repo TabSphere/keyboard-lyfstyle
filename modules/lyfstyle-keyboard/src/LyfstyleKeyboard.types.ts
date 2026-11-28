@@ -16,6 +16,8 @@ export type LyfstyleKeyboardNativeModule = {
   setCustomTheme(json: string): Promise<void>;
   /** JSON array of { id, name, mapping } — the person's own styles, shown under "My styles". */
   setCustomStyles(json: string): Promise<void>;
+  /** JSON: { glow?: boolean, suggestions?: boolean, forgetWords?: boolean } — keyboard switches set in the app. */
+  setKeyboardOptions(json: string): Promise<void>;
   /** 0 (no darkening) to 0.8 (very dark) for the photo behind the keys. */
   setPhotoDim(value: number): Promise<void>;
   /** Android: whether voice typing in the keyboard may use the microphone. Always false on iPhone. */

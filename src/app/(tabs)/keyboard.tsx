@@ -1,8 +1,8 @@
-import { useCallback, useState } from 'react';
-import { ImageBackground, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ImageBackground, Platform, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
-import { Camera, Check, ChevronDown, ChevronRight, ChevronUp, ExternalLink, Languages, Lock, Mic, Palette, RefreshCw, ShieldCheck, Trash2 } from 'lucide-react-native';
+import { Camera, Check, ChevronDown, ChevronRight, ChevronUp, ExternalLink, Languages, Lock, MessageSquareText, Mic, Palette, RefreshCw, ShieldCheck, Sparkles, Trash2 } from 'lucide-react-native';
 import NativeKeyboard, { type AndroidKeyboardStatus } from '@/nativeKeyboard';
 import { useComposer } from '../../state/ComposerContext';
 import { getStyle, themes, type KeyboardTheme } from '../../styleEngine';
@@ -20,6 +20,8 @@ const pictureGroups = PICTURE_GROUPS
   .map((group) => ({ group, items: themes.filter((item) => item.image && item.group === group) }))
   .filter((entry) => entry.items.length);
 const PICTURES_SHOWN = 6;
+const OPTIONS_KEY = 'lyfstyle.keyboardOptions.v1';
+type KeyboardOptions = { glow: boolean; suggestions: boolean };
 const DARKNESS = [
   { label: 'None', value: 0 },
   { label: 'Light', value: 0.15 },
@@ -39,6 +41,7 @@ export default function KeyboardScreen() {
   const [custom, setCustom] = useState<CustomColours | null>(null);
   const [micOn, setMicOn] = useState(false);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const [options, setOptions] = useState<KeyboardOptions>({ glow: false, suggestions: true });
   const customOption = custom ? customTheme(custom) : null;
   // The keyboard shows letters in the chosen style; whole-message frames are app-only.
   const previewStyle = getStyle(selectedStyle).keyboard && !(getStyle(selectedStyle).isPro && !pro.isPro) ? selectedStyle : 'script';
@@ -84,6 +87,31 @@ export default function KeyboardScreen() {
     await AsyncStorage.multiRemove([PHOTO_KEY]).catch(() => undefined);
     await AsyncStorage.setItem(THEME_KEY, themes[0].id).catch(() => undefined);
     setNotice('Photo removed.');
+  };
+
+  useEffect(() => {
+    AsyncStorage.getItem(OPTIONS_KEY).then((saved) => {
+      if (saved) setOptions((current) => ({ ...current, ...(JSON.parse(saved) as Partial<KeyboardOptions>) }));
+    }).catch(() => undefined);
+  }, []);
+
+  /** Glow lights, suggestions and "forget my words" go straight to the keyboard. */
+  const changeOptions = async (patch: Partial<KeyboardOptions> & { forgetWords?: boolean }) => {
+    if (patch.glow && !pro.isPro) {
+      router.push('/pro');
+      return;
+    }
+    const { forgetWords, ...rest } = patch;
+    const next = { ...options, ...rest };
+    setOptions(next);
+    await AsyncStorage.setItem(OPTIONS_KEY, JSON.stringify(next)).catch(() => undefined);
+    if (Platform.OS === 'web') return;
+    try {
+      await NativeKeyboard.setKeyboardOptions(JSON.stringify({ ...rest, ...(forgetWords ? { forgetWords: true } : {}) }));
+      if (forgetWords) setNotice('The keyboard has forgotten the words it learned.');
+    } catch {
+      setNotice('Change this from the 🎨 button on the keyboard.');
+    }
   };
 
   const changeDarkness = async (value: number) => {
@@ -231,6 +259,43 @@ export default function KeyboardScreen() {
             : 'Type your message, tap 文A on the keyboard and pick a language. Translation happens on your phone; each language downloads once (about 30 MB).'}
         </Text>
       </View>
+
+      <View style={[styles.photoCard, styles.extraCard]}>
+        <View style={styles.photoHead}>
+          <Sparkles size={20} color={colors.ink} strokeWidth={2.2} />
+          <Text style={styles.photoTitle}>Glow lights</Text>
+          {!pro.isPro ? <Lock size={14} color={colors.ink} strokeWidth={2.4} /> : null}
+          <Switch
+            accessibilityLabel="Glow lights"
+            value={options.glow && pro.isPro}
+            onValueChange={(glow) => void changeOptions({ glow })}
+            trackColor={{ true: colors.brand, false: colors.line }}
+            thumbColor={colors.white}
+          />
+        </View>
+        <Text style={[styles.photoCopy, styles.mixCopy]}>A soft light that travels around your keyboard in your theme’s colours, and flares when you type. Stays still if your phone has reduced motion on.</Text>
+      </View>
+
+      <View style={[styles.photoCard, styles.extraCard]}>
+        <View style={styles.photoHead}>
+          <MessageSquareText size={20} color={colors.ink} strokeWidth={2.2} />
+          <Text style={styles.photoTitle}>Word suggestions</Text>
+          <Switch
+            accessibilityLabel="Word suggestions"
+            value={options.suggestions}
+            onValueChange={(suggestions) => void changeOptions({ suggestions })}
+            trackColor={{ true: colors.brand, false: colors.line }}
+            thumbColor={colors.white}
+          />
+        </View>
+        <Text style={styles.photoCopy}>Finishes your words and guesses the next one, in your font. It learns your own words on your phone only; nothing is sent anywhere.</Text>
+        <Pressable accessibilityRole="button" onPress={() => void changeOptions({ forgetWords: true })} hitSlop={8}>
+          <Text style={styles.forget}>Forget the words it learned</Text>
+        </Pressable>
+      </View>
+      {Platform.OS === 'ios' ? (
+        <Text style={styles.optionsNote}>On iPhone these switches reach the keyboard with Full Access on. Without it, use the 🎨 button on the keyboard.</Text>
+      ) : null}
 
       {photoUri || customOption ? (
         <>
@@ -402,6 +467,8 @@ const styles = StyleSheet.create({
   mixCard: { backgroundColor: colors.mintSoft },
   mixCopy: { marginBottom: 0 },
   extraCard: { backgroundColor: colors.sunSoft },
+  forget: { fontFamily: type.bold, fontSize: 13, color: colors.brandDeep },
+  optionsNote: { fontFamily: type.sans, fontSize: 12, lineHeight: 17, color: colors.muted, marginTop: -4, marginBottom: 12 },
   fullAccess: { backgroundColor: colors.pinkSoft, borderRadius: radii.medium, padding: 12, marginTop: 14, gap: 6 },
   fullAccessTitle: { fontFamily: type.black, fontSize: 14, color: colors.ink },
   fullAccessCopy: { fontFamily: type.sans, fontSize: 13, lineHeight: 19, color: colors.ink, marginBottom: 4 },
