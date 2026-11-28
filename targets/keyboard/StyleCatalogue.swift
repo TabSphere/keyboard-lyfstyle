@@ -85,6 +85,7 @@ final class StyleCatalogue {
 
     /// Reads the JSON the app saves: [{ id, name, mapping }]. Bad input leaves no custom styles.
     func loadCustom(_ json: String?) {
+        ownReverse = [:]
         guard let data = json?.data(using: .utf8),
               let items = try? JSONDecoder().decode([CustomPayload].self, from: data) else {
             custom = []
@@ -123,17 +124,37 @@ final class StyleCatalogue {
         return map
     }()
 
-    /// Turns fancy text back into plain letters (used before translating).
-    func plain(_ input: String) -> String {
+    /// One style's own styled → plain map (lower case wins when a letter has both cases).
+    private var ownReverse: [String: [String: String]] = [:]
+    private func reverse(for styleId: String) -> [String: String] {
+        if let cached = ownReverse[styleId] { return cached }
+        let style = style(id: styleId)
+        var map: [String: String] = [:]
+        if style.id == styleId && style.kind != "normal" {
+            for (plain, styled) in style.mapping where styled != plain {
+                if let existing = map[styled], existing == existing.lowercased() || plain != plain.lowercased() { continue }
+                map[styled] = plain
+            }
+        }
+        ownReverse[styleId] = map
+        return map
+    }
+
+    /// Turns fancy text back into plain letters. Some fonts share symbols (Curvy's "w" is
+    /// Upside-down's "m"), so pass the font being typed in as `prefer` and its letters are
+    /// read first; anything else falls back to every font.
+    func plain(_ input: String, prefer: String? = nil) -> String {
+        let own = prefer.map { reverse(for: $0) } ?? [:]
+        let lookup = { (key: String) -> String? in own[key] ?? self.reverse[key] }
         // Styled letters may be one or two Characters (e.g. letter + combining mark), so try pairs first.
         let characters = Array(input)
         var output = ""
         var index = 0
         while index < characters.count {
-            if index + 1 < characters.count, let hit = reverse[String(characters[index...index + 1])] {
+            if index + 1 < characters.count, let hit = lookup(String(characters[index...index + 1])) {
                 output += hit
                 index += 2
-            } else if let hit = reverse[String(characters[index])] {
+            } else if let hit = lookup(String(characters[index])) {
                 output += hit
                 index += 1
             } else {

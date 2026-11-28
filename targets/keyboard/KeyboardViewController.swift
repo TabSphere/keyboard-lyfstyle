@@ -138,6 +138,9 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Several fingers at once: the next key can go down before the last one lifts.
+        view.isMultipleTouchEnabled = true
+        KeyCap.pressFeedback = { [weak self] in self?.keyFeedback() }
         // The keyboard is a rounded panel (like iPhone's own keyboard), not a square box:
         // the view stays clear and the background view carries the colour or picture.
         view.backgroundColor = .clear
@@ -192,6 +195,15 @@ final class KeyboardViewController: UIInputViewController {
         rebuild()
         updateAutoShift()
         Task { await refreshEntitlement() }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        keyHaptic.prepare()
+        // iOS holds back touches near the screen edges (for its own swipe gestures), which
+        // makes Q, A, Z, the 123 key and the bottom row feel slow or miss taps. The built-in
+        // keyboard isn't held back, so let ours have touches straight away too.
+        view.window?.gestureRecognizers?.forEach { $0.delaysTouchesBegan = false }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -334,25 +346,32 @@ final class KeyboardViewController: UIInputViewController {
                 guard let self, inside else { return }
                 self.secondarySymbols.toggle(); self.rebuild()
             }
-            var third: [(UIView, CGFloat)] = [(toggle, 1.5), (UIView(), 0.25)]
-            third += source[2].map { (symbolCap($0), 1.0) as (UIView, CGFloat) }
-            third += [(UIView(), 0.25), (deleteCap(), 1.5)]
+            var third: [(UIView, CGFloat)] = [(toggle, 1.5)]
+            third += padded(source[2].map { symbolCap($0) }, by: 0.25)
+            third.append((deleteCap(), 1.5))
             content.addArrangedSubview(weightedRow(third))
             return
         }
         content.addArrangedSubview(weightedRow(letters[0].map { (letterCap($0), 1) }))
-        var second: [(UIView, CGFloat)] = [(UIView(), 0.5)]
-        second += letters[1].map { (letterCap($0), 1.0) as (UIView, CGFloat) }
-        second.append((UIView(), 0.5))
-        content.addArrangedSubview(weightedRow(second))
+        content.addArrangedSubview(weightedRow(padded(letters[1].map { letterCap($0) }, by: 0.5)))
         let shift = cap(nil, kind: .function)
         shift.onUp = { [weak self] _, inside in if inside { self?.tapShift() } }
         shiftCap = shift
-        var third: [(UIView, CGFloat)] = [(shift, 1.4), (UIView(), 0.1)]
-        third += letters[2].map { (letterCap($0), 1.0) as (UIView, CGFloat) }
-        third += [(UIView(), 0.1), (deleteCap(), 1.4)]
+        var third: [(UIView, CGFloat)] = [(shift, 1.4)]
+        third += padded(letters[2].map { letterCap($0) }, by: 0.1)
+        third.append((deleteCap(), 1.4))
         content.addArrangedSubview(weightedRow(third))
         updateLetterLabels()
+    }
+
+    /// A run of keys whose outer two also cover a gap of `pad` key widths on each side,
+    /// so no part of the row is dead to a tap.
+    private func padded(_ keys: [KeyCap], by pad: CGFloat) -> [(UIView, CGFloat)] {
+        keys.enumerated().map { index, key in
+            if index == 0 { key.padStart = pad }
+            if index == keys.count - 1 { key.padEnd = pad }
+            return (key, 1 + key.padStart + key.padEnd)
+        }
     }
 
     /// Lays views out by relative width; the weights in a row add up to 10 key widths.
@@ -455,7 +474,7 @@ final class KeyboardViewController: UIInputViewController {
         guard panel == .none, !safeNormal, !symbols, suggestionsOn,
               (textDocumentProxy.selectedText ?? "").isEmpty else { return .empty }
         let before = String((textDocumentProxy.documentContextBeforeInput ?? "").suffix(80))
-        return suggester.suggest(catalogue.plain(before))
+        return suggester.suggest(catalogue.plain(before, prefer: effectiveStyleId()))
     }
 
     /// Shows suggestions in place of the font chips while a word is being typed.
@@ -490,7 +509,7 @@ final class KeyboardViewController: UIInputViewController {
     private func pickSuggestion(_ word: String) {
         let proxy = textDocumentProxy
         let before = String((proxy.documentContextBeforeInput ?? "").suffix(80))
-        let plain = catalogue.plain(before)
+        let plain = catalogue.plain(before, prefer: effectiveStyleId())
         let previous = previousWord(String(plain.dropLast(WordSuggester.trailingWord(plain).count)))
         if !suggestion.partial.isEmpty {
             let tail = styledTail(before)
@@ -510,7 +529,7 @@ final class KeyboardViewController: UIInputViewController {
     private func styledTail(_ before: String) -> String {
         var tail = ""
         for character in before.reversed() {
-            let plain = catalogue.plain(String(character))
+            let plain = catalogue.plain(String(character), prefer: effectiveStyleId())
             guard !plain.isEmpty, plain.allSatisfy(WordSuggester.isWordChar) else { break }
             tail = String(character) + tail
         }
@@ -1300,7 +1319,7 @@ final class KeyboardViewController: UIInputViewController {
         let now = Date().timeIntervalSince1970
         let before = textDocumentProxy.documentContextBeforeInput ?? ""
         if !safeNormal {
-            let plain = catalogue.plain(String(before.suffix(80)))
+            let plain = catalogue.plain(String(before.suffix(80)), prefer: effectiveStyleId())
             let word = WordSuggester.trailingWord(plain)
             if !word.isEmpty { learnWord(word, previous: previousWord(String(plain.dropLast(word.count)))) }
         }
@@ -1398,10 +1417,24 @@ final class KeyboardViewController: UIInputViewController {
 
     private func recentIds() -> [String] { defaults.stringArray(forKey: "recents") ?? [] }
 
-    private func tick() {
+    /// One generator, kept warm, so the buzz lands with the tap instead of a beat later
+    /// (a new generator per tap often buzzes late or not at all).
+    private let keyHaptic = UIImpactFeedbackGenerator(style: .light)
+    private var lastKeyFeedback: CFTimeInterval = 0
+
+    /// Click and buzz the instant a key is touched, like the built-in keyboard.
+    private func keyFeedback() {
+        lastKeyFeedback = CACurrentMediaTime()
         UIDevice.current.playInputClick()
-        UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: 0.6)
+        keyHaptic.impactOccurred(intensity: 0.7)
+        keyHaptic.prepare()
         if !glowView.isHidden { glowView.pulse() }
+    }
+
+    /// Feedback for taps on chips and panels. Keys already gave theirs on touch-down.
+    private func tick() {
+        if CACurrentMediaTime() - lastKeyFeedback < 0.35 { return }
+        keyFeedback()
     }
 
     // MARK: - Picture themes, the person's photo and their own colours

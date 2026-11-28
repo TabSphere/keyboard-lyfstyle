@@ -83,6 +83,7 @@ class StyleCatalogue private constructor(private val root: JSONObject) {
 
     /** Reads the JSON the app saves: [{ id, name, mapping }]. Bad input leaves no custom styles. */
     fun loadCustom(json: String?) {
+        ownReverse.clear()
         custom = try {
             val array = JSONArray(json ?: "[]")
             (0 until array.length()).mapNotNull { index ->
@@ -125,14 +126,35 @@ class StyleCatalogue private constructor(private val root: JSONObject) {
     }
     private val longestStyled by lazy { reverse.keys.maxOfOrNull { it.length } ?: 1 }
 
-    /** Turns fancy text back into plain letters (used before translating). */
-    fun plain(input: String): String {
+    /** One style's own styled → plain map (lower case wins when a letter has both cases). */
+    private val ownReverse = HashMap<String, Map<String, String>>()
+    private fun reverseFor(styleId: String): Map<String, String> = ownReverse.getOrPut(styleId) {
+        val style = style(styleId)
+        if (style.id != styleId || style.kind == "normal") return@getOrPut emptyMap()
+        val map = HashMap<String, String>()
+        style.mapping.forEach { (plain, styled) ->
+            if (styled == plain) return@forEach
+            val existing = map[styled]
+            if (existing == null || (existing != existing.lowercase() && plain == plain.lowercase())) map[styled] = plain
+        }
+        map
+    }
+
+    /**
+     * Turns fancy text back into plain letters. Some fonts share symbols (Curvy's "w" is
+     * Upside-down's "m"), so pass the font being typed in as [prefer] and its letters are
+     * read first; anything else falls back to every font.
+     */
+    fun plain(input: String, prefer: String? = null): String {
+        val own = prefer?.let { reverseFor(it) } ?: emptyMap()
+        val longest = maxOf(longestStyled, own.keys.maxOfOrNull { it.length } ?: 1)
         val output = StringBuilder(input.length)
         var index = 0
         while (index < input.length) {
             var matched = false
-            for (length in minOf(longestStyled, input.length - index) downTo 1) {
-                val hit = reverse[input.substring(index, index + length)] ?: continue
+            for (length in minOf(longest, input.length - index) downTo 1) {
+                val key = input.substring(index, index + length)
+                val hit = own[key] ?: reverse[key] ?: continue
                 output.append(hit)
                 index += length
                 matched = true
