@@ -475,7 +475,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         val connection = service.currentInputConnection ?: return none
         if (!connection.getSelectedText(0).isNullOrEmpty()) return none
         val before = connection.getTextBeforeCursor(80, 0)?.toString() ?: return none
-        return suggester.suggest(catalogue.plain(before))
+        return suggester.suggest(catalogue.plain(before, effectiveStyleId()))
     }
 
     /** Shows suggestions in place of the font chips while a word is being typed. */
@@ -519,7 +519,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
     private fun pickSuggestion(word: String) {
         val connection = service.currentInputConnection ?: return
         val before = connection.getTextBeforeCursor(80, 0)?.toString() ?: ""
-        val plain = catalogue.plain(before)
+        val plain = catalogue.plain(before, effectiveStyleId())
         val previous = previousWord(plain.dropLast(WordSuggester.trailingWord(plain).length))
         connection.beginBatchEdit()
         if (suggestion.partial.isNotEmpty()) connection.deleteSurroundingText(styledTailLength(before), 0)
@@ -538,7 +538,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         while (end > 0) {
             val start = iterator.previous()
             if (start == BreakIterator.DONE) break
-            val plain = catalogue.plain(before.substring(start, end))
+            val plain = catalogue.plain(before.substring(start, end), effectiveStyleId())
             if (plain.isEmpty() || !plain.all { WordSuggester.isWordChar(it) }) break
             length += end - start
             end = start
@@ -1312,7 +1312,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         val connection = service.currentInputConnection ?: return
         val now = SystemClock.uptimeMillis()
         if (!safeNormal) {
-            val plain = catalogue.plain(connection.getTextBeforeCursor(80, 0)?.toString() ?: "")
+            val plain = catalogue.plain(connection.getTextBeforeCursor(80, 0)?.toString() ?: "", effectiveStyleId())
             val word = WordSuggester.trailingWord(plain)
             if (word.isNotEmpty()) learnWord(word, previousWord(plain.dropLast(word.length)))
         }
@@ -1524,15 +1524,26 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
                     val slop = dp(24)
                     val inside = event.x >= -slop && event.x <= width + slop && event.y >= -slop && event.y <= height + slop
                     onUp?.invoke(this, inside)
-                    if (inside) performClick()
+                    if (inside) { clickFromTouch = true; performClick(); clickFromTouch = false }
                 }
                 MotionEvent.ACTION_CANCEL -> { paint(false); onUp?.invoke(this, false) }
             }
             return true
         }
 
+        private var clickFromTouch = false
+
+        /**
+         * A click that didn't come from a finger on the key is TalkBack (double-tap, or lift
+         * to type) or Switch Access: press and release the key so it types like a tap.
+         */
         override fun performClick(): Boolean {
             super.performClick()
+            if (!clickFromTouch) {
+                keyFeedback(this, sound)
+                onDown?.invoke(this)
+                onUp?.invoke(this, true)
+            }
             return true
         }
     }

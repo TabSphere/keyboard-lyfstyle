@@ -40,6 +40,20 @@ class StyleCatalogueTest {
     }
 
     @Test
+    fun plainReadsTheCurrentStyleFirstSoSharedShapesRoundTrip() {
+        // Every keyboard style must read back exactly when the font being typed in is known
+        // (word suggestions depend on this). Curvy's "w" is Upside-down's "m", for example.
+        val message = "hello world"
+        for (style in catalogue.keyboardStyles) {
+            val styled = catalogue.transform(message, style.id)
+            if (styled.none { it.code > 127 }) continue
+            val back = catalogue.plain(styled, style.id)
+            assertEquals(style.id, message, back.lowercase())
+        }
+        assertEquals("world", catalogue.plain(catalogue.transform("world", "curvy"), "curvy"))
+    }
+
+    @Test
     fun unknownStyleFallsBackToNormal() {
         assertEquals("normal", catalogue.style("unknown").id)
         assertEquals("A 👨‍👩‍👧‍👦", catalogue.transform("A 👨‍👩‍👧‍👦", "unknown"))

@@ -106,6 +106,15 @@ final class KeyCap: UIControl {
         onUp?(self, inside)
     }
 
+    /// VoiceOver and Switch Control: activating the key presses and releases it, so it
+    /// types like a tap.
+    override func accessibilityActivate() -> Bool {
+        Self.pressFeedback?()
+        onDown?(self)
+        onUp?(self, true)
+        return true
+    }
+
     override func cancelTracking(with event: UIEvent?) {
         super.cancelTracking(with: event)
         onUp?(self, false)

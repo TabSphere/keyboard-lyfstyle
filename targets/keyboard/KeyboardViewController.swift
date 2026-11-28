@@ -474,7 +474,7 @@ final class KeyboardViewController: UIInputViewController {
         guard panel == .none, !safeNormal, !symbols, suggestionsOn,
               (textDocumentProxy.selectedText ?? "").isEmpty else { return .empty }
         let before = String((textDocumentProxy.documentContextBeforeInput ?? "").suffix(80))
-        return suggester.suggest(catalogue.plain(before))
+        return suggester.suggest(catalogue.plain(before, prefer: effectiveStyleId()))
     }
 
     /// Shows suggestions in place of the font chips while a word is being typed.
@@ -509,7 +509,7 @@ final class KeyboardViewController: UIInputViewController {
     private func pickSuggestion(_ word: String) {
         let proxy = textDocumentProxy
         let before = String((proxy.documentContextBeforeInput ?? "").suffix(80))
-        let plain = catalogue.plain(before)
+        let plain = catalogue.plain(before, prefer: effectiveStyleId())
         let previous = previousWord(String(plain.dropLast(WordSuggester.trailingWord(plain).count)))
         if !suggestion.partial.isEmpty {
             let tail = styledTail(before)
@@ -529,7 +529,7 @@ final class KeyboardViewController: UIInputViewController {
     private func styledTail(_ before: String) -> String {
         var tail = ""
         for character in before.reversed() {
-            let plain = catalogue.plain(String(character))
+            let plain = catalogue.plain(String(character), prefer: effectiveStyleId())
             guard !plain.isEmpty, plain.allSatisfy(WordSuggester.isWordChar) else { break }
             tail = String(character) + tail
         }
@@ -1319,7 +1319,7 @@ final class KeyboardViewController: UIInputViewController {
         let now = Date().timeIntervalSince1970
         let before = textDocumentProxy.documentContextBeforeInput ?? ""
         if !safeNormal {
-            let plain = catalogue.plain(String(before.suffix(80)))
+            let plain = catalogue.plain(String(before.suffix(80)), prefer: effectiveStyleId())
             let word = WordSuggester.trailingWord(plain)
             if !word.isEmpty { learnWord(word, previous: previousWord(String(plain.dropLast(word.count)))) }
         }
