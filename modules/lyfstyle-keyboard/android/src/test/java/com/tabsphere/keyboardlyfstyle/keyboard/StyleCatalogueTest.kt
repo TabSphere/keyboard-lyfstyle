@@ -60,4 +60,18 @@ class StyleCatalogueTest {
         assertEquals(3, styled.count { !it.isPro })
         assertTrue(catalogue.styles.all { it.mapping.values.none { output -> output.isEmpty() } })
     }
+
+    @Test
+    fun loadsCustomStylesFirstAndIgnoresJunk() {
+        val local = StyleCatalogue(resource("styles.json"))
+        local.loadCustom("""[{"id":"custom-1","name":"Mine","mapping":{"a":"α","b":"𝓫"}},{"id":"script","name":"Hijack","mapping":{}}]""")
+        assertEquals(1, local.custom.size)
+        assertEquals("custom-1", local.keyboardStyles.first().id)
+        assertEquals(StyleCatalogue.MY_STYLES, local.style("custom-1").group)
+        assertEquals("α𝓫c", local.transform("abc", "custom-1"))
+        assertEquals("Script", local.style("script").name)
+        local.loadCustom("not json")
+        assertTrue(local.custom.isEmpty())
+        assertEquals("normal", local.style("custom-1").id)
+    }
 }

@@ -15,7 +15,7 @@ import Translation
 final class KeyboardViewController: UIInputViewController {
     private enum Panel { case none, fonts, symbols, themes, voice, translate }
 
-    private static let fontGroups = ["Cursive & cute", "Bold & clean", "Bubbles & boxes", "Gothic & fancy", "Around the world", "Effects", "Fun & flipped"]
+    private static let fontGroups = [StyleCatalogue.myStylesGroup, "Cursive & cute", "Bold & clean", "Bubbles & boxes", "Gothic & fancy", "Around the world", "Effects", "Fun & flipped"]
     private static let pictureGroups = ["Cute & sweet", "Nature & sky", "Art", "K-pop", "Movies", "Music", "Pride", "City & neon", "Luxe & textures"]
     private enum CapKind { case letter, function, accent }
 
@@ -151,6 +151,8 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // Styles made in the app reach the keyboard through the App Group (needs Full Access).
+        catalogue.loadCustom(sharedDefaults?.string(forKey: "customStyles"))
         palette = resolveTheme(id: defaults.string(forKey: "theme") ?? palette.id)
         applySharedTheme()
         updateInputSafety()
@@ -1048,7 +1050,9 @@ final class KeyboardViewController: UIInputViewController {
 
     private func effectiveStyleId() -> String {
         if normalMode || safeNormal { return "normal" }
-        return isAvailable(catalogue.style(id: selectedStyle)) ? selectedStyle : "script"
+        // A removed custom style (or one hidden without Full Access) falls back to Script.
+        let style = catalogue.style(id: selectedStyle)
+        return style.id == selectedStyle && isAvailable(style) ? selectedStyle : "script"
     }
 
     private func commit(_ raw: String) {

@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
-import { Check, ChevronDown, ChevronUp, Copy, Lock, Share2, Star, X } from 'lucide-react-native';
+import { Check, ChevronDown, ChevronUp, Copy, Lock, PenLine, Plus, Share2, Star, X } from 'lucide-react-native';
 import { useComposer } from '../../state/ComposerContext';
 import { useCopy } from '../../hooks/useCopy';
 import { getStyle, styles as allStyles, transformText, type Lyfstyle } from '../../styleEngine';
+import { CUSTOM_ID_PREFIX } from '../../customStyles';
 import { colors, pastels, radii } from '../../theme/tokens';
 import { Chip, ChipRow, ProLabel, Screen, TopBar, type } from '../../components/ui';
 
@@ -24,7 +25,7 @@ const GROUPS: { id: string; label: string }[] = [
 ];
 const PREVIEW_COUNT = 3;
 
-type Filter = 'all' | 'saved' | 'recent' | string;
+type Filter = 'all' | 'saved' | 'recent' | 'mine' | string;
 
 export default function WriteScreen() {
   const composer = useComposer();
@@ -36,12 +37,13 @@ export default function WriteScreen() {
   const selected = getStyle(composer.selectedStyle);
 
   const visible = useMemo(() => {
-    const styled = allStyles.filter((style) => style.id !== 'normal');
+    const styled = [...composer.customs, ...allStyles.filter((style) => style.id !== 'normal')];
     if (filter === 'all') return styled;
+    if (filter === 'mine') return composer.customs;
     if (filter === 'saved') return styled.filter((style) => composer.favorites.includes(style.id));
     if (filter === 'recent') return composer.recents.map(getStyle).filter((style) => style.id !== 'normal');
     return styled.filter((style) => style.group === filter);
-  }, [composer.favorites, composer.recents, filter]);
+  }, [composer.customs, composer.favorites, composer.recents, filter]);
 
   const groups = useMemo(
     () => GROUPS.map((group) => ({ ...group, styles: allStyles.filter((style) => style.group === group.id) })).filter((group) => group.styles.length),
@@ -69,6 +71,7 @@ export default function WriteScreen() {
     const locked = style.isPro && !pro.isPro;
     const favourite = composer.favorites.includes(style.id);
     const active = style.id === composer.selectedStyle;
+    const mine = style.id.startsWith(CUSTOM_ID_PREFIX);
     return (
       <Pressable
         key={style.id}
@@ -89,15 +92,27 @@ export default function WriteScreen() {
             {locked ? <ProLabel /> : null}
           </View>
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={favourite ? `Remove ${style.name} from saved` : `Save ${style.name}`}
-          onPress={() => composer.toggleFavorite(style.id)}
-          hitSlop={8}
-          style={styles.star}
-        >
-          <Star size={18} color={favourite ? colors.pink : colors.tertiary} fill={favourite ? colors.pink : 'transparent'} strokeWidth={2} />
-        </Pressable>
+        {mine ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Edit ${style.name}`}
+            onPress={() => router.push({ pathname: '/custom-style', params: { id: style.id } })}
+            hitSlop={8}
+            style={styles.star}
+          >
+            <PenLine size={17} color={colors.ink} strokeWidth={2} />
+          </Pressable>
+        ) : (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={favourite ? `Remove ${style.name} from saved` : `Save ${style.name}`}
+            onPress={() => composer.toggleFavorite(style.id)}
+            hitSlop={8}
+            style={styles.star}
+          >
+            <Star size={18} color={favourite ? colors.pink : colors.tertiary} fill={favourite ? colors.pink : 'transparent'} strokeWidth={2} />
+          </Pressable>
+        )}
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={locked ? `Unlock ${style.name} with Pro` : `Copy ${style.name}`}
@@ -111,6 +126,35 @@ export default function WriteScreen() {
       </Pressable>
     );
   };
+
+  // The way into the builder. Free users can play with it; saving needs Pro.
+  const makeOwnCard = (
+    <Pressable
+      key="make-own"
+      accessibilityRole="button"
+      accessibilityLabel={`Make your own style${pro.isPro ? '' : ', Pro'}`}
+      onPress={() => router.push('/custom-style')}
+      style={({ pressed }) => [styles.makeOwn, pressed && styles.pressed]}
+    >
+      <View style={styles.makeOwnIcon}><Plus size={18} color={colors.ink} strokeWidth={2.6} /></View>
+      <View style={styles.cardBody}>
+        <Text style={styles.makeOwnTitle}>Make your own style</Text>
+        <Text style={styles.makeOwnText}>Mix a font, an effect and a frame. Swap any letter.</Text>
+      </View>
+      {pro.isPro ? null : <ProLabel />}
+    </Pressable>
+  );
+
+  const myStyles = (
+    <View key="mine" style={styles.group}>
+      <Pressable accessibilityRole="button" onPress={() => setFilter('mine')} style={styles.groupHead}>
+        <Text style={styles.groupTitle}>✎ My styles</Text>
+        <Text style={styles.groupCount}>{composer.customs.length || ''}</Text>
+      </Pressable>
+      {composer.customs.map((style, index) => renderCard(style, index))}
+      {makeOwnCard}
+    </View>
+  );
 
   return (
     <Screen>
@@ -169,6 +213,7 @@ export default function WriteScreen() {
         <Chip label={`All ${allStyles.length - 1}`} active={filter === 'all'} onPress={() => setFilter('all')} />
         <Chip label="♡ Saved" active={filter === 'saved'} onPress={() => setFilter('saved')} tint={colors.pinkSoft} />
         <Chip label="Recent" active={filter === 'recent'} onPress={() => setFilter('recent')} tint={colors.peachSoft} />
+        <Chip label="✎ My styles" active={filter === 'mine'} onPress={() => setFilter('mine')} tint={colors.mintSoft} />
         {groups.map((group, index) => (
           <Chip
             key={group.id}
@@ -181,11 +226,13 @@ export default function WriteScreen() {
       </ChipRow>
 
       <View style={styles.feed}>
-        {visible.length === 0 ? (
+        {visible.length === 0 && filter !== 'mine' ? (
           <Text style={styles.empty}>
             {filter === 'saved' ? 'Tap the star on any style to save it here.' : 'Styles you copy will show up here.'}
           </Text>
         ) : null}
+        {filter === 'all' ? myStyles : null}
+        {filter === 'mine' ? myStyles : null}
         {filter === 'all'
           ? groups.map((group) => {
             const expanded = open.includes(group.id);
@@ -211,7 +258,7 @@ export default function WriteScreen() {
               </View>
             );
           })
-          : visible.map((style, index) => renderCard(style, index))}
+          : filter === 'mine' ? null : visible.map((style, index) => renderCard(style, index))}
       </View>
 
       <Text style={styles.note}>Your typing stays on this device. Styled letters can look different in some apps and fonts.</Text>
@@ -254,5 +301,9 @@ const styles = StyleSheet.create({
   copyButtonLocked: { backgroundColor: colors.sun },
   copyText: { fontFamily: type.black, fontSize: 12, color: colors.white },
   note: { fontFamily: type.sans, fontSize: 12, lineHeight: 18, color: colors.muted, textAlign: 'center', marginTop: 22 },
+  makeOwn: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: radii.medium, padding: 14, borderWidth: 2, borderStyle: 'dashed', borderColor: colors.brand, backgroundColor: colors.surface },
+  makeOwnIcon: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.sun, alignItems: 'center', justifyContent: 'center' },
+  makeOwnTitle: { fontFamily: type.black, fontSize: 15, color: colors.ink },
+  makeOwnText: { fontFamily: type.sans, fontSize: 12, lineHeight: 17, color: colors.muted, marginTop: 2 },
   pressed: { opacity: 0.75 },
 });

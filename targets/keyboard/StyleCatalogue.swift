@@ -71,8 +71,37 @@ final class StyleCatalogue {
         self.data = try JSONDecoder().decode(StyleCatalogueData.self, from: data)
     }
 
+    static let customPrefix = "custom-"
+    static let myStylesGroup = "My styles"
+
+    /// Styles the person made in the app ("My styles"). Letters only; frames stay in the app.
+    private(set) var custom: [TextStyle] = []
+
+    private struct CustomPayload: Decodable {
+        let id: String
+        let name: String?
+        let mapping: [String: String]?
+    }
+
+    /// Reads the JSON the app saves: [{ id, name, mapping }]. Bad input leaves no custom styles.
+    func loadCustom(_ json: String?) {
+        guard let data = json?.data(using: .utf8),
+              let items = try? JSONDecoder().decode([CustomPayload].self, from: data) else {
+            custom = []
+            return
+        }
+        custom = items.filter { $0.id.hasPrefix(Self.customPrefix) }.map { item in
+            let name = (item.name ?? "").trimmingCharacters(in: .whitespaces)
+            return TextStyle(
+                id: item.id, name: name.isEmpty ? "My style" : name, category: "Mine", description: "",
+                kind: "alphabet", isPro: true, fallback: "preserve", keyboard: true,
+                mapping: item.mapping ?? [:], group: Self.myStylesGroup
+            )
+        }
+    }
+
     func style(id: String) -> TextStyle {
-        data.styles.first { $0.id == id } ?? data.styles.first { $0.id == "normal" }!
+        custom.first { $0.id == id } ?? data.styles.first { $0.id == id } ?? data.styles.first { $0.id == "normal" }!
     }
 
     func theme(id: String) -> KeyboardPalette {
@@ -80,7 +109,7 @@ final class StyleCatalogue {
     }
 
     var keyboardStyles: [TextStyle] {
-        data.styles.filter { $0.id != "normal" && $0.worksInKeyboard }
+        custom + data.styles.filter { $0.id != "normal" && $0.worksInKeyboard }
     }
 
     /// Styled character → plain letter, across every keyboard style (skips plain ASCII outputs).

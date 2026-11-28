@@ -14,6 +14,7 @@ export default {
   setKeyboardPhoto: unavailable,
   clearKeyboardPhoto: async (): Promise<void> => undefined,
   setCustomTheme: async (): Promise<void> => undefined,
+  setCustomStyles: async (): Promise<void> => undefined,
   setPhotoDim: async (): Promise<void> => undefined,
   hasMicrophone: async (): Promise<boolean> => false,
   requestMicrophone: async (): Promise<void> => undefined,

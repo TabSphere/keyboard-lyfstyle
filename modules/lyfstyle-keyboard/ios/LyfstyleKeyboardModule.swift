@@ -79,6 +79,18 @@ public class LyfstyleKeyboardModule: Module {
       defaults.synchronize()
     }
 
+    // The person's own styles, shown under "My styles" in the keyboard's Fonts panel.
+    AsyncFunction("setCustomStyles") { (json: String) in
+      guard let defaults = UserDefaults(suiteName: self.appGroup) else {
+        throw KeyboardSetupError.appGroupUnavailable
+      }
+      guard let data = json.data(using: .utf8), (try? JSONSerialization.jsonObject(with: data)) is [Any] else {
+        throw KeyboardSetupError.invalidTheme
+      }
+      defaults.set(json, forKey: "customStyles")
+      defaults.synchronize()
+    }
+
     // How much to darken the person's photo behind the keys (0 = not at all, 0.8 = very dark).
     AsyncFunction("setPhotoDim") { (value: Double) in
       guard let defaults = UserDefaults(suiteName: self.appGroup) else {

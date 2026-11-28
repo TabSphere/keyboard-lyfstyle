@@ -51,8 +51,22 @@ export const PRODUCT_ID = catalogue.productId;
 /** Categories in the order the app shows them. */
 export const CATEGORIES = ['Emoji', 'Cute', 'Bold', 'Fancy', 'Soft', 'Dark', 'Playful', 'Effects', 'Kaomoji', 'Classic', 'Decorated'] as const;
 
+// Styles people make themselves ("My styles"). Kept outside the catalogue so the
+// shipped list stays fixed; registered by the app once they load from storage.
+let customRegistry: Lyfstyle[] = [];
+
+export function registerCustomStyles(list: Lyfstyle[]): void {
+  customRegistry = list;
+}
+
+export function customStyles(): Lyfstyle[] {
+  return customRegistry;
+}
+
 export function getStyle(styleId: string): Lyfstyle {
-  return styles.find((style) => style.id === styleId) ?? styles[0];
+  return customRegistry.find((style) => style.id === styleId)
+    ?? styles.find((style) => style.id === styleId)
+    ?? styles[0];
 }
 
 const joinable = /^[A-Za-z0-9]$/;

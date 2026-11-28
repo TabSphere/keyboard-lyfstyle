@@ -90,6 +90,16 @@ class LyfstyleKeyboardModule : Module() {
         .apply()
     }
 
+    // The person's own styles, shown under "My styles" in the keyboard's Fonts panel.
+    AsyncFunction("setCustomStyles") { json: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      org.json.JSONArray(json) // reject malformed input before saving it
+      context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
+        .edit()
+        .putString("customStyles", json)
+        .apply()
+    }
+
     // How much to darken the person's photo behind the keys (0 = not at all, 0.8 = very dark).
     AsyncFunction("setPhotoDim") { value: Double ->
       val context = appContext.reactContext ?: throw IllegalStateException("No application context")

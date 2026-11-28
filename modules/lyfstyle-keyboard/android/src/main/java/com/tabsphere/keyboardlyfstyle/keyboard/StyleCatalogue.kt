@@ -1,6 +1,7 @@
 package com.tabsphere.keyboardlyfstyle.keyboard
 
 import android.content.Context
+import org.json.JSONArray
 import org.json.JSONObject
 
 data class TextStyle(
@@ -76,9 +77,40 @@ class StyleCatalogue private constructor(private val root: JSONObject) {
             )
         }
     }
-    val keyboardStyles: List<TextStyle> get() = styles.filter { it.keyboard && it.id != "normal" }
+    /** Styles the person made in the app ("My styles"). Letters only; frames stay in the app. */
+    var custom: List<TextStyle> = emptyList()
+        private set
 
-    fun style(id: String): TextStyle = styles.firstOrNull { it.id == id } ?: styles.first { it.id == "normal" }
+    /** Reads the JSON the app saves: [{ id, name, mapping }]. Bad input leaves no custom styles. */
+    fun loadCustom(json: String?) {
+        custom = try {
+            val array = JSONArray(json ?: "[]")
+            (0 until array.length()).mapNotNull { index ->
+                val item = array.optJSONObject(index) ?: return@mapNotNull null
+                val id = item.optString("id")
+                if (!id.startsWith(CUSTOM_PREFIX)) return@mapNotNull null
+                val mappingJson = item.optJSONObject("mapping") ?: JSONObject()
+                val mapping = buildMap { mappingJson.keys().forEach { key -> put(key, mappingJson.optString(key, key)) } }
+                TextStyle(
+                    id = id, name = item.optString("name", "My style").ifBlank { "My style" },
+                    category = "Mine", description = "", kind = "alphabet", isPro = true,
+                    keyboard = true, mapping = mapping, group = MY_STYLES,
+                )
+            }
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    val keyboardStyles: List<TextStyle> get() = custom + styles.filter { it.keyboard && it.id != "normal" }
+
+    fun style(id: String): TextStyle = custom.firstOrNull { it.id == id }
+        ?: styles.firstOrNull { it.id == id } ?: styles.first { it.id == "normal" }
+
+    companion object {
+        const val CUSTOM_PREFIX = "custom-"
+        const val MY_STYLES = "My styles"
+    }
     fun theme(id: String): KeyboardPalette = themes.firstOrNull { it.id == id } ?: themes.first()
 
     /** Styled character → plain letter, across every keyboard style (skips plain ASCII outputs). */
