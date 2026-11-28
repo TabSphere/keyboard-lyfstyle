@@ -48,6 +48,9 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: android-actions/setup-android@v3
+        with:
+          # The default list includes the retired 'tools' package, which makes sdkmanager fail.
+          packages: platform-tools
       - run: npm ci
       - name: Build the signed app bundle on this machine
         run: npx eas-cli@latest build --platform android --profile production --local --non-interactive --output "$RUNNER_TEMP/lyfstyle.aab"
