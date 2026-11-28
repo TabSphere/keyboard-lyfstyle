@@ -1,4 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Voice typing: only used while the person taps the mic on the Lyfstyle keyboard. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Android 11+: lets the keyboard find the phone's speech recogniser. -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
     <application>
         <service
             android:name="com.tabsphere.keyboardlyfstyle.keyboard.LyfstyleImeService"

@@ -2,23 +2,26 @@
   "expo": {
     "name": "Lyfstyle",
     "slug": "keyboard-lyfstyle",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "lyfstyle",
-    "backgroundColor": "#FAFAFA",
+    "backgroundColor": "#FFF3F6",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1B1916"
+      "backgroundColor": "#FF3D8B"
     },
     "ios": {
+      "appleTeamId": "GZRWULYGLN",
       "supportsTablet": true,
       "bundleIdentifier": "com.tabsphere.keyboardlyfstyle",
       "buildNumber": "1",
       "entitlements": {
-        "com.apple.security.application-groups": ["group.com.tabsphere.keyboardlyfstyle"]
+        "com.apple.security.application-groups": [
+          "group.com.tabsphere.keyboardlyfstyle"
+        ]
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -29,7 +32,7 @@
       "versionCode": 1,
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
-        "backgroundColor": "#1B1916",
+        "backgroundColor": "#FF3D8B",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -60,11 +63,41 @@
           }
         }
       ],
-      "expo-iap"
+      "expo-iap",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Lyfstyle uses a photo you choose as your keyboard background. It stays on your device.",
+          "cameraPermission": false,
+          "microphonePermission": "Lyfstyle uses the microphone only while you tap the mic on the Lyfstyle keyboard to speak instead of type."
+        }
+      ]
     ],
     "extra": {
       "proProductId": "com.tabsphere.keyboardlyfstyle.pro",
-      "appGroup": "group.com.tabsphere.keyboardlyfstyle"
-    }
+      "appGroup": "group.com.tabsphere.keyboardlyfstyle",
+      "router": {},
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "bundleIdentifier": "com.tabsphere.keyboardlyfstyle.keyboard",
+                  "targetName": "keyboard",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.tabsphere.keyboardlyfstyle"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "3e45211f-5ac6-4dc1-a69c-0d7691d82aba"
+      }
+    },
+    "owner": "tabsphere"
   }
 }

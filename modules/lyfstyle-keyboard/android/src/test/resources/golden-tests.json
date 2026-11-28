@@ -55,6 +55,26 @@
       "styleId": "does-not-exist",
       "input": "Keep me normal",
       "expected": "Keep me normal"
+    },
+    {
+      "styleId": "wizard",
+      "input": "Ab 1",
+      "expected": "ᗩᗷ 1"
+    },
+    {
+      "styleId": "bubble-filled",
+      "input": "Hi!",
+      "expected": "🅗🅘!"
+    },
+    {
+      "styleId": "slash",
+      "input": "H",
+      "expected": "H̸"
+    },
+    {
+      "styleId": "glitch",
+      "input": "a",
+      "expected": "a̴͓"
     }
   ]
 }

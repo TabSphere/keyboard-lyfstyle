@@ -1,19 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
+import { Platform } from 'react-native';
+import { keyboardPayload, MAX_CUSTOM_STYLES, resolveCustomStyle, sanitizeSpec, type CustomStyleSpec } from '../customStyles';
 import { usePro } from '../hooks/usePro';
-import {
-  applyDecoration,
-  decorations,
-  getStyle,
-  transformText,
-} from '../styleEngine';
+import NativeKeyboard from '../nativeKeyboard';
+import { getStyle, registerCustomStyles, transformText, type Lyfstyle } from '../styleEngine';
 
-const DRAFT_KEY = 'lyfstyle.composer.v1';
+const DRAFT_KEY = 'lyfstyle.composer.v2';
+const CUSTOM_KEY = 'lyfstyle.customStyles.v1';
 
 type StoredComposer = {
   text: string;
   selectedStyle: string;
-  selectedDecoration: string;
   favorites: string[];
   recents: string[];
 };
@@ -25,45 +23,83 @@ type ComposerContextValue = StoredComposer & {
   pro: ReturnType<typeof usePro>;
   setText: (value: string) => void;
   selectStyle: (value: string) => void;
-  selectDecoration: (value: string) => void;
   toggleFavorite: (value: string) => void;
+  rememberCopy: (value: string) => void;
+  /** Styles the person made, newest first. */
+  customSpecs: CustomStyleSpec[];
+  customs: Lyfstyle[];
+  saveCustomStyle: (spec: CustomStyleSpec) => void;
+  deleteCustomStyle: (id: string) => void;
 };
 
 const ComposerContext = createContext<ComposerContextValue | null>(null);
 
 export function ComposerProvider({ children }: PropsWithChildren) {
   const pro = usePro();
-  const [text, setText] = useState('Make it yours.');
-  const [selectedStyle, setSelectedStyle] = useState('script');
-  const [selectedDecoration, setSelectedDecoration] = useState('');
-  const [favorites, setFavorites] = useState(['bold', 'script']);
-  const [recents, setRecents] = useState(['script']);
+  const [text, setText] = useState('soft but savage');
+  const [selectedStyle, setSelectedStyle] = useState('frame-sparkles');
+  const [favorites, setFavorites] = useState<string[]>(['frame-sparkles', 'script']);
+  const [recents, setRecents] = useState<string[]>([]);
+  const [customSpecs, setCustomSpecs] = useState<CustomStyleSpec[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
+  // Custom styles are registered before the saved selection is read, so a chosen custom style survives a restart.
+  const customs = useMemo(() => {
+    const list = customSpecs.map(resolveCustomStyle);
+    registerCustomStyles(list);
+    return list;
+  }, [customSpecs]);
+
   useEffect(() => {
-    AsyncStorage.getItem(DRAFT_KEY).then((stored) => {
+    Promise.all([AsyncStorage.getItem(DRAFT_KEY), AsyncStorage.getItem(CUSTOM_KEY)]).then(([stored, storedCustoms]) => {
+      if (storedCustoms) {
+        const parsed = JSON.parse(storedCustoms) as unknown;
+        const specs = Array.isArray(parsed) ? parsed.map(sanitizeSpec).filter((spec): spec is CustomStyleSpec => spec !== null) : [];
+        registerCustomStyles(specs.map(resolveCustomStyle));
+        setCustomSpecs(specs);
+      }
       if (!stored) return;
       const value = JSON.parse(stored) as Partial<StoredComposer>;
       if (typeof value.text === 'string') setText(value.text);
       if (typeof value.selectedStyle === 'string') setSelectedStyle(getStyle(value.selectedStyle).id);
-      if (typeof value.selectedDecoration === 'string') {
-        setSelectedDecoration(decorations.some((item) => item.id === value.selectedDecoration) ? value.selectedDecoration : '');
-      }
       if (Array.isArray(value.favorites)) setFavorites(value.favorites.filter((id) => typeof id === 'string'));
-      if (Array.isArray(value.recents)) setRecents(value.recents.filter((id) => typeof id === 'string').slice(0, 6));
+      if (Array.isArray(value.recents)) setRecents(value.recents.filter((id) => typeof id === 'string').slice(0, 8));
     }).catch(() => undefined).finally(() => setHydrated(true));
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    const value: StoredComposer = { text, selectedStyle, selectedDecoration, favorites, recents };
+    const value: StoredComposer = { text, selectedStyle, favorites, recents };
     AsyncStorage.setItem(DRAFT_KEY, JSON.stringify(value)).catch(() => undefined);
-  }, [favorites, hydrated, recents, selectedDecoration, selectedStyle, text]);
+  }, [favorites, hydrated, recents, selectedStyle, text]);
 
-  const selectStyle = useCallback((value: string) => {
-    const id = getStyle(value).id;
-    setSelectedStyle(id);
-    if (id !== 'normal') setRecents((current) => [id, ...current.filter((item) => item !== id)].slice(0, 6));
+  useEffect(() => {
+    if (!hydrated) return;
+    AsyncStorage.setItem(CUSTOM_KEY, JSON.stringify(customSpecs)).catch(() => undefined);
+    // The keyboards show these under "My styles" (letters only).
+    if (Platform.OS !== 'web') NativeKeyboard.setCustomStyles(keyboardPayload(customs)).catch(() => undefined);
+  }, [customSpecs, customs, hydrated]);
+
+  const saveCustomStyle = useCallback((spec: CustomStyleSpec) => {
+    setCustomSpecs((current) => {
+      const exists = current.some((item) => item.id === spec.id);
+      if (exists) return current.map((item) => (item.id === spec.id ? spec : item));
+      return [spec, ...current].slice(0, MAX_CUSTOM_STYLES);
+    });
+  }, []);
+
+  const deleteCustomStyle = useCallback((id: string) => {
+    setCustomSpecs((current) => current.filter((item) => item.id !== id));
+    setFavorites((current) => current.filter((item) => item !== id));
+    setRecents((current) => current.filter((item) => item !== id));
+    setSelectedStyle((current) => (current === id ? 'frame-sparkles' : current));
+  }, []);
+
+  const selectStyle = useCallback((value: string) => setSelectedStyle(getStyle(value).id), []);
+
+  const rememberCopy = useCallback((value: string) => {
+    if (value === 'normal') return;
+    setRecents((current) => [value, ...current.filter((item) => item !== value)].slice(0, 8));
   }, []);
 
   const toggleFavorite = useCallback((value: string) => {
@@ -72,21 +108,13 @@ export function ComposerProvider({ children }: PropsWithChildren) {
       : [...current, value]);
   }, []);
 
-  const output = useMemo(() => applyDecoration(
-    transformText(text, selectedStyle),
-    selectedDecoration,
-  ), [selectedDecoration, selectedStyle, text]);
-
-  const locked = useMemo(() => {
-    const styleLocked = getStyle(selectedStyle).isPro;
-    const decorationLocked = decorations.find((item) => item.id === selectedDecoration)?.isPro ?? false;
-    return !pro.isPro && (styleLocked || decorationLocked);
-  }, [pro.isPro, selectedDecoration, selectedStyle]);
+  // customs is a dependency so edits to the selected custom style show at once.
+  const output = useMemo(() => (customs ? transformText(text, selectedStyle) : text), [customs, selectedStyle, text]);
+  const locked = !pro.isPro && getStyle(selectedStyle).isPro;
 
   const value = useMemo<ComposerContextValue>(() => ({
     text,
     selectedStyle,
-    selectedDecoration,
     favorites,
     recents,
     output,
@@ -95,9 +123,13 @@ export function ComposerProvider({ children }: PropsWithChildren) {
     pro,
     setText,
     selectStyle,
-    selectDecoration: setSelectedDecoration,
     toggleFavorite,
-  }), [favorites, hydrated, locked, output, pro, recents, selectStyle, selectedDecoration, selectedStyle, text, toggleFavorite]);
+    rememberCopy,
+    customSpecs,
+    customs,
+    saveCustomStyle,
+    deleteCustomStyle,
+  }), [customSpecs, customs, deleteCustomStyle, favorites, hydrated, locked, output, pro, recents, rememberCopy, saveCustomStyle, selectStyle, selectedStyle, text, toggleFavorite]);
 
   return <ComposerContext.Provider value={value}>{children}</ComposerContext.Provider>;
 }

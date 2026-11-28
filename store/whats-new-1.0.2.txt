@@ -1,0 +1,7 @@
+What's new in 1.0.2 (plain text: App Store "What's New" and Google Play "Release notes", under 500 characters)
+
+Word suggestions: finish words and guess the next one, in your font. It learns your own words on your phone only.
+Emoji: a full emoji panel next to the aesthetic symbols, with your recents.
+Glow lights (Pro): a soft light that travels around your keyboard. Switch it on or off.
+Make your own style (Pro): mix a font, an effect and a frame, swap any letter, and use it on the keyboard.
+Fixes: photo backgrounds on iPhone, the bottom row on Android gesture phones, and delete with text selected.

@@ -4,7 +4,7 @@ export default function PrivacyScreen() {
   return (
     <InfoPage title="Private by" italic="default." intro="Lyfstyle is a local text-styling tool. This is the practical data note for version 1.0.0, not a wall of legal language.">
       <InfoSection number="YOUR WORDS" title="Nothing typed is uploaded.">
-        Your composer draft is saved in app storage on your device. Keyboard preferences stay in native local storage. Lyfstyle contains no account system, advertising, analytics, prediction engine, AI rewriting or code that transmits keystrokes to TabSphere.
+        Your composer draft is saved in app storage on your device. Keyboard preferences stay in native local storage. Word suggestions are worked out on your phone; the keyboard remembers words you type often (up to a few hundred) in its own local storage so it can suggest them, and you can turn this off or clear it in the Keyboard tab. Lyfstyle contains no account system, advertising, analytics, AI rewriting or code that transmits keystrokes to TabSphere.
       </InfoSection>
       <InfoSection number="COPY & SHARE" title="You choose when text leaves Lyfstyle.">
         Copy writes your explicitly selected output to the system clipboard. Share opens the operating system share sheet. The destination app or clipboard is then governed by your device and that app’s own privacy terms.

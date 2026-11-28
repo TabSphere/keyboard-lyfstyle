@@ -42,5 +42,90 @@ class LyfstyleKeyboardModule : Module() {
     }
 
     AsyncFunction("isProSyncAvailable") { true }
+
+    // The keyboard runs in this app's process, so it can read a file in our private files dir.
+    AsyncFunction("setKeyboardPhoto") { fileUri: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      val source = android.net.Uri.parse(fileUri)
+      val target = java.io.File(context.filesDir, "keyboard_photo.jpg")
+      context.contentResolver.openInputStream(source).use { input ->
+        requireNotNull(input) { "Could not read the chosen photo" }
+        target.outputStream().use { output -> input.copyTo(output) }
+      }
+      context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
+        .edit()
+        .putString("theme", "custom-photo")
+        .putLong("photoUpdatedAt", System.currentTimeMillis())
+        .apply()
+    }
+
+    AsyncFunction("clearKeyboardPhoto") {
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      java.io.File(context.filesDir, "keyboard_photo.jpg").delete()
+      val preferences = context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
+      if (preferences.getString("theme", "") == "custom-photo") {
+        preferences.edit().putString("theme", "pop-pink").apply()
+      }
+    }
+
+    // Voice typing in the keyboard needs the microphone permission, which only the app can ask for.
+    AsyncFunction("hasMicrophone") {
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      context.checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    }
+
+    AsyncFunction("requestMicrophone") {
+      val activity = appContext.currentActivity ?: throw IllegalStateException("No activity")
+      activity.requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), 4711)
+    }
+
+    // Colours mixed on the colour wheel: JSON with background, key, text, accent, keyAlpha.
+    AsyncFunction("setCustomTheme") { json: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      org.json.JSONObject(json) // reject malformed input before saving it
+      context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
+        .edit()
+        .putString("customTheme", json)
+        .putString("theme", "custom-colors")
+        .apply()
+    }
+
+    // The person's own styles, shown under "My styles" in the keyboard's Fonts panel.
+    AsyncFunction("setCustomStyles") { json: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      org.json.JSONArray(json) // reject malformed input before saving it
+      context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
+        .edit()
+        .putString("customStyles", json)
+        .apply()
+    }
+
+    // Keyboard switches set in the app: glow lights, word suggestions, "forget my words".
+    AsyncFunction("setKeyboardOptions") { json: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      val options = org.json.JSONObject(json)
+      val edit = context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE).edit()
+      if (options.has("glow")) edit.putBoolean("glow", options.getBoolean("glow"))
+      if (options.has("suggestions")) edit.putBoolean("suggestions", options.getBoolean("suggestions"))
+      if (options.optBoolean("forgetWords", false)) edit.putLong("forgetWordsAt", System.currentTimeMillis())
+      edit.apply()
+    }
+
+    // How much to darken the person's photo behind the keys (0 = not at all, 0.8 = very dark).
+    AsyncFunction("setPhotoDim") { value: Double ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
+        .edit()
+        .putFloat("photoDim", value.toFloat().coerceIn(0f, 0.8f))
+        .apply()
+    }
+
+    AsyncFunction("setKeyboardTheme") { themeId: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("No application context")
+      context.getSharedPreferences("lyfstyle_keyboard", Context.MODE_PRIVATE)
+        .edit()
+        .putString("theme", themeId)
+        .apply()
+    }
   }
 }

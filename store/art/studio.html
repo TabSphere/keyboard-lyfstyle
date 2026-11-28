@@ -1,0 +1,294 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Lyfstyle store screenshots</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Noto+Color+Emoji&display=block" rel="stylesheet">
+<script src="data.js"></script>
+<style>
+  :root { --pink: #FF3D8B; --sun: #FFD84D; --ink: #22172F; --blush: #FFF3F6; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #111; }
+  body { font-family: Inter, system-ui, sans-serif; }
+  .emoji { font-family: 'Noto Color Emoji', sans-serif; }
+
+  /* ---------- slide ---------- */
+  .slide { position: relative; overflow: hidden; background: #ddd center / cover no-repeat; }
+  .slide .bgimg { position: absolute; inset: -20px; background: center / cover no-repeat; filter: saturate(1.05); }
+  .slide .shade { position: absolute; inset: 0; }
+  .copy { position: absolute; left: 0; right: 0; text-align: center; padding: 0 22px; z-index: 3; }
+  .kicker { display: inline-block; font: 700 11px/1 Inter, sans-serif; letter-spacing: 1.6px; text-transform: uppercase; padding: 7px 11px; border-radius: 99px; background: rgba(255,255,255,.88); color: var(--ink); margin-bottom: 12px; }
+  h1 { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; letter-spacing: -1px; line-height: 1.02; }
+  h1 mark { background: var(--sun); color: var(--ink); padding: 0 6px; border-radius: 6px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  .copy p { font: 600 15px/1.35 Inter, sans-serif; margin-top: 10px; opacity: .92; }
+  .light h1, .light p { color: #fff; text-shadow: 0 2px 18px rgba(0,0,0,.35); }
+  .dark h1, .dark p { color: var(--ink); }
+
+  /* ---------- devices ---------- */
+  .device { position: absolute; z-index: 2; }
+  .device .shadow { position: absolute; inset: 6% -4% -3% -4%; background: rgba(0,0,0,.45); filter: blur(28px); border-radius: 60px; transform: translateY(18px); }
+  .frame { position: relative; }
+  .screen { position: absolute; overflow: hidden; background: #fff; }
+  .screen .canvas { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+
+  /* iPhone 16 Pro-style: titanium band, thin black border, Dynamic Island */
+  .iphone .frame { border-radius: 19% / 8.9%; background: linear-gradient(135deg, #f2efe9 0%, #b9b4ac 18%, #e9e5de 40%, #8f8a83 62%, #d9d4cc 82%, #7d7871 100%); padding: 1.15%; box-shadow: inset 0 0 0 1px rgba(255,255,255,.5), 0 1px 0 rgba(255,255,255,.4); }
+  .iphone .bezel { position: relative; width: 100%; height: 100%; border-radius: 18% / 8.4%; background: #050505; padding: 3.1%; }
+  .iphone .screen { border-radius: 15.4% / 7.1%; }
+  .iphone .island { position: absolute; z-index: 5; left: 50%; transform: translateX(-50%); background: #000; border-radius: 99px; }
+  .iphone .btn { position: absolute; background: linear-gradient(90deg, #8f8a83, #d9d4cc, #8f8a83); border-radius: 3px; }
+
+  /* Pixel 9-style: flat aluminium band, even bezel, centred punch-hole */
+  .pixel .frame { border-radius: 13% / 6%; background: linear-gradient(135deg, #e7e9ec 0%, #9aa0a6 25%, #dfe2e6 50%, #8a9096 75%, #cfd3d8 100%); padding: 1.3%; }
+  .pixel .bezel { position: relative; width: 100%; height: 100%; border-radius: 12% / 5.4%; background: #060606; padding: 3.4%; }
+  .pixel .screen { border-radius: 9.6% / 4.4%; }
+  .pixel .hole { position: absolute; z-index: 5; left: 50%; transform: translateX(-50%); background: #000; border-radius: 50%; box-shadow: 0 0 0 1.5px #1c1c1c; }
+  /* iPad Pro-style: thin aluminium band, even black border, front camera on the long edge */
+  .ipad .frame { border-radius: 5.2% / 3.9%; background: linear-gradient(135deg, #e9eaec 0%, #a7abb0 30%, #e1e3e6 55%, #8f9499 80%, #d2d5d9 100%); padding: 0.9%; }
+  .ipad .bezel { position: relative; width: 100%; height: 100%; border-radius: 4.6% / 3.45%; background: #070707; padding: 2.6%; }
+  .ipad .screen { border-radius: 2.6% / 1.95%; }
+  .ipad .cam { position: absolute; z-index: 5; left: 50%; transform: translateX(-50%); background: #1a1a1a; border-radius: 50%; }
+  .pixel .btn { position: absolute; background: linear-gradient(90deg, #8a9096, #dfe2e6, #8a9096); border-radius: 3px; }
+
+  /* ---------- phone UI (drawn at 430 x 932 for iPhone, 412 x 915 for Android) ---------- */
+  .ui { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; background: #fff; }
+  .status { height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 14px 34px 0 40px; font: 600 17px Inter, sans-serif; color: #000; flex: none; }
+  .android .status { height: 40px; padding: 8px 22px 0; font: 500 14px Roboto, sans-serif; }
+  .status svg { height: 13px; margin-left: 6px; }
+  .chathead { display: flex; align-items: center; gap: 10px; padding: 6px 16px 12px; border-bottom: 1px solid #eee; flex: none; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #ffb3c9, #c7b3ff); display: grid; place-items: center; font: 700 15px Inter; color: #fff; }
+  .chathead b { font: 700 16px Inter; color: #111; } .chathead small { display: block; font: 500 12px Inter; color: #8a8a8f; }
+  .android .chathead b, .android .chathead small { font-family: Roboto, sans-serif; }
+  .thread { flex: 1; padding: 14px 14px 10px; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; background: #fbf9fc; overflow: hidden; }
+  .bubble { max-width: 76%; padding: 10px 14px; border-radius: 20px; font: 400 17px/1.3 Inter, sans-serif; }
+  .in { align-self: flex-start; background: #ececf1; color: #111; border-bottom-left-radius: 6px; }
+  .out { align-self: flex-end; background: var(--pink); color: #fff; border-bottom-right-radius: 6px; }
+  .android .bubble { font-family: Roboto, sans-serif; }
+  .composer { display: flex; align-items: center; gap: 8px; padding: 8px 12px 10px; background: #fbf9fc; flex: none; }
+  .field { flex: 1; min-height: 38px; border-radius: 20px; border: 1px solid #ddd; background: #fff; padding: 8px 14px; font: 400 17px Inter; color: #111; }
+  .field .caret { display: inline-block; width: 2px; height: 20px; background: var(--pink); vertical-align: -4px; margin-left: 1px; }
+  .send { width: 34px; height: 34px; border-radius: 50%; background: var(--pink); display: grid; place-items: center; color: #fff; font: 700 18px Inter; }
+
+  /* keyboard */
+  .kbwrap { flex: none; background: #d4d6dc; padding: 6px 4px 0; }
+  .android .kbwrap { background: #e9e9ee; padding: 4px 0 0; }
+  .kb { position: relative; border-radius: 22px; overflow: hidden; padding: 6px 3px 4px; background: #FFE0EA center / cover no-repeat; }
+  .android .kb { border-radius: 0; }
+  .kb .dim { position: absolute; inset: 0; background: rgba(0,0,0,.3); }
+  .kb > * { position: relative; }
+  .bar { display: flex; gap: 5px; align-items: center; height: 40px; padding: 0 2px; overflow: hidden; }
+  .chip { flex: none; max-width: 120px; overflow: hidden; text-overflow: ellipsis; height: 32px; padding: 0 12px; border-radius: 16px; display: grid; place-items: center; font: 500 15px Inter, 'Segoe UI Symbol', sans-serif; white-space: nowrap; }
+  .row { display: flex; height: 54px; }
+  .cell { position: relative; height: 54px; }
+  .key { position: absolute; inset: 5px 3px; border-radius: 9px; display: grid; place-items: center; font: 400 23px Inter, 'Segoe UI Symbol', 'Cambria Math', sans-serif; box-shadow: 0 1px 0 rgba(0,0,0,.25); }
+  .android .key { border-radius: 8px; font-family: Roboto, 'Segoe UI Symbol', 'Cambria Math', sans-serif; }
+  .glass .key { box-shadow: none; }
+  .sysbar { height: 46px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; color: #3a3a3c; font-size: 22px; }
+  .home { height: 30px; display: grid; place-items: center; } .home i { width: 140px; height: 5px; border-radius: 3px; background: #000; display: block; }
+  .android .home i { width: 110px; height: 4px; background: #333; }
+  .panel { height: 162px; overflow: hidden; padding: 0 4px; }
+  .plabel { font: 700 10px Inter; letter-spacing: 1px; text-transform: uppercase; padding: 8px 4px 4px; }
+  .pgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .tile { height: 46px; border-radius: 12px; background: center / cover; display: flex; align-items: flex-end; padding: 6px 8px; font: 700 12px Inter; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+  .tile.on { box-shadow: inset 0 0 0 3px var(--pink); }
+  .fgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .fgrid .chip { width: 100%; height: 36px; padding: 0 6px; overflow: hidden; }
+  .result { margin-top: 6px; border-radius: 10px; padding: 9px 11px; font: 400 16px/1.3 Inter; min-height: 64px; }
+  .acts { display: flex; gap: 8px; margin-top: 8px; } .acts .chip { flex: 1; }
+  .appshot { width: 100%; display: block; }
+  .appbg { background: #FFF3F6; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const S = window.STYLES;
+const T = Object.fromEntries(window.THEMES.map((t) => [t.id, t]));
+const tf = (text, id) => !id ? text : [...text].map((c) => (S[id]?.mapping[c]) ?? c).join('');
+const hex = (h, a = 1) => { const v = parseInt(h.slice(1), 16); return `rgba(${(v >> 16) & 255},${(v >> 8) & 255},${v & 255},${a})`; };
+const lum = (h) => { const v = parseInt(h.slice(1), 16); return (0.2126 * ((v >> 16) & 255) + 0.7152 * ((v >> 8) & 255) + 0.0722 * (v & 255)) / 255; };
+const onAccent = (h) => lum(h) > 0.55 ? '#22172F' : '#fff';
+const blend = (a, b, t) => { const x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16); const m = (s) => Math.round(((x >> s) & 255) + ((((y >> s) & 255) - ((x >> s) & 255)) * t)); return `rgb(${m(16)},${m(8)},${m(0)})`; };
+
+const STATUS = (android) => android
+  ? `<div class="status"><span>9:41</span><span><svg viewBox="0 0 40 14"><path d="M2 12h3V9H2zm6 0h3V6H8zm6 0h3V3h-3zm6 0h3V0h-3z" fill="#000"/></svg><svg viewBox="0 0 26 14"><rect x="1" y="2" width="21" height="10" rx="2" fill="none" stroke="#000" stroke-width="1.6"/><rect x="3" y="4" width="15" height="6" rx="1" fill="#000"/><rect x="23" y="5" width="2" height="4" fill="#000"/></svg></span></div>`
+  : `<div class="status"><span>9:41</span><span><svg viewBox="0 0 54 14"><path d="M2 12h3V9H2zm5 0h3V6H7zm5 0h3V3h-3zm5 0h3V0h-3z" fill="#000"/><path d="M33 4a10 10 0 0 1 12 0l-1.6 1.7a7.5 7.5 0 0 0-8.8 0zm2.8 2.9a6 6 0 0 1 6.4 0L39 9.3z" fill="#000"/></svg><svg viewBox="0 0 30 14"><rect x="1" y="1.5" width="24" height="11" rx="3.2" fill="none" stroke="#000" stroke-opacity=".4" stroke-width="1.2"/><rect x="3" y="3.5" width="18" height="7" rx="1.8" fill="#000"/><path d="M27 5v4a2 2 0 0 0 0-4z" fill="#000" fill-opacity=".4"/></svg></span></div>`;
+
+function keyboard({ android, theme, styleId, panel = 'none', photo = null, recents = ['script', 'fraktur', 'bold-script', 'circled'], translate = null }) {
+  const t = T[theme] || T.sakura;
+  const glass = (t.keyAlpha ?? 1) < 1;
+  const keyFill = hex(t.key, t.keyAlpha ?? 1);
+  const fn = glass ? hex(t.key, Math.min((t.keyAlpha ?? 1) + 0.14, 1)) : blend(t.key, t.text, 0.13);
+  const bgImg = photo ? `url(${photo})` : `url(kb/${t.image})`;
+  const chip = (label, active) => `<div class="chip" style="background:${active ? t.accent : keyFill};color:${active ? onAccent(t.accent) : t.text}">${label}</div>`;
+  const cell = (label, w, kind = 'l', extra = '') => `<div class="cell" style="width:${w}%"><div class="key" style="background:${kind === 'a' ? t.accent : kind === 'f' ? fn : keyFill};color:${kind === 'a' ? onAccent(t.accent) : t.text};${extra}">${label}</div></div>`;
+  const spacer = (w) => `<div style="width:${w}%"></div>`;
+  let bar = chip(panel === 'fonts' ? 'Fonts ▴' : 'Fonts ▾', panel === 'fonts');
+  recents.forEach((id) => { bar += chip(tf(S[id].name, id), id === styleId && panel === 'none'); });
+  const right = `<div style="margin-left:auto;display:flex;gap:5px">${chip('文A', panel === 'translate')}${chip('<span class="emoji">🎨</span>', panel === 'themes')}</div>`;
+  let body = '';
+  if (panel === 'none') {
+    const r = (letters) => letters.map((c) => cell(tf(c, styleId), 10)).join('');
+    body = `<div class="row">${r([...'qwertyuiop'])}</div>
+      <div class="row">${spacer(5)}${r([...'asdfghjkl'])}${spacer(5)}</div>
+      <div class="row">${cell('⇧', 14, 'f', 'font-size:22px')}${spacer(1)}${r([...'zxcvbnm'])}${spacer(1)}${cell('⌫', 14, 'f', 'font-size:20px')}</div>`;
+  } else if (panel === 'themes') {
+    const groups = [['K-pop', ['kpop-holographic-foil', 'kpop-y2k-chrome-hearts', 'kpop-bubblegum-candy', 'kpop-stage-lights', 'kpop-lightstick-ocean', 'kpop-glitchcore-acid']], ['Pride', ['pride-rainbow-silk', 'pride-trans-dream', 'pride-bi-gradient']]];
+    body = `<div class="panel">${groups.map(([g, ids]) => `<div class="plabel" style="color:${t.text}">${g}</div><div class="pgrid">${ids.map((id) => `<div class="tile ${id === theme ? 'on' : ''}" style="background-image:url(kb/thumbs/${id}.jpg)">${T[id].name}</div>`).join('')}</div>`).join('')}</div>`;
+  } else if (panel === 'fonts') {
+    const groups = [['Cursive & cute', ['script', 'bold-script', 'tiny-cursive', 'cute-alpha', 'mythic', 'curvy']], ['Gothic & fancy', ['fraktur', 'wizard', 'asian', 'witchy', 'currency', 'tribal']]];
+    body = `<div class="panel">${groups.map(([g, ids]) => `<div class="plabel" style="color:${t.text}">${g}</div><div class="fgrid">${ids.map((id) => chip(tf(S[id].name, id), id === styleId)).join('')}</div>`).join('')}</div>`;
+  } else if (panel === 'translate') {
+    const langs = ['Spanish', 'French', 'Korean', 'Japanese', 'Portuguese'];
+    body = `<div class="panel"><div class="bar" style="padding:2px 0">${langs.map((l) => chip(l, l === translate.lang)).join('')}</div>
+      <div class="result" style="background:${keyFill};color:${t.text}">${translate.text}</div>
+      <div class="acts">${chip('Replace my text', true)}${chip('Add it', false)}</div></div>`;
+  }
+  const mode = panel === 'none' ? '123' : 'ABC';
+  const bottom = `<div class="row">${cell(mode, 13, 'f', 'font-size:17px;font-weight:500')}${cell('<span class="emoji" style="font-size:19px">🎙</span>', 11, 'f')}${cell(`<span style="font-size:16px;opacity:.85">${tf('lyfstyle', styleId)}</span>`, 47)}${cell('.', 10)}${cell('↵', 19, 'a', 'font-size:22px')}</div>`;
+  return `<div class="kbwrap"><div class="kb ${glass ? 'glass' : ''}" style="background-image:${bgImg};background-color:${t.key}">${photo ? '<div class="dim"></div>' : ''}<div class="bar">${bar}${right}</div>${body}${bottom}</div>
+    ${android ? '<div class="home" style="height:22px"><i></i></div>' : '<div class="sysbar"><span>🌐︎</span><span>🎙︎</span></div><div class="home" style="height:14px"><i></i></div>'}</div>`;
+}
+
+function chat({ android, theme, styleId, panel, typed, messages, photo, translate }) {
+  return `<div class="ui ${android ? 'android' : ''}">${STATUS(android)}
+    <div class="chathead">${android ? '<span style="font-size:22px;color:#444">←</span>' : '<span style="font-size:26px;color:#FF3D8B;font-weight:300">‹</span>'}<div class="avatar">M</div><div><b>Maya</b><small>online</small></div></div>
+    <div class="thread"><div style="text-align:center;font:600 11px Inter;color:#9a9aa0;margin-bottom:4px">Today 9:12 PM</div>${messages.map(([side, text]) => `<div class="bubble ${side}">${text}</div>`).join('')}</div>
+    <div class="composer"><div class="field">${typed}<span class="caret"></span></div><div class="send">↑</div></div>
+    ${keyboard({ android, theme, styleId, panel, photo, translate })}</div>`;
+}
+
+function appScreen({ android, shot }) {
+  return `<div class="ui appbg ${android ? 'android' : ''}">${STATUS(android)}<img class="appshot" src="${window.IPAD ? 'app-ipad' : 'app'}/${shot}.png"></div>`;
+}
+
+// iPad Pro 13-inch-like frame; the screen is drawn at 1032 x 1376.
+function ipadDevice({ w, x, y, content }) {
+  const sw = 774, sh = 1032, pad = 0.035; // drawn at 75% then scaled up, like the iPad keyboard's larger keys
+  const screenW = w * (1 - pad * 2), screenH = screenW * sh / sw, h = screenH + w * pad * 2, scale = screenW / sw;
+  return `<div class="device ipad" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"><div class="shadow"></div>
+    <div class="frame" style="width:${w}px;height:${h}px"><div class="bezel">
+      <div class="screen" style="left:${w * pad - w * 0.009}px;top:${w * pad - w * 0.009}px;width:${screenW}px;height:${screenH}px">
+        <div class="canvas" style="width:${sw}px;height:${sh}px;transform:scale(${scale})">${content}</div></div>
+      <div class="cam" style="top:${w * 0.012}px;width:${w * 0.01}px;height:${w * 0.01}px"></div></div></div></div>`;
+}
+
+// iPhone 16 Pro Max-like and Pixel 9 Pro-like frames. `w` = outer device width in slide px.
+function device({ android, w, x, y, rotate = 0, content }) {
+  const sw = android ? 412 : 430, sh = android ? 915 : 932;
+  const pad = android ? 0.047 : 0.0425;            // band + black border, as a share of width
+  const screenW = w * (1 - pad * 2);
+  const screenH = screenW * sh / sw;
+  const h = screenH + w * pad * 2;
+  const scale = screenW / sw;
+  const kind = android ? 'pixel' : 'iphone';
+  const notch = android
+    ? `<div class="hole" style="top:${w * pad + screenW * 0.025}px;width:${screenW * 0.06}px;height:${screenW * 0.06}px"></div>`
+    : `<div class="island" style="top:${w * pad + screenW * 0.026}px;width:${screenW * 0.29}px;height:${screenW * 0.085}px"></div>`;
+  const btns = android
+    ? `<div class="btn" style="right:-2.5px;top:${h * 0.2}px;width:3px;height:${h * 0.07}px"></div><div class="btn" style="right:-2.5px;top:${h * 0.31}px;width:3px;height:${h * 0.13}px"></div>`
+    : `<div class="btn" style="left:-2.5px;top:${h * 0.17}px;width:3px;height:${h * 0.045}px"></div><div class="btn" style="left:-2.5px;top:${h * 0.25}px;width:3px;height:${h * 0.075}px"></div><div class="btn" style="left:-2.5px;top:${h * 0.34}px;width:3px;height:${h * 0.075}px"></div><div class="btn" style="right:-2.5px;top:${h * 0.27}px;width:3px;height:${h * 0.11}px"></div>`;
+  return `<div class="device ${kind}" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;transform:rotate(${rotate}deg)">
+    <div class="shadow"></div>${btns}
+    <div class="frame" style="width:${w}px;height:${h}px"><div class="bezel">
+      <div class="screen" style="left:${w * pad - w * 0.0115}px;top:${w * pad - w * 0.0115}px;width:${screenW}px;height:${screenH}px">
+        <div class="canvas" style="width:${sw}px;height:${sh}px;transform:scale(${scale})">${content}</div></div>${notch}</div></div></div>`;
+}
+
+const MSG = {
+  hero: [['in', 'are we still on for tonight'], ['out', 'yesss obviously'], ['in', 'what are we wearing tonight??'], ['out', tf('soft but savage', 'script') + ' <span class="emoji">✨</span>'], ['in', 'wait HOW is your text like that <span class="emoji">😭</span>']],
+  gothic: [['in', 'did you see the photos from last night'], ['out', 'stop i look so good'], ['in', 'new pfp who dis'], ['out', tf('main character energy', 'fraktur')], ['in', 'obsessed with this']],
+  themes: [['in', 'wait what keyboard is that'], ['out', 'lyfstyle, it has picture themes'], ['in', 'ur keyboard is so cute'], ['out', tf('there are 100+ themes', 'circled')]],
+  photo: [['in', 'missing summer already'], ['out', 'look at my keyboard'], ['in', 'is that our beach day?? <span class="emoji">🌅</span>'], ['out', tf('best day ever', 'script')]],
+  fonts: [['in', 'ok I need this app'], ['out', 'it groups all the fonts too'], ['in', 'how many fonts are there'], ['out', tf('like a hundred', 'mythic') + ' <span class="emoji">💅</span>']],
+  translate: [['in', '¡Hola! Soy Lucía, la amiga de Maya'], ['out', 'hiii nice to meet you'], ['in', '¿Vienes a la fiesta esta noche?'], ['out', tf('obviously, see you at 9', 'script')]],
+};
+
+const SLIDES = [
+  { bg: 'cafe-linen-morning', tone: 'dark', kicker: 'Fonts keyboard', title: 'Type in <mark>any font</mark>,<br>in any app', sub: 'Pick a style and every key shows it.',
+    screen: (a) => chat({ android: a, theme: 'sakura', styleId: 'script', messages: MSG.hero, typed: tf('see u at 8', 'script') }) },
+  { bg: 'urban-neon-nights', tone: 'light', kicker: '60 keyboard fonts', title: 'Your font,<br><mark>right on the keys</mark>', sub: 'What you see is what you send.',
+    screen: (a) => chat({ android: a, theme: 'neon-wave', styleId: 'fraktur', messages: MSG.gothic, typed: tf('who did this', 'fraktur') }) },
+  { bg: 'kpop-holographic-foil', tone: 'dark', kicker: 'Themes', title: '<mark>100+</mark> keyboard<br>themes', sub: 'K-pop, Pride, movies, music, art and more.',
+    screen: (a) => chat({ android: a, theme: 'galaxy', styleId: 'circled', panel: 'themes', messages: MSG.themes, typed: '' }) },
+  { bg: 'sunset-beach-golden', tone: 'light', kicker: 'Your photo', title: 'Your photo.<br><mark>Your keyboard.</mark>', sub: 'It stays on your phone.',
+    screen: (a) => chat({ android: a, theme: 'sakura', styleId: 'script', messages: MSG.photo, typed: tf('golden hour', 'script'), photo: 'kb/sunset-beach-golden.jpg' }) },
+  { bg: 'pastel-cloud-dream', tone: 'dark', kicker: 'Colour wheel', title: 'Mix your<br><mark>own colours</mark>', sub: 'Background, keys, letters and accent.',
+    screen: (a) => appScreen({ android: a, shot: 'custom-theme' }) },
+  { bg: 'cherry-blossom-spring', tone: 'dark', kicker: '100+ text styles', title: 'Fonts, <mark>neatly</mark><br>grouped', sub: 'Cursive, gothic, bubbles, effects and more.',
+    screen: (a) => chat({ android: a, theme: 'golden-lake', styleId: 'mythic', panel: 'fonts', messages: MSG.fonts, typed: '' }) },
+  { bg: 'vintage-film-faded', tone: 'dark', kicker: 'Translate', title: 'Translate<br><mark>as you type</mark>', sub: 'Right in the keyboard, on your phone.',
+    screen: (a) => chat({ android: a, theme: 'sakura', styleId: 'script', panel: 'translate', messages: MSG.translate, typed: 'obviously, see you at 9',
+      translate: { lang: 'Spanish', text: 'Obvio, nos vemos a las 9' } }) },
+  { bg: 'white-marble-gold', tone: 'dark', kicker: 'Lifetime Pro', title: 'Pay once.<br><mark>No ads.</mark> No tracking.', sub: '100+ fonts, 100+ themes, bios and tools.',
+    screen: (a) => appScreen({ android: a, shot: 'write' }) },
+];
+
+const params = new URLSearchParams(location.search);
+if (params.get('feature')) {
+  // Google Play feature graphic, 1024 x 500. Pixel phones only (no iPhones on Play).
+  document.getElementById('root').innerHTML = `<div class="slide" style="width:1024px;height:500px;background:linear-gradient(120deg,#FF3D8B 0%,#FF6FA8 55%,#FFB3C9 100%)">
+    <div style="position:absolute;left:64px;top:118px;z-index:3">
+      <div style="font:800 92px/1 'Bricolage Grotesque';letter-spacing:-3px;color:#22172F"><span style="color:#FFD84D">lyf</span>style</div>
+      <div style="font:800 40px/1.1 'Bricolage Grotesque';color:#fff;margin-top:18px;letter-spacing:-.5px">Fancy fonts keyboard</div>
+      <div style="display:flex;gap:10px;margin-top:22px">${['100+ fonts','100+ themes','Pay once'].map((x)=>`<span style="font:700 16px Inter;background:#22172F;color:#fff;border-radius:99px;padding:9px 15px">${x}</span>`).join('')}</div>
+    </div>
+    ${device({ android: true, w: 205, x: 610, y: 70, rotate: -8, content: chat({ android: true, theme: 'sakura', styleId: 'script', messages: MSG.hero, typed: tf('see u at 8', 'script') }) })}
+    ${device({ android: true, w: 205, x: 790, y: 40, rotate: 7, content: chat({ android: true, theme: 'galaxy', styleId: 'circled', panel: 'themes', messages: MSG.themes, typed: '' }) })}
+  </div>`;
+  throw new Error('feature rendered');
+}
+if (params.get('header')) {
+  // App Store product page header, 3840 x 1646 (drawn at 1920 x 823, rendered at 2x).
+  // Apple crops it differently per device, so the words and phones sit in the middle 70%.
+  const pill = (x) => `<span style="font:700 22px Inter;background:#22172F;color:#fff;border-radius:99px;padding:12px 22px">${x}</span>`;
+  document.getElementById('root').innerHTML = `<div class="slide" style="width:1920px;height:823px;background:radial-gradient(120% 140% at 15% 20%,#FF6FA8 0%,#FF3D8B 45%,#E02C77 100%)">
+    <div style="position:absolute;right:-160px;top:-220px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(255,216,77,.55),rgba(255,216,77,0) 65%)"></div>
+    <div style="position:absolute;left:300px;top:228px;z-index:3">
+      <div style="font:800 150px/0.95 'Bricolage Grotesque';letter-spacing:-5px;color:#22172F"><span style="color:#FFD84D">lyf</span>style</div>
+      <div style="font:800 58px/1.05 'Bricolage Grotesque';color:#fff;margin-top:26px;letter-spacing:-1px">Type in <span style="background:#FFD84D;color:#22172F;padding:0 10px;border-radius:10px">any font</span>,<br>in any app</div>
+      <div style="display:flex;gap:12px;margin-top:34px">${['100+ fonts', '100+ themes', 'Pay once'].map(pill).join('')}</div>
+    </div>
+    ${device({ w: 300, x: 960, y: 150, rotate: -8, content: chat({ theme: 'galaxy', styleId: 'circled', panel: 'themes', messages: MSG.themes, typed: '' }) })}
+    ${device({ w: 320, x: 1170, y: 95, rotate: 0, content: chat({ theme: 'sakura', styleId: 'script', messages: MSG.hero, typed: tf('see u at 8', 'script') }) })}
+    ${device({ w: 300, x: 1400, y: 150, rotate: 8, content: chat({ theme: 'sakura', styleId: 'script', messages: MSG.photo, typed: tf('golden hour', 'script'), photo: 'kb/sunset-beach-golden.jpg' }) })}
+  </div>`;
+  throw new Error('header rendered');
+}
+if (params.get('thumb')) {
+  // YouTube thumbnail, 1920 x 1080 (drawn at 1280 x 720, rendered at 1.5x). Big words that still read at phone size.
+  document.getElementById('root').innerHTML = `<div class="slide" style="width:1280px;height:720px;background:radial-gradient(110% 130% at 10% 10%,#FF6FA8 0%,#FF3D8B 50%,#D9246E 100%)">
+    <div style="position:absolute;right:-120px;top:-160px;width:760px;height:760px;border-radius:50%;background:radial-gradient(circle,rgba(255,216,77,.6),rgba(255,216,77,0) 65%)"></div>
+    <div style="position:absolute;left:64px;top:70px;z-index:3">
+      <div style="font:800 58px/1 'Bricolage Grotesque';letter-spacing:-2px;color:#22172F"><span style="color:#FFD84D">lyf</span>style</div>
+      <div style="font:800 190px/0.9 'Bricolage Grotesque';letter-spacing:-8px;color:#fff;margin-top:26px;text-shadow:0 6px 0 rgba(34,23,47,.25)">100+</div>
+      <div style="font:800 88px/0.95 'Bricolage Grotesque';letter-spacing:-3px;color:#22172F;margin-top:6px"><span style="background:#FFD84D;padding:0 14px;border-radius:14px">FANCY FONTS</span></div>
+      <div style="font:800 46px/1.1 'Bricolage Grotesque';color:#fff;margin-top:22px;letter-spacing:-1px">right on your keyboard</div>
+    </div>
+    ${device({ w: 290, x: 770, y: 150, rotate: -7, content: chat({ theme: 'galaxy', styleId: 'circled', panel: 'themes', messages: MSG.themes, typed: '' }) })}
+    ${device({ w: 320, x: 950, y: 80, rotate: 6, content: chat({ theme: 'sakura', styleId: 'script', messages: MSG.hero, typed: tf('see u at 8', 'script') }) })}
+  </div>`;
+  throw new Error('thumb rendered');
+}
+const platform = params.get('p') || 'ios';
+const index = Number(params.get('i') || 0);
+const android = platform === 'android';
+const ipad = platform === 'ipad';
+window.IPAD = ipad;
+const W = ipad ? 1032 : android ? 360 : 430, H = ipad ? 1376 : android ? 640 : 932;
+const s = SLIDES[index];
+const titleSize = ipad ? 62 : android ? 32 : 40;
+const devW = ipad ? 800 : android ? 226 : 318;
+const devY = ipad ? 330 : android ? 196 : 244;
+const shade = s.tone === 'light'
+  ? 'linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.1) 38%, rgba(0,0,0,0) 60%)'
+  : 'linear-gradient(180deg, rgba(255,255,255,.78) 0%, rgba(255,255,255,.35) 30%, rgba(255,255,255,0) 52%)';
+document.getElementById('root').innerHTML = `<div class="slide" style="width:${W}px;height:${H}px">
+  <div class="bgimg" style="background-image:url(bg/${s.bg}.png)"></div><div class="shade" style="background:${shade}"></div>
+  <div class="copy ${s.tone}" style="top:${ipad ? 70 : android ? 26 : 52}px"><div class="kicker">${s.kicker}</div><h1 style="font-size:${titleSize}px">${s.title}</h1><p>${s.sub}</p></div>
+  ${ipad ? ipadDevice({ w: devW, x: (W - devW) / 2, y: devY, content: s.screen(false) }) : device({ android, w: devW, x: (W - devW) / 2, y: devY, content: s.screen(android) })}
+</div>`;
+</script>
+</body>
+</html>
