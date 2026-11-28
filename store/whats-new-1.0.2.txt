@@ -5,4 +5,4 @@ Emoji: a full emoji panel with your recents.
 Glow lights (Pro): a soft light that travels around your keyboard.
 Make your own style (Pro): mix a font, an effect and a frame, and use it on the keyboard.
 Keys feel better: no dead spots at the edges, a crisp tap click and buzz, and quicker taps on iPhone.
-Fixes: photo backgrounds on iPhone and delete with text selected.
+Fixes: photo backgrounds on iPhone, bottom tabs on phones with navigation buttons, and delete with text selected.
