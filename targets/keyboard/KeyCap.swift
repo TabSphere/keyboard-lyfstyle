@@ -18,8 +18,20 @@ final class KeyCap: UIControl {
     var onMove: ((KeyCap, CGPoint) -> Void)?
     /// Finger lifted (true when it lifted on or near the key) or the touch was cancelled (false).
     var onUp: ((KeyCap, Bool) -> Void)?
+    /// Click and buzz the instant any key is touched (set once by the keyboard).
+    static var pressFeedback: (() -> Void)?
+
+    /// Extra touch area beside the visible key, in key widths. The outer keys of a short
+    /// row (A, L, Z, M...) reach into the gap, so a tap there still types. The cell's
+    /// width already includes this padding.
+    var padStart: CGFloat = 0 { didSet { setNeedsLayout() } }
+    var padEnd: CGFloat = 0 { didSet { setNeedsLayout() } }
+    private let inset: UIEdgeInsets
+    private var leadingEdge: NSLayoutConstraint!
+    private var trailingEdge: NSLayoutConstraint!
 
     init(inset: UIEdgeInsets) {
+        self.inset = inset
         super.init(frame: .zero)
         isExclusiveTouch = false
         body.isUserInteractionEnabled = false
@@ -43,9 +55,11 @@ final class KeyCap: UIControl {
         icon.translatesAutoresizingMaskIntoConstraints = false
         body.addSubview(icon)
 
+        leadingEdge = body.leadingAnchor.constraint(equalTo: leadingAnchor, constant: inset.left)
+        trailingEdge = body.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -inset.right)
         NSLayoutConstraint.activate([
-            body.leadingAnchor.constraint(equalTo: leadingAnchor, constant: inset.left),
-            body.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -inset.right),
+            leadingEdge,
+            trailingEdge,
             body.topAnchor.constraint(equalTo: topAnchor, constant: inset.top),
             body.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -inset.bottom),
             label.leadingAnchor.constraint(equalTo: body.leadingAnchor, constant: 2),
@@ -62,6 +76,11 @@ final class KeyCap: UIControl {
     override var isHighlighted: Bool { didSet { refresh() } }
 
     override func layoutSubviews() {
+        let cell = bounds.width / (1 + padStart + padEnd)
+        let lead = inset.left + cell * padStart
+        let trail = -(inset.right + cell * padEnd)
+        if leadingEdge.constant != lead { leadingEdge.constant = lead }
+        if trailingEdge.constant != trail { trailingEdge.constant = trail }
         super.layoutSubviews()
         body.layer.shadowPath = UIBezierPath(roundedRect: body.bounds, cornerRadius: body.layer.cornerRadius).cgPath
     }
@@ -71,6 +90,7 @@ final class KeyCap: UIControl {
     }
 
     override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        Self.pressFeedback?()
         onDown?(self)
         return true
     }

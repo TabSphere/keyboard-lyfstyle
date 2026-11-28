@@ -2,6 +2,9 @@
     <!-- Voice typing: only used while the person taps the mic on the Lyfstyle keyboard. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!-- A short buzz on each key tap, when the phone has touch feedback switched on. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <!-- Android 11+: lets the keyboard find the phone's speech recogniser. -->
     <queries>
         <intent>

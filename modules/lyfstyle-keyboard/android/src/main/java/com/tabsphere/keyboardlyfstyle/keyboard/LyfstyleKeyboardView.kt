@@ -6,7 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
+import android.provider.Settings
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -19,6 +24,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
+import android.media.AudioManager
 import android.icu.text.BreakIterator
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
@@ -991,18 +997,14 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
             letterRows[0].forEach { addView(letterCap(it), weighted(1f)) }
         }, rowParams())
         rows.addView(keyRow().apply {
-            addView(View(context), weighted(0.5f))
-            letterRows[1].forEach { addView(letterCap(it), weighted(1f)) }
-            addView(View(context), weighted(0.5f))
+            addPadded(this, letterRows[1].map { letterCap(it) }, 0.5f)
         }, rowParams())
         rows.addView(keyRow().apply {
             val shift = cap(null, CapKind.FUNCTION)
             shift.onUp = { _, inside -> if (inside) tapShift(shift) }
             shiftCap = shift
             addView(shift, weighted(1.4f))
-            addView(View(context), weighted(0.1f))
-            letterRows[2].forEach { addView(letterCap(it), weighted(1f)) }
-            addView(View(context), weighted(0.1f))
+            addPadded(this, letterRows[2].map { letterCap(it) }, 0.1f)
             addView(deleteCap(), weighted(1.4f))
         }, rowParams())
         updateLetterLabels()
@@ -1016,9 +1018,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
             val toggle = cap(if (secondarySymbols) "123" else "#+=", CapKind.FUNCTION, textSize = 16f)
             toggle.onUp = { _, inside -> if (inside) { secondarySymbols = !secondarySymbols; rebuild() } }
             addView(toggle, weighted(1.5f))
-            addView(View(context), weighted(0.25f))
-            source[2].forEach { addView(symbolCap(it), weighted(1f)) }
-            addView(View(context), weighted(0.25f))
+            addPadded(this, source[2].map { symbolCap(it) }, 0.25f)
             addView(deleteCap(), weighted(1.5f))
         }, rowParams())
     }
@@ -1041,6 +1041,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         val space = cap(catalogue.transform("lyfstyle", effectiveStyleId()), CapKind.LETTER, textSize = 15f).apply {
             label.setTextColor(Color.parseColor(theme.secondary))
             contentDescription = "Space. Hold to switch keyboard."
+            sound = AudioManager.FX_KEYPRESS_SPACEBAR
         }
         space.onDown = { key ->
             tick(key); spaceStartX = -1f; spaceSliding = false; spaceHeld = false
@@ -1060,7 +1061,10 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         val period = cap(".", CapKind.LETTER)
         period.onDown = { key -> tick(key); commitText(".") }
         row.addView(period, weighted(1f))
-        val enter = cap("↵", CapKind.ACCENT, textSize = 20f).apply { contentDescription = "Return" }
+        val enter = cap("↵", CapKind.ACCENT, textSize = 20f).apply {
+            contentDescription = "Return"
+            sound = AudioManager.FX_KEYPRESS_RETURN
+        }
         enter.onUp = { key, inside ->
             if (inside) {
                 tick(key)
@@ -1084,6 +1088,18 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
 
     private fun rowParams() = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, dp(ROW_HEIGHT))
     private fun weighted(weight: Float) = LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, weight)
+
+    /**
+     * A run of keys whose outer two keys also cover the gap of [pad] key widths on each
+     * side, so no part of the row is dead to a tap.
+     */
+    private fun addPadded(row: LinearLayout, keys: List<KeyCap>, pad: Float) {
+        keys.forEachIndexed { index, key ->
+            if (index == 0) key.padStart = pad
+            if (index == keys.lastIndex) key.padEnd = pad
+            row.addView(key, weighted(1f + key.padStart + key.padEnd))
+        }
+    }
 
     private fun cap(label: String?, kind: CapKind, textSize: Float = 22f): KeyCap {
         val base = when (kind) {
@@ -1122,7 +1138,10 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
     }
 
     private fun deleteCap(): KeyCap {
-        val key = cap("⌫", CapKind.FUNCTION, textSize = 20f).apply { contentDescription = "Delete. Hold to repeat." }
+        val key = cap("⌫", CapKind.FUNCTION, textSize = 20f).apply {
+            contentDescription = "Delete. Hold to repeat."
+            sound = AudioManager.FX_KEYPRESS_DELETE
+        }
         key.onDown = {
             tick(it)
             deleteLastGrapheme()
@@ -1230,7 +1249,7 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         alternatesStrip.visibility = VISIBLE
         alternatesStrip.bringToFront()
         highlightAlternate()
-        tick(key)
+        keyFeedback(key, AudioManager.FX_KEYPRESS_STANDARD)
     }
 
     private fun moveAlternates(rawX: Float) {
@@ -1373,8 +1392,45 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         connection.deleteSurroundingText(length, 0)
     }
 
+    /**
+     * Feedback for taps outside the letter keys (chips, panels). Keys give their own
+     * feedback the instant a finger lands (see [KeyCap]), so this skips them.
+     */
     private fun tick(view: View) {
-        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        if (view !is KeyCap) keyFeedback(view, AudioManager.FX_KEYPRESS_STANDARD)
+    }
+
+    private val audio = service.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+    private val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        service.getSystemService(VibratorManager::class.java)?.defaultVibrator
+    } else {
+        @Suppress("DEPRECATION")
+        service.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+    }
+    private val keyBuzz: VibrationEffect? = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> VibrationEffect.createOneShot(14, VibrationEffect.DEFAULT_AMPLITUDE)
+        else -> null
+    }
+
+    /**
+     * A short, crisp buzz plus the phone's key click, like the built-in keyboard. Follows
+     * the phone's own settings: "Touch sounds" for the click and "Touch feedback" (haptics)
+     * for the buzz. The buzz goes straight to the vibrator because on many phones the
+     * ordinary view haptic for key taps is so faint that typing feels dead.
+     */
+    private fun keyFeedback(view: View, sound: Int) {
+        try {
+            audio?.playSoundEffect(sound)
+            val haptics = Settings.System.getInt(context.contentResolver, Settings.System.HAPTIC_FEEDBACK_ENABLED, 1) != 0
+            val motor = vibrator
+            if (haptics && motor != null && motor.hasVibrator()) {
+                val effect = keyBuzz
+                if (effect != null) motor.vibrate(effect) else @Suppress("DEPRECATION") motor.vibrate(14)
+            } else if (haptics) view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        } catch (_: RuntimeException) {
+            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        }
         if (glow.visibility == VISIBLE) glow.pulse()
     }
 
@@ -1415,8 +1471,18 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         var onDown: ((KeyCap) -> Unit)? = null
         var onMove: ((KeyCap, Float) -> Unit)? = null
         var onUp: ((KeyCap, Boolean) -> Unit)? = null
+        /** The click the phone plays for this key (when touch sounds are on). */
+        var sound = AudioManager.FX_KEYPRESS_STANDARD
+        /**
+         * Extra touch area beside the visible key, in key widths. The keys next to the
+         * edges of a short row (A, L, Z, M...) reach into the gap, so a tap there still
+         * types instead of landing on nothing. The cell's weight includes this padding.
+         */
+        var padStart = 0f
+        var padEnd = 0f
         private var fillColor = Color.WHITE
         private var pressedColor = Color.LTGRAY
+        private val shape = GradientDrawable().apply { cornerRadius = dp(8).toFloat() }
 
         init {
             label.gravity = Gravity.CENTER
@@ -1426,7 +1492,16 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
             addView(body, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT).apply {
                 setMargins(dp(3), dp(5), dp(3), dp(5))
             })
+            body.background = shape
             isHapticFeedbackEnabled = true
+        }
+
+        override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+            val params = body.layoutParams as LayoutParams
+            val cell = MeasureSpec.getSize(widthMeasureSpec) / (1f + padStart + padEnd)
+            params.leftMargin = dp(3) + (cell * padStart).toInt()
+            params.rightMargin = dp(3) + (cell * padEnd).toInt()
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
 
         fun setFill(fill: Int, pressed: Int) {
@@ -1436,16 +1511,13 @@ class LyfstyleKeyboardView(private val service: InputMethodService) : FrameLayou
         }
 
         private fun paint(pressed: Boolean) {
-            body.background = GradientDrawable().apply {
-                cornerRadius = dp(8).toFloat()
-                setColor(if (pressed) pressedColor else fillColor)
-            }
+            shape.setColor(if (pressed) pressedColor else fillColor)
         }
 
         @SuppressLint("ClickableViewAccessibility")
         override fun onTouchEvent(event: MotionEvent): Boolean {
             when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> { paint(true); onDown?.invoke(this) }
+                MotionEvent.ACTION_DOWN -> { paint(true); keyFeedback(this, sound); onDown?.invoke(this) }
                 MotionEvent.ACTION_MOVE -> onMove?.invoke(this, event.rawX)
                 MotionEvent.ACTION_UP -> {
                     paint(false)
